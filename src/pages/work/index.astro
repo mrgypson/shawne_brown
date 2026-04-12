@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProjects } from '../../lib/content';
+import { siteConfig } from '../../data/mock/site';
+
+const projects = await getProjects();
+const title = 'Work';
+const description = `Selected projects and series by ${siteConfig.siteTitle}.`;
+---
+
+<BaseLayout title={title} description={description}>
+	<header class="prose-narrow">
+		<h1 class="page-title">Work</h1>
+		<p class="page-lede">Series and projects, listed in current order of emphasis.</p>
+	</header>
+	<div class="work-grid">
+		{
+			projects.map((project) => (
+				<a class="work-item" href={`/work/${project.slug}`} data-testid={`work-index-${project.slug}`}>
+					<figure class="work-item-figure">
+						<img src={project.coverImage.src} alt={project.coverImage.alt} loading="lazy" decoding="async" />
+					</figure>
+					<div class="work-item-meta">
+						<h2 class="work-item-title">{project.title}</h2>
+						<p class="work-item-year">{project.yearLabel}</p>
+					</div>
+				</a>
+			))
+		}
+	</div>
+</BaseLayout>

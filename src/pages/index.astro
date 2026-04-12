@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/mock/site';
+
+const title = siteConfig.siteTitle;
+const description = siteConfig.defaultDescription;
+---
+
+<BaseLayout title={title} description={description}>
+	<section class="prose-narrow" aria-labelledby="home-heading">
+		<h1 id="home-heading" class="page-title">Shawne</h1>
+		<p class="page-lede">
+			Fine art photography — contemporary work for gallery, museum, and collection contexts.
+		</p>
+		<p>
+			<a href="/work">View work</a>
+			<span class="text-muted"> · </span>
+			<a href="/about">About</a>
+		</p>
+	</section>
+</BaseLayout>

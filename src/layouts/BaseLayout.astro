@@ -1,0 +1,33 @@
+---
+import '../styles/global.css';
+import SeoHead from '../components/SeoHead.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { siteConfig } from '../data/mock/site';
+
+interface Props {
+	title: string;
+	description: string;
+	ogImage?: string;
+}
+
+const { title, description, ogImage } = Astro.props;
+const pageTitle =
+	title.includes(siteConfig.siteTitle) ? title : `${title} — ${siteConfig.siteTitle}`;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<SeoHead title={pageTitle} description={description} ogImage={ogImage} />
+	</head>
+	<body>
+		<a class="skip-link" href="#main-content">Skip to content</a>
+		<div class="layout-main">
+			<SiteHeader />
+			<main id="main-content">
+				<slot />
+			</main>
+		</div>
+	</body>
+</html>

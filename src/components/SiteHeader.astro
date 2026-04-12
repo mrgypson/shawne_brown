@@ -1,0 +1,33 @@
+---
+import { siteConfig } from '../data/mock/site';
+
+const pathname = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+	if (href === '/') {
+		return pathname === '/';
+	}
+	return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+const links = [
+	{ href: '/work', label: 'Work' },
+	{ href: '/about', label: 'About' },
+	{ href: '/contact', label: 'Contact' },
+] as const;
+---
+
+<header class="site-header" id="site-header">
+	<p class="site-title">
+		<a href="/" id="site-header-title" data-testid="site-header-title-link">{siteConfig.siteTitle}</a>
+	</p>
+	<nav class="site-nav" aria-label="Primary" id="site-header-nav" data-testid="site-header-nav">
+		{
+			links.map(({ href, label }) => (
+				<a href={href} aria-current={isActive(href) ? 'page' : undefined} data-testid={`site-header-link-${label.toLowerCase()}`}>
+					{label}
+				</a>
+			))
+		}
+	</nav>
+</header>

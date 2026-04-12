@@ -1,0 +1,26 @@
+{
+  "name": "brown",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro",
+    "studio": "npm run dev --prefix studio",
+    "studio:deploy": "npm run deploy --prefix studio"
+  },
+  "dependencies": {
+    "@sanity/client": "^7.20.0",
+    "@sanity/image-url": "^2.1.1",
+    "astro": "^6.1.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.8",
+    "typescript": "^5.9.3"
+  }
+}

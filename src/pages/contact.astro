@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAbout } from '../lib/content';
+import { siteConfig } from '../data/mock/site';
+
+const about = getAbout();
+const title = 'Contact';
+const description = `Inquire about work, exhibitions, and editions — ${siteConfig.siteTitle}.`;
+const mailHref = `mailto:${about.contact.email}?subject=${encodeURIComponent('Inquiry')}`;
+---
+
+<BaseLayout title={title} description={description}>
+	<header class="prose-narrow">
+		<h1 class="page-title">Contact</h1>
+		<p class="page-lede">
+			For studio inquiries, commissions, and availability, email is the most reliable channel. A structured inquiry form may
+			be added later.
+		</p>
+	</header>
+
+	<section class="prose-narrow contact-block" aria-labelledby="contact-primary-heading">
+		<h2 id="contact-primary-heading" class="visually-hidden">Email</h2>
+		<p style="margin: 0 0 var(--space-3);">
+			<a href={mailHref} data-testid="contact-mailto-primary">{about.contact.email}</a>
+		</p>
+		<p class="text-muted" style="margin: 0;">
+			{about.contact.location && <>{about.contact.location} · </>}
+			Response times vary; thank you for your patience.
+		</p>
+	</section>
+
+	<section class="prose-narrow" style="margin-top: var(--space-6);" aria-labelledby="contact-form-heading">
+		<h2 id="contact-form-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
+			Inquiry (optional fields)
+		</h2>
+		<p class="text-muted" style="margin-top: 0; margin-bottom: var(--space-3); font-size: 0.9375rem;">
+			These fields are for layout and future integration — they do not submit to a server yet. Use the email link above to
+			reach the studio.
+		</p>
+		<form class="form-contact" name="inquiry" id="contact-inquiry-form" data-testid="contact-inquiry-form" action="#" method="get">
+			<label for="contact-name">Name</label>
+			<input id="contact-name" name="name" type="text" autocomplete="name" disabled />
+
+			<label for="contact-email">Email</label>
+			<input id="contact-email" name="email" type="email" autocomplete="email" disabled />
+
+			<label for="contact-message">Message</label>
+			<textarea id="contact-message" name="message" disabled />
+
+			<button type="button" disabled>Send (not connected)</button>
+		</form>
+	</section>
+</BaseLayout>

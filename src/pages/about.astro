@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAbout } from '../lib/content';
+import { siteConfig } from '../data/mock/site';
+
+const about = getAbout();
+const title = 'About';
+const description = `Artist biography, statement, and contact for ${siteConfig.siteTitle}.`;
+---
+
+<BaseLayout title={title} description={description}>
+	<header class="prose-narrow">
+		<h1 class="page-title">About</h1>
+	</header>
+
+	<section class="prose-narrow" style="margin-bottom: var(--space-6);" aria-labelledby="about-bio-heading">
+		<h2 id="about-bio-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
+			Biography
+		</h2>
+		<p style="margin: 0;">{about.bio}</p>
+	</section>
+
+	<section class="prose-narrow" style="margin-bottom: var(--space-6);" aria-labelledby="about-statement-heading">
+		<h2 id="about-statement-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
+			Statement
+		</h2>
+		<p style="margin: 0; white-space: pre-wrap;">{about.statement}</p>
+	</section>
+
+	<section class="prose-narrow" style="margin-bottom: var(--space-6);" aria-labelledby="about-exhibitions-heading">
+		<h2 id="about-exhibitions-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
+			Exhibitions &amp; publications
+		</h2>
+		<ul style="margin: 0; padding-left: 1.25rem;">
+			{about.exhibitions.map((entry) => (
+				<li style="margin-bottom: var(--space-2);">
+					<span class="text-muted">{entry.year}</span> — {entry.detail}
+				</li>
+			))}
+		</ul>
+		{about.publicationsNote && (
+			<p class="text-muted" style="margin-top: var(--space-3); margin-bottom: 0;">
+				{about.publicationsNote}
+			</p>
+		)}
+	</section>
+
+	<section class="prose-narrow contact-block" aria-labelledby="about-contact-heading">
+		<h2 id="about-contact-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
+			Contact
+		</h2>
+		<ul class="contact-list">
+			<li>
+				<a href={`mailto:${about.contact.email}`}>{about.contact.email}</a>
+			</li>
+			{about.contact.location && <li class="text-muted">{about.contact.location}</li>}
+			{about.contact.instagram && <li class="text-muted">{about.contact.instagram}</li>}
+		</ul>
+	</section>
+</BaseLayout>
