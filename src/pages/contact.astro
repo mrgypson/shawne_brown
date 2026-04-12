@@ -3,18 +3,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getAbout } from '../lib/content';
 import { siteConfig } from '../data/mock/site';
 
-const about = getAbout();
+const about = await getAbout();
 const title = 'Contact';
 const description = `Inquire about work, exhibitions, and editions — ${siteConfig.siteTitle}.`;
 const mailHref = `mailto:${about.contact.email}?subject=${encodeURIComponent('Inquiry')}`;
+
+const contactLede =
+	about.contactPageLede ??
+	'For studio inquiries, commissions, and availability, email is the most reliable channel. A structured inquiry form may be added later.';
+const inquiryHeading = about.contactInquiryHeading ?? 'Inquiry (optional fields)';
+const inquiryDisclaimer =
+	about.contactInquiryDisclaimer ??
+	'These fields are for layout and future integration — they do not submit to a server yet. Use the email link above to reach the studio.';
 ---
 
 <BaseLayout title={title} description={description}>
 	<header class="prose-narrow">
 		<h1 class="page-title">Contact</h1>
 		<p class="page-lede">
-			For studio inquiries, commissions, and availability, email is the most reliable channel. A structured inquiry form may
-			be added later.
+			{contactLede}
 		</p>
 	</header>
 
@@ -31,11 +38,10 @@ const mailHref = `mailto:${about.contact.email}?subject=${encodeURIComponent('In
 
 	<section class="prose-narrow" style="margin-top: var(--space-6);" aria-labelledby="contact-form-heading">
 		<h2 id="contact-form-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
-			Inquiry (optional fields)
+			{inquiryHeading}
 		</h2>
 		<p class="text-muted" style="margin-top: 0; margin-bottom: var(--space-3); font-size: 0.9375rem;">
-			These fields are for layout and future integration — they do not submit to a server yet. Use the email link above to
-			reach the studio.
+			{inquiryDisclaimer}
 		</p>
 		<form class="form-contact" name="inquiry" id="contact-inquiry-form" data-testid="contact-inquiry-form" action="#" method="get">
 			<label for="contact-name">Name</label>

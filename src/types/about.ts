@@ -16,4 +16,8 @@ export interface AboutContent {
 	exhibitions: ExhibitionEntry[];
 	publicationsNote?: string;
 	contact: AboutContact;
+	/** Contact page only; omit to use defaults in the Contact page template */
+	contactPageLede?: string;
+	contactInquiryHeading?: string;
+	contactInquiryDisclaimer?: string;
 }

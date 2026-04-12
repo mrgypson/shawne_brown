@@ -2,6 +2,7 @@ import { aboutContent } from '../data/mock/about';
 import { mockProjects } from '../data/mock/projects';
 import type { AboutContent } from '../types/about';
 import type { Project } from '../types/project';
+import { fetchAboutFromSanity } from './sanity/fetchAbout';
 import { fetchProjectsFromSanity } from './sanity/fetchProjects';
 
 /**
@@ -25,6 +26,17 @@ export async function getProjectBySlug(slug: string): Promise<Project | undefine
 	return projects.find((p) => p.slug === slug);
 }
 
-export function getAbout(): AboutContent {
-	return aboutContent;
+/**
+ * About + contact copy. Uses Sanity when configured; set `SANITY_USE_MOCK=true` to force mock data.
+ */
+export async function getAbout(): Promise<AboutContent> {
+	if (import.meta.env.SANITY_USE_MOCK === 'true') {
+		return aboutContent;
+	}
+	try {
+		return await fetchAboutFromSanity();
+	} catch (err) {
+		console.warn('[content] Sanity fetch failed; using mock about.', err);
+		return aboutContent;
+	}
 }

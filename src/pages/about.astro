@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getAbout } from '../lib/content';
 import { siteConfig } from '../data/mock/site';
 
-const about = getAbout();
+const about = await getAbout();
 const title = 'About';
 const description = `Artist biography, statement, and contact for ${siteConfig.siteTitle}.`;
 ---
