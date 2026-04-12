@@ -14,6 +14,14 @@ const { images, showPrintMeta = false, layout = 'single' } = Astro.props;
 function hasPrintSales(img: GalleryImage | NeuhoffImage): img is NeuhoffImage {
 	return 'printSales' in img && img.printSales !== undefined && Object.keys(img.printSales).length > 0;
 }
+
+function spacingAttr(img: GalleryImage | NeuhoffImage): { sa: string; sb: string; insetL: string; insetR: string } {
+	const sa = img.spaceAbove ?? 0;
+	const sb = img.spaceBelow ?? 3;
+	const insetL = img.insetLeft ?? 0;
+	const insetR = img.insetRight ?? 0;
+	return { sa: String(sa), sb: String(sb), insetL: String(insetL), insetR: String(insetR) };
+}
 ---
 
 <div
@@ -22,9 +30,18 @@ function hasPrintSales(img: GalleryImage | NeuhoffImage): img is NeuhoffImage {
 	data-testid="project-gallery"
 >
 	{
-		images.map((image, index) => (
-			<figure class="gallery-figure" data-testid={`project-gallery-figure-${index}`}>
-				<img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+		images.map((image, index) => {
+			const { sa, sb, insetL, insetR } = spacingAttr(image);
+			return (
+			<figure
+				class="gallery-figure"
+				data-testid={`project-gallery-figure-${index}`}
+				data-space-above={sa}
+				data-space-below={sb}
+			>
+				<div class="gallery-figure__media" data-inset-left={insetL} data-inset-right={insetR}>
+					<img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+				</div>
 				{(image.caption || image.printNumber) && (
 					<figcaption class="gallery-caption">
 						{image.caption && <span>{image.caption}</span>}
@@ -69,6 +86,7 @@ function hasPrintSales(img: GalleryImage | NeuhoffImage): img is NeuhoffImage {
 					</div>
 				)}
 			</figure>
-		))
+			);
+		})
 	}
 </div>

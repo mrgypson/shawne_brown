@@ -1,5 +1,5 @@
 import type { NeuhoffImage, PrintAvailability, PrintSalesMetadata } from '../../types/neuhoff';
-import type { GalleryImage, Project, ProjectKind } from '../../types/project';
+import type { GalleryImage, GallerySpacingStep, Project, ProjectKind } from '../../types/project';
 import { urlForImage } from './image';
 
 type SanityPrintSales = {
@@ -16,7 +16,23 @@ type SanityGalleryRow = {
 	caption?: string | null;
 	printNumber?: string | null;
 	printSales?: SanityPrintSales | null;
+	spaceAbove?: number | null;
+	spaceBelow?: number | null;
+	insetLeft?: number | null;
+	insetRight?: number | null;
+	/** Legacy single inset; used when insetLeft/insetRight are absent. */
+	insetHorizontal?: number | null;
 };
+
+const DEFAULT_SPACE_ABOVE: GallerySpacingStep = 0;
+const DEFAULT_SPACE_BELOW: GallerySpacingStep = 3;
+const DEFAULT_INSET: GallerySpacingStep = 0;
+
+function toSpacingStep(value: number | null | undefined, fallback: GallerySpacingStep): GallerySpacingStep {
+	if (typeof value !== 'number' || Number.isNaN(value)) return fallback;
+	const rounded = Math.round(value);
+	return Math.min(4, Math.max(0, rounded)) as GallerySpacingStep;
+}
 
 export type SanityProjectDoc = {
 	_id: string;
@@ -54,6 +70,10 @@ function mapGalleryRow(row: SanityGalleryRow, kind: ProjectKind): GalleryImage |
 		alt,
 		caption: row.caption?.trim() || undefined,
 		printNumber: row.printNumber?.trim() || undefined,
+		spaceAbove: toSpacingStep(row.spaceAbove, DEFAULT_SPACE_ABOVE),
+		spaceBelow: toSpacingStep(row.spaceBelow, DEFAULT_SPACE_BELOW),
+		insetLeft: toSpacingStep(row.insetLeft ?? row.insetHorizontal, DEFAULT_INSET),
+		insetRight: toSpacingStep(row.insetRight ?? row.insetHorizontal, DEFAULT_INSET),
 	};
 
 	if (kind === 'neuhoff') {

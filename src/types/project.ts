@@ -8,6 +8,9 @@ export interface CoverImage {
 	alt: string;
 }
 
+/** Spacing scale from Sanity (0–4); mapped to CSS space tokens on the site. */
+export type GallerySpacingStep = 0 | 1 | 2 | 3 | 4;
+
 /**
  * Base gallery image fields (CMS-mappable).
  */
@@ -17,6 +20,14 @@ export interface GalleryImage {
 	caption?: string;
 	/** Edition / inventory label (optional on standard projects). */
 	printNumber?: string;
+	/** Extra margin above this figure. */
+	spaceAbove?: GallerySpacingStep;
+	/** Margin below this figure (after caption / print meta). */
+	spaceBelow?: GallerySpacingStep;
+	/** Padding on the left (shrinks image from that side). */
+	insetLeft?: GallerySpacingStep;
+	/** Padding on the right (shrinks image from that side). */
+	insetRight?: GallerySpacingStep;
 }
 
 export type ProjectKind = 'standard' | 'neuhoff';

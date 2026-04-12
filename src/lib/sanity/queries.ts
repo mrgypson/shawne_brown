@@ -25,6 +25,11 @@ export const projectsQuery = `*[_type == "project" && defined(slug.current)] | o
     _key,
     image,
     caption,
+    spaceAbove,
+    spaceBelow,
+    insetLeft,
+    insetRight,
+    insetHorizontal,
     printNumber,
     printSales
   }

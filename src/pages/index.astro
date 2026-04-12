@@ -1,21 +1,30 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getProjects } from '../lib/content';
 import { siteConfig } from '../data/mock/site';
 
 const title = siteConfig.siteTitle;
 const description = siteConfig.defaultDescription;
+const projects = await getProjects();
 ---
 
 <BaseLayout title={title} description={description}>
-	<section class="prose-narrow" aria-labelledby="home-heading">
-		<h1 id="home-heading" class="page-title">Shawne</h1>
-		<p class="page-lede">
-			Fine art photography — contemporary work for gallery, museum, and collection contexts.
-		</p>
-		<p>
-			<a href="/work">View work</a>
-			<span class="text-muted"> · </span>
-			<a href="/about">About</a>
-		</p>
+	<section class="home-projects" aria-labelledby="home-heading">
+		<h1 id="home-heading" class="visually-hidden">{title}</h1>
+		<ul class="home-project-list">
+			{
+				projects.map((project) => (
+					<li>
+						<a
+							href={`/work/${project.slug}`}
+							class="home-project-link"
+							data-testid={`home-project-${project.slug}`}
+						>
+							{project.title}
+						</a>
+					</li>
+				))
+			}
+		</ul>
 	</section>
 </BaseLayout>

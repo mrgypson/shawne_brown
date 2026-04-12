@@ -1,5 +1,14 @@
 import { defineArrayMember, defineField, defineType } from 'sanity';
 
+/** Shared 0–4 scale for gallery spacing (mapped to site CSS space tokens). */
+const gallerySpacingList = [
+	{ title: '0 — none', value: 0 },
+	{ title: '1 — tight', value: 1 },
+	{ title: '2 — medium', value: 2 },
+	{ title: '3 — generous', value: 3 },
+	{ title: '4 — maximum', value: 4 },
+] as const;
+
 const printSalesFields = [
 	defineField({
 		name: 'printNumber',
@@ -154,6 +163,44 @@ export const project = defineType({
 							name: 'caption',
 							title: 'Caption',
 							type: 'string',
+						}),
+						defineField({
+							name: 'spaceAbove',
+							title: 'Space above image',
+							type: 'number',
+							description: 'Extra margin above this image (stacked with the previous image’s space below).',
+							options: { list: [...gallerySpacingList] },
+							initialValue: 0,
+							validation: (Rule) => Rule.min(0).max(4).integer(),
+						}),
+						defineField({
+							name: 'spaceBelow',
+							title: 'Space below image',
+							type: 'number',
+							description: 'Margin below this block (image, caption, and optional print details).',
+							options: { list: [...gallerySpacingList] },
+							initialValue: 3,
+							validation: (Rule) => Rule.min(0).max(4).integer(),
+						}),
+						defineField({
+							name: 'insetLeft',
+							title: 'Inset left',
+							type: 'number',
+							description:
+								'Padding on the left narrows the image inside the column without changing page width.',
+							options: { list: [...gallerySpacingList] },
+							initialValue: 0,
+							validation: (Rule) => Rule.min(0).max(4).integer(),
+						}),
+						defineField({
+							name: 'insetRight',
+							title: 'Inset right',
+							type: 'number',
+							description:
+								'Padding on the right narrows the image inside the column without changing page width.',
+							options: { list: [...gallerySpacingList] },
+							initialValue: 0,
+							validation: (Rule) => Rule.min(0).max(4).integer(),
 						}),
 						defineField({
 							name: 'printNumber',
