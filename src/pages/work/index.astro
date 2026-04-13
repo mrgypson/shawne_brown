@@ -1,9 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getProjects } from '../../lib/content';
 import { siteConfig } from '../../data/mock/site';
+import { getProjects } from '../../lib/content';
 
-const projects = await getProjects();
+export const prerender = false;
+
+const usePreview = Boolean(Astro.locals.sanityPreview);
+const projects = await getProjects({ preview: usePreview });
 const title = 'Work';
 const description = `Selected projects and series by ${siteConfig.siteTitle}.`;
 ---

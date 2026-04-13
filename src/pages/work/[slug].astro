@@ -1,24 +1,22 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectGallery from '../../components/ProjectGallery.astro';
-import { getProjects } from '../../lib/content';
-import { isNeuhoffProject } from '../../types/project';
 import { siteConfig } from '../../data/mock/site';
+import { getProjectBySlug } from '../../lib/content';
+import { isNeuhoffProject } from '../../types/project';
 import type { Project } from '../../types/project';
 
-export async function getStaticPaths() {
-	const projects = await getProjects();
-	return projects.map((project) => ({
-		params: { slug: project.slug },
-		props: { project },
-	}));
-}
+export const prerender = false;
 
-interface Props {
-	project: Project;
-}
+const usePreview = Boolean(Astro.locals.sanityPreview);
+const slug = Astro.params.slug;
+const project: Project | undefined = slug
+	? await getProjectBySlug(slug, { preview: usePreview })
+	: undefined;
 
-const { project } = Astro.props;
+if (!project) {
+	return Astro.redirect('/404');
+}
 
 const title = project.title;
 const description = project.shortDescription;

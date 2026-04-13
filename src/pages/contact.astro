@@ -1,9 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getAbout } from '../lib/content';
 import { siteConfig } from '../data/mock/site';
+import { getAbout } from '../lib/content';
 
-const about = await getAbout();
+export const prerender = false;
+
+const usePreview = Boolean(Astro.locals.sanityPreview);
+const about = await getAbout({ preview: usePreview });
 const title = 'Contact';
 const description = `Inquire about work, exhibitions, and editions — ${siteConfig.siteTitle}.`;
 const mailHref = `mailto:${about.contact.email}?subject=${encodeURIComponent('Inquiry')}`;

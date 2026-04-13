@@ -1,11 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getProjects } from '../lib/content';
 import { siteConfig } from '../data/mock/site';
+import { getProjects } from '../lib/content';
+
+/** Server-rendered so Presentation + `/api/preview/enable` can swap in draft content without a separate preview build. */
+export const prerender = false;
 
 const title = siteConfig.siteTitle;
 const description = siteConfig.defaultDescription;
-const projects = await getProjects();
+const usePreview = Boolean(Astro.locals.sanityPreview);
+const projects = await getProjects({ preview: usePreview });
 ---
 
 <BaseLayout title={title} description={description}>

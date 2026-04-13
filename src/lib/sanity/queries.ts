@@ -10,8 +10,8 @@ export const aboutPageQuery = `*[_type == "aboutPage" && _id == "aboutPage"][0] 
   contactInquiryDisclaimer
 }`;
 
-/** Fetches all published projects with assets for the Work index and detail pages. */
-export const projectsQuery = `*[_type == "project" && defined(slug.current)] | order(coalesce(order, 999) asc, title asc) {
+/** Shared projection for project documents (list + detail). */
+export const projectFieldsProjection = `
   _id,
   title,
   "slug": slug.current,
@@ -33,4 +33,10 @@ export const projectsQuery = `*[_type == "project" && defined(slug.current)] | o
     printNumber,
     printSales
   }
-}`;
+`;
+
+/** Fetches all published projects with assets for the Work index and detail pages. */
+export const projectsQuery = `*[_type == "project" && defined(slug.current)] | order(coalesce(order, 999) asc, title asc) { ${projectFieldsProjection} }`;
+
+/** Single project by slug (SSR preview routes). */
+export const projectBySlugQuery = `*[_type == "project" && slug.current == $slug][0]{ ${projectFieldsProjection} }`;

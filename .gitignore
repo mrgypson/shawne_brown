@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Sanity
 .sanity/
+
+# Local Netlify folder
+.netlify

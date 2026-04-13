@@ -6,10 +6,21 @@ interface ImportMetaEnv {
 	readonly SANITY_API_VERSION?: string;
 	/** Optional; use for private datasets or draft perspective. */
 	readonly SANITY_READ_TOKEN?: string;
+	/** Set to `false` so build-time fetches bypass the Sanity CDN. */
+	readonly SANITY_USE_CDN?: string;
+	/** Legacy manual preview: must match query `secret` on `/api/preview/enable`. */
+	readonly SANITY_PREVIEW_SECRET?: string;
 	/** Set to `true` to use local mock projects (no Sanity request). */
 	readonly SANITY_USE_MOCK?: string;
 }
 
 interface ImportMeta {
 	readonly env: ImportMetaEnv;
+}
+
+declare namespace App {
+	interface Locals {
+		/** True after a successful `/api/preview/enable` (cookie set). */
+		sanityPreview?: boolean;
+	}
 }
