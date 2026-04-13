@@ -1,0 +1,22 @@
+---
+interface Props {
+	/** Set from middleware when `sanity-preview` cookie is present (after `/api/preview/enable`). */
+	enabled: boolean;
+}
+
+const { enabled } = Astro.props;
+---
+
+{
+	enabled && (
+		<script>
+			import { enableVisualEditing } from '@sanity/visual-editing';
+
+			try {
+				enableVisualEditing();
+			} catch (err) {
+				console.error('[sanity visual-editing]', err);
+			}
+		</script>
+	)
+}

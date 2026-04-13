@@ -48,6 +48,13 @@ Set in the host’s build environment (see [`.env.example`](../.env.example)).
 1. Copy [`studio/.env.example`](../studio/.env.example) to `studio/.env` and set `SANITY_STUDIO_PREVIEW_URL` to your deployed site origin (e.g. `https://your-site.netlify.app` or `http://localhost:4321` for local Astro).
 2. Deploy or run Studio; open the **Presentation** tool. It uses `/api/preview/enable` and `/api/preview/disable` configured in [`studio/sanity.config.ts`](../studio/sanity.config.ts).
 
+### Presentation troubleshooting
+
+- **`/api/preview/enable` returns 5xx**: Ensure `SANITY_READ_TOKEN` is a **project** token (Viewer/Editor) in the Astro root `.env`, then restart `npm run dev`. Response bodies are plain text and describe the failure.
+- **401 after enable**: Preview secrets expire (about an hour). Close Presentation and open it again so Studio issues a new `sanity-preview-secret`.
+- **“Unable to connect to visual editing”**: With a valid preview session, [`SanityVisualEditing.astro`](../src/components/SanityVisualEditing.astro) calls `enableVisualEditing()` from `@sanity/visual-editing`. Full click-to-edit overlays also need **Stega**-encoded strings in your queries; this repo uses plain strings, so overlays may be limited until you add Stega.
+- **Hosted Studio (`https://`) + `http://localhost:4321`**: The iframe is cross-origin / mixed-content; browsers may warn. For fewer warnings, run Studio locally against localhost or preview the **deployed** HTTPS site.
+
 ---
 
 ## 4. Client workflow (summary)

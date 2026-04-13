@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import SanityVisualEditing from '../components/SanityVisualEditing.astro';
 import SeoHead from '../components/SeoHead.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import { siteConfig } from '../data/mock/site';
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const { title, description, ogImage } = Astro.props;
+const sanityPreview = Boolean(Astro.locals.sanityPreview);
 const pageTitle =
 	title.includes(siteConfig.siteTitle) ? title : `${title} — ${siteConfig.siteTitle}`;
 ---
@@ -29,5 +31,6 @@ const pageTitle =
 				<slot />
 			</main>
 		</div>
+		<SanityVisualEditing enabled={sanityPreview} />
 	</body>
 </html>
