@@ -21,11 +21,25 @@ function useCdn(): boolean {
 	return import.meta.env.SANITY_USE_CDN !== 'false';
 }
 
+/**
+ * Sanity read token from `.env`. Vite loads `SANITY_READ_TOKEN` into `process.env` but does not
+ * expose non-`PUBLIC_` / non-`VITE_` keys on `import.meta.env`, so prefer `process.env` on the server.
+ */
+export function getSanityReadToken(): string | undefined {
+	const raw =
+		(typeof process !== 'undefined' && process.env.SANITY_READ_TOKEN) ||
+		import.meta.env.SANITY_READ_TOKEN;
+	const trimmed = typeof raw === 'string' ? raw.trim() : '';
+	return trimmed || undefined;
+}
+
 let client: SanityClient | null = null;
+let clientTokenCache: string | undefined;
 
 export function getSanityClient(): SanityClient {
-	if (!client) {
-		const token = import.meta.env.SANITY_READ_TOKEN;
+	const token = getSanityReadToken();
+	if (!client || clientTokenCache !== token) {
+		clientTokenCache = token;
 		client = createClient({
 			projectId: getProjectId(),
 			dataset: getDataset(),
@@ -44,7 +58,7 @@ export function getSanityQueryClient(options: { preview: boolean }): SanityClien
 	if (!options.preview) {
 		return getSanityClient();
 	}
-	const token = import.meta.env.SANITY_READ_TOKEN;
+	const token = getSanityReadToken();
 	if (!token) {
 		throw new Error('SANITY_READ_TOKEN is required for draft preview');
 	}
