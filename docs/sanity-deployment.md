@@ -1,6 +1,6 @@
 # Sanity: publish webhooks and preview
 
-Content routes (home, Work, project detail, About, Contact) are **server-rendered** on Netlify so that after `/api/preview/enable` runs, the same deployment can show **draft** content when `SANITY_READ_TOKEN` is configured. Published visitors still see published documents; drafts require a valid preview session from Studio’s Presentation tool (or the legacy manual secret flow).
+Content routes (home, Work, project detail, About, Contact) are **server-rendered** (this repo uses [`@astrojs/vercel`](../astro.config.mjs) for Vercel) so that after `/api/preview/enable` runs, the same deployment can show **draft** content when `SANITY_READ_TOKEN` is configured. Published visitors still see published documents; drafts require a valid preview session from Studio’s Presentation tool (or the legacy manual secret flow).
 
 ## 1. Automatic deploy when content is published
 
@@ -17,8 +17,8 @@ Publishing in Studio updates the API immediately, but this app reads Sanity **at
 
 ### Host notes
 
-- **Vercel**: Deploy Hooks (production branch).
-- **Netlify**: Build hooks; this repo uses [`@astrojs/netlify`](../astro.config.mjs).
+- **Vercel**: Deploy Hooks (production branch); Astro adapter is `@astrojs/vercel`.
+- **Netlify**: Build hooks (switch adapter to `@astrojs/netlify` if you move the site there).
 - **Cloudflare Pages**: Deploy hooks.
 
 ### Build freshness (optional)
@@ -45,15 +45,27 @@ Set in the host’s build environment (see [`.env.example`](../.env.example)).
 
 ## 3. Studio: Presentation + preview URL
 
-1. Copy [`studio/.env.example`](../studio/.env.example) to `studio/.env` and set `SANITY_STUDIO_PREVIEW_URL` to your deployed site origin (e.g. `https://your-site.netlify.app` or `http://localhost:4321` for local Astro).
-2. Deploy or run Studio; open the **Presentation** tool. It uses `/api/preview/enable` and `/api/preview/disable` configured in [`studio/sanity.config.ts`](../studio/sanity.config.ts).
+### Local Studio (`sanity dev`)
+
+1. Copy [`studio/.env.example`](../studio/.env.example) to `studio/.env`.
+2. Set `SANITY_STUDIO_PREVIEW_URL` to `http://localhost:4321` while the Astro app runs with `npm run dev`, or to your **deployed** HTTPS URL if you want Presentation to hit production from local Studio.
+
+### Hosted Studio (`*.sanity.studio`)
+
+`previewUrl.initial` is resolved when the Studio bundle is **built**. Other people’s browsers never reach your machine’s `localhost`.
+
+1. In [Sanity Manage](https://www.sanity.io/manage) → **Project** → **Environment variables** (or your CI secrets for `sanity deploy`), set:
+   - **`SANITY_STUDIO_PREVIEW_URL`** — public Astro origin, e.g. `https://your-project.vercel.app` (no trailing slash required).
+   - **`SANITY_STUDIO_ALLOW_ORIGINS`** (recommended) — e.g. `https://your-project.vercel.app,https://*.vercel.app` so branch preview deploys and extra domains match Presentation’s origin checks.
+2. From `studio/`, run **`npm run deploy`** again so the hosted Studio embeds those values.
+3. Open **Presentation** in hosted Studio; it calls `/api/preview/enable` and `/api/preview/disable` on that origin per [`studio/sanity.config.ts`](../studio/sanity.config.ts).
 
 ### Presentation troubleshooting
 
 - **`/api/preview/enable` returns 5xx**: Ensure `SANITY_READ_TOKEN` is a **project** token (Viewer/Editor) in the Astro root `.env`, then restart `npm run dev`. Response bodies are plain text and describe the failure.
 - **401 after enable**: Preview secrets expire (about an hour). Close Presentation and open it again so Studio issues a new `sanity-preview-secret`.
 - **“Unable to connect to visual editing”**: With a valid preview session, [`SanityVisualEditing.astro`](../src/components/SanityVisualEditing.astro) calls `enableVisualEditing()` from `@sanity/visual-editing`. Full click-to-edit overlays also need **Stega**-encoded strings in your queries; this repo uses plain strings, so overlays may be limited until you add Stega.
-- **Hosted Studio (`https://`) + `http://localhost:4321`**: The iframe is cross-origin / mixed-content; browsers may warn. For fewer warnings, run Studio locally against localhost or preview the **deployed** HTTPS site.
+- **Hosted Studio still opening localhost**: The deploy was built without `SANITY_STUDIO_PREVIEW_URL` pointing at your **live** site. Fix the env vars in Manage, redeploy Studio, and ensure Vercel has `SANITY_READ_TOKEN`.
 
 ---
 

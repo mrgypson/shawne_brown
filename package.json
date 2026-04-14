@@ -16,7 +16,7 @@
     "studio:deploy": "npm run deploy --prefix studio"
   },
   "dependencies": {
-    "@astrojs/netlify": "^7.0.6",
+    "@astrojs/vercel": "^10.0.4",
     "@sanity/client": "^7.20.0",
     "@sanity/image-url": "^2.1.1",
     "@sanity/preview-url-secret": "^4.0.4",

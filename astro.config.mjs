@@ -1,11 +1,11 @@
 // @ts-check
-import netlify from '@astrojs/netlify';
+import vercel from '@astrojs/vercel';
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://shawne.example',
-	adapter: netlify(),
+	site: 'https://shawne-brown-git-main-mrgypsons-projects.vercel.app',
+	adapter: vercel(),
 	devToolbar: {
 		enabled: false,
 	},

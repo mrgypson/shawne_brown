@@ -26,5 +26,6 @@ pnpm-debug.log*
 # Sanity
 .sanity/
 
-# Local Netlify folder
+# Local adapter / Vercel CLI output
+.vercel
 .netlify

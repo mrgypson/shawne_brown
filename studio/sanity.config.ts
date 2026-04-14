@@ -5,6 +5,7 @@ import { schemaTypes } from './schemaTypes';
 
 const ABOUT_PAGE_DOC_ID = 'aboutPage';
 
+// For hosted Studio: set SANITY_STUDIO_PREVIEW_URL in project env before deploy (defaults to localhost for local `sanity dev` only).
 const studioPreviewUrl = process.env.SANITY_STUDIO_PREVIEW_URL || 'http://localhost:4321';
 
 const presentationAllowOrigins = [
