@@ -35,7 +35,7 @@ export const projectFieldsProjection = `
   }
 `;
 
-/** Fetches all published projects with assets for the Work index and detail pages. */
+/** Fetches projects for the Work index. Requires a client with `published` or `previewDrafts` perspective — not `raw`, or you get duplicate rows (draft + published). */
 export const projectsQuery = `*[_type == "project" && defined(slug.current)] | order(coalesce(order, 999) asc, title asc) { ${projectFieldsProjection} }`;
 
 /** Single project by slug (SSR preview routes). */

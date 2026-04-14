@@ -45,6 +45,11 @@ export function getSanityClient(): SanityClient {
 			dataset: getDataset(),
 			apiVersion: getApiVersion(),
 			useCdn: useCdn(),
+			/**
+			 * Without this, API versions before `2025-02-19` default to `raw`, so `*[_type == "project"]`
+			 * returns both `drafts.*` and published docs — duplicate rows on the live site and in Presentation.
+			 */
+			perspective: 'published',
 			...(token ? { token } : {}),
 		});
 	}
