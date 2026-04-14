@@ -13,6 +13,8 @@ interface Props {
 
 const { title, description, ogImage } = Astro.props;
 const sanityPreview = Boolean(Astro.locals.sanityPreview);
+const visualEditingEnabled =
+	sanityPreview || Astro.url.searchParams.has('sanity-preview-perspective');
 const pageTitle =
 	title.includes(siteConfig.siteTitle) ? title : `${title} — ${siteConfig.siteTitle}`;
 ---
@@ -31,6 +33,6 @@ const pageTitle =
 				<slot />
 			</main>
 		</div>
-		<SanityVisualEditing enabled={sanityPreview} />
+		<SanityVisualEditing enabled={visualEditingEnabled} />
 	</body>
 </html>

@@ -7,6 +7,15 @@ const ABOUT_PAGE_DOC_ID = 'aboutPage';
 
 const studioPreviewUrl = process.env.SANITY_STUDIO_PREVIEW_URL || 'http://localhost:4321';
 
+const presentationAllowOrigins = [
+	'http://localhost:*',
+	'http://127.0.0.1:*',
+	...(process.env.SANITY_STUDIO_ALLOW_ORIGINS ?? '')
+		.split(',')
+		.map((s) => s.trim())
+		.filter(Boolean),
+];
+
 export default defineConfig({
 	name: 'default',
 	title: 'Brown',
@@ -21,6 +30,7 @@ export default defineConfig({
 					disable: '/api/preview/disable',
 				},
 			},
+			allowOrigins: presentationAllowOrigins,
 		}),
 		structureTool({
 			structure: (S) =>

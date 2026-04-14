@@ -18,10 +18,29 @@ function isUnauthorizedError(err: unknown): boolean {
 	const msg = err instanceof Error ? err.message : String(err);
 	return (
 		status === 401 ||
+		status === 403 ||
 		msg.includes('401') ||
+		msg.includes('403') ||
 		msg.includes('Unauthorized') ||
+		msg.includes('Forbidden') ||
 		msg.includes('Session not found')
 	);
+}
+
+/**
+ * Sanity returns a path + search + hash. Keep it on the current origin (Astro `redirect` expects a path).
+ */
+function normalizeRedirectTarget(requestUrl: URL, redirectTo: string | undefined): string {
+	const raw = redirectTo ?? '/';
+	try {
+		const resolved = new URL(raw, requestUrl.origin);
+		if (resolved.origin !== requestUrl.origin) {
+			return '/';
+		}
+		return `${resolved.pathname}${resolved.search}${resolved.hash}` || '/';
+	} catch {
+		return '/';
+	}
 }
 
 export const GET: APIRoute = async ({ url, cookies, redirect }) => {
@@ -38,7 +57,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 				maxAge: 60 * 60 * 8,
 				secure: import.meta.env.PROD,
 			});
-			return redirect(redirectTo);
+			return redirect(normalizeRedirectTarget(url, redirectTo));
 		}
 
 		if (!getSanityReadToken()) {
@@ -54,7 +73,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 		} catch (err: unknown) {
 			if (isUnauthorizedError(err)) {
 				return new Response(
-					'Sanity rejected this API token (401). Create a token under this project: Sanity Manage → Project (Brown) → API → Tokens → Viewer (or Editor). Do not use organization-only deploy tokens. Match SANITY_PROJECT_ID=yrca4rxr and SANITY_DATASET=production in .env if you override them.',
+					'Sanity rejected this API token (401/403). Use a Viewer or Editor token for project yrca4rxr dataset production in SANITY_READ_TOKEN. Deploy tokens or tokens for another project will fail. Match SANITY_PROJECT_ID and SANITY_DATASET in .env if you override them.',
 					{ status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
 				);
 			}
@@ -80,7 +99,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 			secure: import.meta.env.PROD,
 		});
 
-		return redirect(result.redirectTo ?? '/');
+		return redirect(normalizeRedirectTarget(url, result.redirectTo));
 	} catch (err: unknown) {
 		const detail = err instanceof Error ? err.message : String(err);
 		return new Response(`Preview enable failed: ${detail}`, {

@@ -6,4 +6,7 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
 	site: 'https://shawne.example',
 	adapter: netlify(),
+	devToolbar: {
+		enabled: false,
+	},
 });
