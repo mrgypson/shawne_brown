@@ -5,17 +5,29 @@ import { schemaTypes } from './schemaTypes';
 
 const ABOUT_PAGE_DOC_ID = 'aboutPage';
 
-// For hosted Studio: set SANITY_STUDIO_PREVIEW_URL in project env before deploy (defaults to localhost for local `sanity dev` only).
-const studioPreviewUrl = process.env.SANITY_STUDIO_PREVIEW_URL || 'http://localhost:4321';
+/** Deployed Astro site (Vercel). Presentation `initial` must be this origin, not `/api/preview/enable`. */
+const BROWN_ASTRO_SITE_ORIGIN = 'https://shawne-brown.vercel.app';
 
+/** Optional: `studio/.env` → `SANITY_STUDIO_PREVIEW_URL=http://localhost:4321` when running Astro locally. */
+const studioPreviewUrlRaw =
+	(process.env.SANITY_STUDIO_PREVIEW_URL ?? '').trim() || BROWN_ASTRO_SITE_ORIGIN;
+const studioPreviewUrl = studioPreviewUrlRaw.replace(/\/$/, '');
+if (/\/api\/preview\/enable\b/i.test(studioPreviewUrl)) {
+	throw new Error(
+		'SANITY_STUDIO_PREVIEW_URL must be your Astro site origin (e.g. https://shawne-brown.vercel.app), not /api/preview/enable. Presentation calls that route automatically.',
+	);
+}
+
+const defaultAllowOrigins = `${BROWN_ASTRO_SITE_ORIGIN},https://*.vercel.app`;
 const presentationAllowOrigins = [
 	'http://localhost:*',
 	'http://127.0.0.1:*',
-	...(process.env.SANITY_STUDIO_ALLOW_ORIGINS ?? '')
-		.split(',')
-		.map((s) => s.trim())
-		.filter(Boolean),
-];
+	...(process.env.SANITY_STUDIO_ALLOW_ORIGINS?.trim()
+		? process.env.SANITY_STUDIO_ALLOW_ORIGINS.split(',')
+		: defaultAllowOrigins.split(',')),
+]
+	.map((s) => s.trim())
+	.filter(Boolean);
 
 export default defineConfig({
 	name: 'default',

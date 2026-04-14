@@ -1,4 +1,5 @@
 import { validatePreviewUrl } from '@sanity/preview-url-secret';
+import { urlSearchParamPreviewSecret } from '@sanity/preview-url-secret/constants';
 import type { APIRoute } from 'astro';
 import { getSanityClient, getSanityReadToken } from '../../../lib/sanity/client';
 
@@ -75,6 +76,24 @@ export const GET: APIRoute = async ({ url, cookies }) => {
 		const legacySecret = import.meta.env.SANITY_PREVIEW_SECRET;
 		const legacyToken = url.searchParams.get('secret');
 		const redirectTo = url.searchParams.get('redirect') ?? '/';
+		const legacyOk = Boolean(legacySecret && legacyToken === legacySecret);
+		const hasStudioPreviewSecret = url.searchParams.has(urlSearchParamPreviewSecret);
+
+		/** Opening this path in the iframe without Studio-issued params usually means preview URL was mis-set to this API path instead of the site origin. */
+		if (!legacyOk && !hasStudioPreviewSecret && !legacyToken) {
+			return new Response(
+				[
+					'Missing preview credentials on this URL.',
+					'',
+					'Fix: set SANITY_STUDIO_PREVIEW_URL to your Astro site origin (e.g. https://shawne-brown.vercel.app), not /api/preview/enable.',
+					'Sanity Presentation will call this route with a sanity-preview-secret query param automatically.',
+				].join('\n'),
+				{
+					status: 400,
+					headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+				},
+			);
+		}
 
 		if (legacySecret && legacyToken === legacySecret) {
 			cookies.set('sanity-preview', '1', previewSessionCookieOptions());
