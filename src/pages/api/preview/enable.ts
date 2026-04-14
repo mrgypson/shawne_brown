@@ -4,6 +4,26 @@ import { getSanityClient, getSanityReadToken } from '../../../lib/sanity/client'
 
 export const prerender = false;
 
+/** Hosted Studio (`*.sanity.studio`) embeds the site in a cross-site iframe; `Lax` drops the session there. */
+function previewSessionCookieOptions() {
+	if (import.meta.env.PROD) {
+		return {
+			path: '/' as const,
+			httpOnly: true,
+			sameSite: 'none' as const,
+			secure: true,
+			maxAge: 60 * 60 * 8,
+		};
+	}
+	return {
+		path: '/' as const,
+		httpOnly: true,
+		sameSite: 'lax' as const,
+		secure: false,
+		maxAge: 60 * 60 * 8,
+	};
+}
+
 function getSanityHttpStatus(err: unknown): number | undefined {
 	if (!err || typeof err !== 'object') return undefined;
 	const e = err as Record<string, unknown>;
@@ -57,13 +77,7 @@ export const GET: APIRoute = async ({ url, cookies }) => {
 		const redirectTo = url.searchParams.get('redirect') ?? '/';
 
 		if (legacySecret && legacyToken === legacySecret) {
-			cookies.set('sanity-preview', '1', {
-				path: '/',
-				httpOnly: true,
-				sameSite: 'lax',
-				maxAge: 60 * 60 * 8,
-				secure: import.meta.env.PROD,
-			});
+			cookies.set('sanity-preview', '1', previewSessionCookieOptions());
 			return Response.redirect(absoluteRedirectUrl(url, redirectTo), 302);
 		}
 
@@ -105,13 +119,7 @@ export const GET: APIRoute = async ({ url, cookies }) => {
 			);
 		}
 
-		cookies.set('sanity-preview', '1', {
-			path: '/',
-			httpOnly: true,
-			sameSite: 'lax',
-			maxAge: 60 * 60 * 8,
-			secure: import.meta.env.PROD,
-		});
+		cookies.set('sanity-preview', '1', previewSessionCookieOptions());
 
 		return Response.redirect(absoluteRedirectUrl(url, result.redirectTo), 302);
 	} catch (err: unknown) {
