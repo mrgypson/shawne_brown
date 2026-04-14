@@ -71,7 +71,26 @@ function absoluteRedirectUrl(requestUrl: URL, redirectTo: string | undefined): s
 	return new URL(path, requestUrl.origin).href;
 }
 
-export const GET: APIRoute = async ({ url, cookies }) => {
+/**
+ * Vercel + Astro can throw or drop cookies when mixing `cookies.set()` with `Response.redirect()`.
+ * One `Set-Cookie` line is enough for the preview session flag.
+ */
+function previewSessionSetCookieHeader(): string {
+	const o = previewSessionCookieOptions();
+	const same = o.sameSite === 'none' ? 'None' : 'Lax';
+	const parts = [`sanity-preview=1`, `Path=${o.path}`, `HttpOnly`, `Max-Age=${o.maxAge}`, `SameSite=${same}`];
+	if (o.secure) parts.push('Secure');
+	return parts.join('; ');
+}
+
+function redirectWithPreviewCookie(requestUrl: URL, redirectTo: string | undefined): Response {
+	const headers = new Headers();
+	headers.set('Location', absoluteRedirectUrl(requestUrl, redirectTo));
+	headers.append('Set-Cookie', previewSessionSetCookieHeader());
+	return new Response(null, { status: 302, headers });
+}
+
+export const GET: APIRoute = async ({ url }) => {
 	try {
 		const legacySecret = import.meta.env.SANITY_PREVIEW_SECRET;
 		const legacyToken = url.searchParams.get('secret');
@@ -96,8 +115,7 @@ export const GET: APIRoute = async ({ url, cookies }) => {
 		}
 
 		if (legacySecret && legacyToken === legacySecret) {
-			cookies.set('sanity-preview', '1', previewSessionCookieOptions());
-			return Response.redirect(absoluteRedirectUrl(url, redirectTo), 302);
+			return redirectWithPreviewCookie(url, redirectTo);
 		}
 
 		if (!getSanityReadToken()) {
@@ -138,9 +156,7 @@ export const GET: APIRoute = async ({ url, cookies }) => {
 			);
 		}
 
-		cookies.set('sanity-preview', '1', previewSessionCookieOptions());
-
-		return Response.redirect(absoluteRedirectUrl(url, result.redirectTo), 302);
+		return redirectWithPreviewCookie(url, result.redirectTo);
 	} catch (err: unknown) {
 		const detail = err instanceof Error ? err.message : String(err);
 		return new Response(`Preview enable failed: ${detail}`, {

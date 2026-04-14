@@ -59,13 +59,23 @@ Set in the host’s build environment (see [`.env.example`](../.env.example)).
 
 **If you deploy Studio from CI:** pass `SANITY_STUDIO_*` overrides as runner env only when you need a non-default preview host.
 
-### Presentation troubleshooting
+### Presentation troubleshooting (checklist vs generic guides)
 
-- **Iframe address bar shows only `/api/preview/enable` or plain “Internal Server Error”**: `SANITY_STUDIO_PREVIEW_URL` was set to the enable route (or Studio was redeployed with the wrong value). It must be the **site root** (`https://your-deployment.vercel.app`). Redeploy hosted Studio after fixing `studio/.env.production`.
-- **`/api/preview/enable` returns 5xx**: Ensure `SANITY_READ_TOKEN` is a **project** token (Viewer/Editor) in the Astro root `.env`, then restart `npm run dev`. Response bodies are plain text and describe the failure.
-- **401 after enable**: Preview secrets expire (about an hour). Close Presentation and open it again so Studio issues a new `sanity-preview-secret`.
-- **“Unable to connect to visual editing”**: With a valid preview session, [`SanityVisualEditing.astro`](../src/components/SanityVisualEditing.astro) calls `enableVisualEditing()` from `@sanity/visual-editing`. Full click-to-edit overlays also need **Stega**-encoded strings in your queries; this repo uses plain strings, so overlays may be limited until you add Stega.
-- **Hosted Studio still opening localhost**: The last `sanity deploy` ran **without** `SANITY_STUDIO_PREVIEW_URL` in `studio/.env.production` (or CI env). Add it, redeploy Studio, and ensure Vercel has `SANITY_READ_TOKEN`.
+| Step | This repo | You still do in dashboards |
+|------|-----------|----------------------------|
+| **`presentationTool` + `previewUrl`** | Done in [`studio/sanity.config.ts`](../studio/sanity.config.ts) — defaults to `https://shawne-brown.vercel.app`, `allowOrigins` includes `*.vercel.app`. | If you use another production URL, change `BROWN_ASTRO_SITE_ORIGIN` in that file and redeploy Studio. Remove bad overrides from `studio/.env.production` if present. |
+| **`SANITY_STUDIO_PREVIEW_URL`** | Optional: defaults are in `sanity.config.ts`. Set env only for **local Astro** (`http://localhost:4321` in `studio/.env`). | — |
+| **CORS (Sanity Manage)** | Not in repo. | [Sanity Manage](https://www.sanity.io/manage) → **yrca4rxr** → **API** → **CORS origins** → add **`https://shawne-brown.vercel.app`** and **`http://localhost:4321`** (credentials / browser requests from the preview iframe often need this). Keep `https://*.sanity.studio` if listed. |
+| **Cookies / cross-site Studio** | [`/api/preview/enable`](../src/pages/api/preview/enable.ts) sets `sanity-preview` with **`SameSite=None; Secure`** in production. | Browsers that block third-party cookies may still break Presentation; then use “Open in new tab” or embed Studio on your domain. |
+| **`SANITY_READ_TOKEN` on the Astro host** | Not in repo. | **Vercel** → Environment variables → Production **and** Preview → redeploy. |
+| **`next-sanity`** | **N/A** — this app is **Astro**, not Next.js. | Use `@sanity/client`, `@sanity/visual-editing`, `sanity` versions in root [`package.json`](../package.json); bump when you choose, not required for “latest” unless you hit a known bug. |
+
+Other bullets:
+
+- **Iframe shows only `/api/preview/enable`**: Preview base was wrong; `sanity.config.ts` now defaults to the site origin and throws if someone sets the enable path. Redeploy Studio.
+- **`/api/preview/enable` returns 5xx**: `SANITY_READ_TOKEN` missing or wrong on **Vercel** (or local `.env`). Plain-text response explains the failure.
+- **401 after enable**: Preview secrets expire (~1h). Close Presentation and reopen.
+- **“Unable to connect to visual editing”**: Needs a working preview session (cookie) + [`SanityVisualEditing.astro`](../src/components/SanityVisualEditing.astro). Stega overlays are optional for basic connection.
 
 ---
 
