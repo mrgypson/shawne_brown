@@ -52,20 +52,23 @@ Set in the host’s build environment (see [`.env.example`](../.env.example)).
 
 ### Hosted Studio (`*.sanity.studio`)
 
-`previewUrl.initial` is resolved when the Studio bundle is **built**. Other people’s browsers never reach your machine’s `localhost`.
+`previewUrl.initial` is resolved when the Studio bundle is **built** (`sanity deploy`). Those values come from **environment files in your repo / machine** (or from CI env), **not** from a “project environment variables” screen inside Sanity Manage (that pattern is Vercel, not Studio).
 
-1. In [Sanity Manage](https://www.sanity.io/manage) → **Project** → **Environment variables** (or your CI secrets for `sanity deploy`), set:
-   - **`SANITY_STUDIO_PREVIEW_URL`** — public Astro origin, e.g. `https://your-project.vercel.app` (no trailing slash required).
-   - **`SANITY_STUDIO_ALLOW_ORIGINS`** (recommended) — e.g. `https://your-project.vercel.app,https://*.vercel.app` so branch preview deploys and extra domains match Presentation’s origin checks.
-2. From `studio/`, run **`npm run deploy`** again so the hosted Studio embeds those values.
-3. Open **Presentation** in hosted Studio; it calls `/api/preview/enable` and `/api/preview/disable` on that origin per [`studio/sanity.config.ts`](../studio/sanity.config.ts).
+1. In `studio/`, copy [`studio/.env.production.example`](../studio/.env.production.example) to **`studio/.env.production`** (same folder as `sanity.config.ts`).
+2. Edit `studio/.env.production` and set:
+   - **`SANITY_STUDIO_PREVIEW_URL`** — your public Astro origin, e.g. `https://shawne-brown.vercel.app` (no trailing slash required).
+   - **`SANITY_STUDIO_ALLOW_ORIGINS`** (recommended) — e.g. `https://shawne-brown.vercel.app,https://*.vercel.app` for branch preview deploys.
+3. From `studio/`, run **`npm run deploy`** (or `npx sanity deploy`). The CLI loads `.env.production` in production mode and bakes these into the hosted Studio.
+4. Open **Presentation** on `*.sanity.studio`; it still uses `/api/preview/enable` on that site per [`studio/sanity.config.ts`](../studio/sanity.config.ts).
+
+**If you deploy Studio from CI (GitHub Actions, etc.):** set the same `SANITY_STUDIO_*` names as **secrets / variables** on the runner *before* the step that runs `sanity deploy`, instead of relying on a local `.env.production` file.
 
 ### Presentation troubleshooting
 
 - **`/api/preview/enable` returns 5xx**: Ensure `SANITY_READ_TOKEN` is a **project** token (Viewer/Editor) in the Astro root `.env`, then restart `npm run dev`. Response bodies are plain text and describe the failure.
 - **401 after enable**: Preview secrets expire (about an hour). Close Presentation and open it again so Studio issues a new `sanity-preview-secret`.
 - **“Unable to connect to visual editing”**: With a valid preview session, [`SanityVisualEditing.astro`](../src/components/SanityVisualEditing.astro) calls `enableVisualEditing()` from `@sanity/visual-editing`. Full click-to-edit overlays also need **Stega**-encoded strings in your queries; this repo uses plain strings, so overlays may be limited until you add Stega.
-- **Hosted Studio still opening localhost**: The deploy was built without `SANITY_STUDIO_PREVIEW_URL` pointing at your **live** site. Fix the env vars in Manage, redeploy Studio, and ensure Vercel has `SANITY_READ_TOKEN`.
+- **Hosted Studio still opening localhost**: The last `sanity deploy` ran **without** `SANITY_STUDIO_PREVIEW_URL` in `studio/.env.production` (or CI env). Add it, redeploy Studio, and ensure Vercel has `SANITY_READ_TOKEN`.
 
 ---
 
