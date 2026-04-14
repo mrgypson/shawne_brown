@@ -5,8 +5,8 @@ import { getProjects } from '../../lib/content';
 
 export const prerender = false;
 
-const usePreview = Boolean(Astro.locals.sanityPreview);
-const projects = await getProjects({ preview: usePreview });
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
+const projects = await getProjects({ preview: useDraftPerspective });
 const title = 'Work';
 const description = `Selected projects and series by ${siteConfig.siteTitle}.`;
 ---

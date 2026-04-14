@@ -8,8 +8,8 @@ export const prerender = false;
 
 const title = siteConfig.siteTitle;
 const description = siteConfig.defaultDescription;
-const usePreview = Boolean(Astro.locals.sanityPreview);
-const projects = await getProjects({ preview: usePreview });
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
+const projects = await getProjects({ preview: useDraftPerspective });
 ---
 
 <BaseLayout title={title} description={description}>

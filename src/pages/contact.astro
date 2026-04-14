@@ -5,8 +5,8 @@ import { getAbout } from '../lib/content';
 
 export const prerender = false;
 
-const usePreview = Boolean(Astro.locals.sanityPreview);
-const about = await getAbout({ preview: usePreview });
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
+const about = await getAbout({ preview: useDraftPerspective });
 const title = 'Contact';
 const description = `Inquire about work, exhibitions, and editions — ${siteConfig.siteTitle}.`;
 const mailHref = `mailto:${about.contact.email}?subject=${encodeURIComponent('Inquiry')}`;

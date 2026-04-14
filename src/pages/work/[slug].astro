@@ -8,10 +8,10 @@ import type { Project } from '../../types/project';
 
 export const prerender = false;
 
-const usePreview = Boolean(Astro.locals.sanityPreview);
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
 const slug = Astro.params.slug;
 const project: Project | undefined = slug
-	? await getProjectBySlug(slug, { preview: usePreview })
+	? await getProjectBySlug(slug, { preview: useDraftPerspective })
 	: undefined;
 
 if (!project) {

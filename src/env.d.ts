@@ -22,5 +22,10 @@ declare namespace App {
 	interface Locals {
 		/** True after a successful `/api/preview/enable` (cookie set). */
 		sanityPreview?: boolean;
+		/**
+		 * In a preview session: use Content Lake `previewDrafts` for GROQ (`true`), or `published` when
+		 * Presentation sets `sanity-preview-perspective=published` (`false`).
+		 */
+		sanityDraftPerspective?: boolean;
 	}
 }
