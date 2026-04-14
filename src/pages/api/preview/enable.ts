@@ -28,10 +28,11 @@ function isUnauthorizedError(err: unknown): boolean {
 }
 
 /**
- * Sanity returns a path + search + hash. Keep it on the current origin (Astro `redirect` expects a path).
+ * Sanity returns a path + search + hash. Keep it on the current origin.
+ * `redirectTo` can be "" — `??` would not fall back, so coerce empty to `/`.
  */
 function normalizeRedirectTarget(requestUrl: URL, redirectTo: string | undefined): string {
-	const raw = redirectTo ?? '/';
+	const raw = redirectTo?.trim() ? redirectTo : '/';
 	try {
 		const resolved = new URL(raw, requestUrl.origin);
 		if (resolved.origin !== requestUrl.origin) {
@@ -43,7 +44,13 @@ function normalizeRedirectTarget(requestUrl: URL, redirectTo: string | undefined
 	}
 }
 
-export const GET: APIRoute = async ({ url, cookies, redirect }) => {
+/** Absolute URL for `Location` (Presentation iframe + some proxies handle this more reliably than path-only). */
+function absoluteRedirectUrl(requestUrl: URL, redirectTo: string | undefined): string {
+	const path = normalizeRedirectTarget(requestUrl, redirectTo);
+	return new URL(path, requestUrl.origin).href;
+}
+
+export const GET: APIRoute = async ({ url, cookies }) => {
 	try {
 		const legacySecret = import.meta.env.SANITY_PREVIEW_SECRET;
 		const legacyToken = url.searchParams.get('secret');
@@ -57,7 +64,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 				maxAge: 60 * 60 * 8,
 				secure: import.meta.env.PROD,
 			});
-			return redirect(normalizeRedirectTarget(url, redirectTo));
+			return Response.redirect(absoluteRedirectUrl(url, redirectTo), 302);
 		}
 
 		if (!getSanityReadToken()) {
@@ -75,6 +82,13 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 				return new Response(
 					'Sanity rejected this API token (401/403). Use a Viewer or Editor token for project yrca4rxr dataset production in SANITY_READ_TOKEN. Deploy tokens or tokens for another project will fail. Match SANITY_PROJECT_ID and SANITY_DATASET in .env if you override them.',
 					{ status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+				);
+			}
+			const status = getSanityHttpStatus(err);
+			if (status !== undefined && status >= 500) {
+				return new Response(
+					`Sanity API error (${status}) while validating the preview secret. Retry in a moment; if it persists, check status.sanity.io and your network.`,
+					{ status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
 				);
 			}
 			const detail = err instanceof Error ? err.message : String(err);
@@ -99,7 +113,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
 			secure: import.meta.env.PROD,
 		});
 
-		return redirect(normalizeRedirectTarget(url, result.redirectTo));
+		return Response.redirect(absoluteRedirectUrl(url, result.redirectTo), 302);
 	} catch (err: unknown) {
 		const detail = err instanceof Error ? err.message : String(err);
 		return new Response(`Preview enable failed: ${detail}`, {
