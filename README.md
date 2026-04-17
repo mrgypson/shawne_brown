@@ -1,43 +1,52 @@
-# Astro Starter Kit: Minimal
+# Shawne Brown — artist site
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Astro + Sanity: the public site reads projects and the About/Contact singleton from the Content Lake; [Sanity Studio](studio/) is the editorial UI.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Scripts
 
-## 🚀 Project Structure
+| Command | Action |
+| --- | --- |
+| `npm install` | Install site dependencies |
+| `npm run dev` | Dev server at `http://localhost:4321` |
+| `npm run build` | Production build |
+| `npm run check` | `astro check` (TypeScript) |
+| `npm run studio` | Run Studio locally (`studio/`) |
+| `npm run studio:deploy` | Deploy hosted Studio |
 
-Inside of your Astro project, you'll see the following folders and files:
+## Environment variables
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Copy [`.env.example`](.env.example) to `.env` for local development. On Vercel, set the same keys in Project Settings → Environment Variables.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### Sanity (site)
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+| Variable | Required | Notes |
+| --- | --- | --- |
+| `SANITY_PROJECT_ID` | Usually no | Defaults match the Studio project when unset |
+| `SANITY_DATASET` | No | Default `production` |
+| `SANITY_READ_TOKEN` | For drafts/preview | Server-only; used with `previewDrafts` perspective |
+| `SANITY_USE_CDN` | No | Set `false` to bypass CDN when needed |
+| `SANITY_USE_MOCK` | No | Set `true` to force mock data (no Sanity requests) |
+| `SANITY_PREVIEW_SECRET` | Legacy manual preview | Must match `secret` query param on `/api/preview/enable` if used |
 
-Any static assets, like images, can be placed in the `public/` directory.
+### Inquiry email (Resend)
 
-## 🧞 Commands
+The contact form `POST`s to [`/api/inquiry`](src/pages/api/inquiry.ts). Mail is sent with [Resend](https://resend.com); the **To** address is `contact.email` from the Sanity **About & Contact** document (`aboutPage`). That address is **not** shown on the public Contact page—it is only used server-side for delivery.
 
-All commands are run from the root of the project, from a terminal:
+| Variable | Required (prod) | Notes |
+| --- | --- | --- |
+| `RESEND_API_KEY` | Yes | API key from Resend dashboard |
+| `RESEND_FROM_EMAIL` | Yes | Verified sender, e.g. `Shawne Brown <onboarding@resend.dev>` or your domain |
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+### Phase One production checklist
 
-## 👀 Want to learn more?
+1. **Sanity content**: Create the singleton About document with **document id** `aboutPage` (required by the GROQ query). Add at least one **Project** with slug and images.
+2. **Vercel env**: Set `RESEND_*`, Sanity vars as needed, and **never** set `SANITY_USE_MOCK=true` in production.
+3. **Canonical URL**: Set `site` in [`astro.config.mjs`](astro.config.mjs) to the final domain; [`siteConfig.baseUrl`](src/data/mock/site.ts) follows `import.meta.env.SITE`.
+4. **Studio**: Deploy Studio (`npm run studio:deploy`); set `SANITY_STUDIO_PREVIEW_URL` in `studio/.env` to the live site origin for Presentation.
+5. **Resend**: Verify the sending domain (or use Resend’s test sender for smoke tests).
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Project layout
+
+- [`src/pages/`](src/pages/) — routes (Work, About, Contact, preview API)
+- [`src/lib/sanity/`](src/lib/sanity/) — client, queries, image URLs, mappers
+- [`studio/schemaTypes/`](studio/schemaTypes/) — Sanity schemas

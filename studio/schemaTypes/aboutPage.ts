@@ -70,6 +70,8 @@ export const aboutPage = defineType({
 					name: 'email',
 					title: 'Email',
 					type: 'string',
+					description:
+						'Inbox for inquiry form submissions. Not shown on the public Contact page; keep it current.',
 					validation: (Rule) => Rule.required(),
 				}),
 				defineField({
@@ -108,7 +110,8 @@ export const aboutPage = defineType({
 			title: 'Contact page — inquiry disclaimer',
 			type: 'text',
 			rows: 3,
-			description: 'Note under the inquiry section title (e.g. form not connected).',
+			description:
+				'Optional note under the inquiry heading (e.g. response expectations). Leave blank to use the site default.',
 		}),
 	],
 	preview: {

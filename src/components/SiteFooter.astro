@@ -1,0 +1,42 @@
+---
+import type { AboutContact } from '../types/about';
+import { instagramHref, websiteHref } from '../lib/contact/socialUrls';
+import { siteConfig } from '../data/mock/site';
+
+interface Props {
+	contact: AboutContact;
+}
+
+const { contact } = Astro.props;
+const ig = instagramHref(contact.instagram);
+const web = websiteHref(contact.website);
+const hasSocial = Boolean(ig || web);
+---
+
+<footer class="site-footer" id="site-footer" data-testid="site-footer">
+	<div class="site-footer-inner">
+		{
+			hasSocial ? (
+				<ul class="site-footer-social" aria-label="Social and web">
+					{ig && contact.instagram && (
+						<li>
+							<a href={ig} rel="noopener noreferrer" target="_blank" data-testid="site-footer-instagram">
+								Instagram
+							</a>
+						</li>
+					)}
+					{web && (
+						<li>
+							<a href={web} rel="noopener noreferrer" target="_blank" data-testid="site-footer-website">
+								Website
+							</a>
+						</li>
+					)}
+				</ul>
+			) : (
+				<p class="site-footer-meta">{siteConfig.siteTitle}</p>
+			)
+		}
+		{contact.location && <p class="site-footer-meta">{contact.location}</p>}
+	</div>
+</footer>

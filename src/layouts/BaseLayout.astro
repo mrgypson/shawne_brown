@@ -2,8 +2,10 @@
 import '../styles/global.css';
 import SanityVisualEditing from '../components/SanityVisualEditing.astro';
 import SeoHead from '../components/SeoHead.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import { siteConfig } from '../data/mock/site';
+import { getAbout } from '../lib/content';
 
 interface Props {
 	title: string;
@@ -12,6 +14,8 @@ interface Props {
 }
 
 const { title, description, ogImage } = Astro.props;
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
+const about = await getAbout({ preview: useDraftPerspective });
 const sanityPreview = Boolean(Astro.locals.sanityPreview);
 const visualEditingEnabled =
 	sanityPreview || Astro.url.searchParams.has('sanity-preview-perspective');
@@ -32,6 +36,7 @@ const pageTitle =
 			<main id="main-content">
 				<slot />
 			</main>
+			<SiteFooter contact={about.contact} />
 		</div>
 		<SanityVisualEditing enabled={visualEditingEnabled} />
 	</body>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { instagramHref, websiteHref } from '../lib/contact/socialUrls';
 import { siteConfig } from '../data/mock/site';
 import { getAbout } from '../lib/content';
 
@@ -9,6 +10,8 @@ const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
 const about = await getAbout({ preview: useDraftPerspective });
 const title = 'About';
 const description = `Artist biography, statement, and contact for ${siteConfig.siteTitle}.`;
+const ig = instagramHref(about.contact.instagram);
+const web = websiteHref(about.contact.website);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -16,48 +19,61 @@ const description = `Artist biography, statement, and contact for ${siteConfig.s
 		<h1 class="page-title">About</h1>
 	</header>
 
-	<section class="prose-narrow" style="margin-bottom: var(--space-6);" aria-labelledby="about-bio-heading">
-		<h2 id="about-bio-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
-			Biography
-		</h2>
-		<p style="margin: 0;">{about.bio}</p>
+	<section class="prose-narrow page-section" aria-labelledby="about-bio-heading">
+		<h2 id="about-bio-heading" class="page-section-heading">Biography</h2>
+		<p class="page-section-body">{about.bio}</p>
 	</section>
 
-	<section class="prose-narrow" style="margin-bottom: var(--space-6);" aria-labelledby="about-statement-heading">
-		<h2 id="about-statement-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
-			Statement
-		</h2>
-		<p style="margin: 0; white-space: pre-wrap;">{about.statement}</p>
+	<section class="prose-narrow page-section" aria-labelledby="about-statement-heading">
+		<h2 id="about-statement-heading" class="page-section-heading">Statement</h2>
+		<p class="page-section-body page-section-body--pre">{about.statement}</p>
 	</section>
 
-	<section class="prose-narrow" style="margin-bottom: var(--space-6);" aria-labelledby="about-exhibitions-heading">
-		<h2 id="about-exhibitions-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
-			Exhibitions &amp; publications
-		</h2>
-		<ul style="margin: 0; padding-left: 1.25rem;">
+	<section class="prose-narrow page-section" aria-labelledby="about-exhibitions-heading">
+		<h2 id="about-exhibitions-heading" class="page-section-heading">Exhibitions &amp; publications</h2>
+		<ul class="exhibitions-list">
 			{about.exhibitions.map((entry) => (
-				<li style="margin-bottom: var(--space-2);">
+				<li>
 					<span class="text-muted">{entry.year}</span> — {entry.detail}
 				</li>
 			))}
 		</ul>
-		{about.publicationsNote && (
-			<p class="text-muted" style="margin-top: var(--space-3); margin-bottom: 0;">
-				{about.publicationsNote}
-			</p>
-		)}
+		{about.publicationsNote && <p class="text-muted page-section-body publications-note">{about.publicationsNote}</p>}
 	</section>
 
 	<section class="prose-narrow contact-block" aria-labelledby="about-contact-heading">
-		<h2 id="about-contact-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
-			Contact
-		</h2>
+		<h2 id="about-contact-heading" class="page-section-heading">Contact</h2>
 		<ul class="contact-list">
 			<li>
-				<a href={`mailto:${about.contact.email}`}>{about.contact.email}</a>
+				<a href={`mailto:${about.contact.email}`} data-testid="about-mailto">{about.contact.email}</a>
 			</li>
 			{about.contact.location && <li class="text-muted">{about.contact.location}</li>}
-			{about.contact.instagram && <li class="text-muted">{about.contact.instagram}</li>}
+			{
+				about.contact.instagram && (
+					<li>
+						{ig ? (
+							<a href={ig} rel="noopener noreferrer me" target="_blank" data-testid="about-instagram-link">
+								Instagram
+							</a>
+						) : (
+							<span class="text-muted">{about.contact.instagram}</span>
+						)}
+					</li>
+				)
+			}
+			{
+				about.contact.website && (
+					<li>
+						{web ? (
+							<a href={web} rel="noopener noreferrer me" target="_blank" data-testid="about-website-link">
+								Website
+							</a>
+						) : (
+							<span class="text-muted">{about.contact.website}</span>
+						)}
+					</li>
+				)
+			}
 		</ul>
 	</section>
 </BaseLayout>

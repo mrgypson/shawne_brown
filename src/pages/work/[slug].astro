@@ -27,16 +27,16 @@ const showPrintMeta = isNeuhoffProject(project);
 	<article>
 		<header class="prose-narrow">
 			<h1 class="page-title">{project.title}</h1>
-			<p class="text-muted" style="margin-top: 0; margin-bottom: var(--space-3);">{project.yearLabel}</p>
-			<p class="page-lede" style="margin-bottom: var(--space-3);">{project.shortDescription}</p>
-			{project.longDescription && <p class="prose-narrow" style="margin: 0; color: var(--color-muted);">{project.longDescription}</p>}
+			<p class="text-muted project-header-year">{project.yearLabel}</p>
+			<p class="page-lede project-header-lede">{project.shortDescription}</p>
+			{project.longDescription && <p class="prose-narrow project-header-long">{project.longDescription}</p>}
 		</header>
 
 		{
 			showPrintMeta && (
 				<div class="neuhoff-note prose-narrow" role="note" data-testid="neuhoff-print-note">
 					<strong>{siteConfig.siteTitle} — edition structure</strong>
-					<p style="margin: var(--space-2) 0 0;">
+					<p>
 						This series may include limited editions and print sales. Availability, sizing, and framing below are
 						placeholder fields for a future inquiry flow — no purchases are processed on this site yet.
 					</p>

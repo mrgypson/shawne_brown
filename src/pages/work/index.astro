@@ -21,7 +21,15 @@ const description = `Selected projects and series by ${siteConfig.siteTitle}.`;
 			projects.map((project) => (
 				<a class="work-item" href={`/work/${project.slug}`} data-testid={`work-index-${project.slug}`}>
 					<figure class="work-item-figure">
-						<img src={project.coverImage.src} alt={project.coverImage.alt} loading="lazy" decoding="async" />
+						<img
+							src={project.coverImage.src}
+							alt={project.coverImage.alt}
+							loading="lazy"
+							decoding="async"
+							sizes="(min-width: 40rem) 50vw, 100vw"
+							width="960"
+							height="720"
+						/>
 					</figure>
 					<div class="work-item-meta">
 						<h2 class="work-item-title">{project.title}</h2>

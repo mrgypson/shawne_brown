@@ -12,6 +12,10 @@ interface ImportMetaEnv {
 	readonly SANITY_PREVIEW_SECRET?: string;
 	/** Set to `true` to use local mock projects (no Sanity request). */
 	readonly SANITY_USE_MOCK?: string;
+	/** Resend API key (server-only). Inquiry emails are sent to `aboutPage.contact.email` from Sanity. */
+	readonly RESEND_API_KEY?: string;
+	/** Verified sender, e.g. `Shawne Brown <mail@yourdomain.com>`. */
+	readonly RESEND_FROM_EMAIL?: string;
 }
 
 interface ImportMeta {

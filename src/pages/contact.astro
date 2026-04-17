@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../data/mock/site';
+import { instagramHref, websiteHref } from '../lib/contact/socialUrls';
 import { getAbout } from '../lib/content';
 
 export const prerender = false;
@@ -9,15 +10,16 @@ const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
 const about = await getAbout({ preview: useDraftPerspective });
 const title = 'Contact';
 const description = `Inquire about work, exhibitions, and editions — ${siteConfig.siteTitle}.`;
-const mailHref = `mailto:${about.contact.email}?subject=${encodeURIComponent('Inquiry')}`;
 
 const contactLede =
 	about.contactPageLede ??
-	'For studio inquiries, commissions, and availability, email is the most reliable channel. A structured inquiry form may be added later.';
-const inquiryHeading = about.contactInquiryHeading ?? 'Inquiry (optional fields)';
+	'For studio inquiries, commissions, and availability, use the form below.';
+const inquiryHeading = about.contactInquiryHeading ?? 'Inquiry';
 const inquiryDisclaimer =
 	about.contactInquiryDisclaimer ??
-	'These fields are for layout and future integration — they do not submit to a server yet. Use the email link above to reach the studio.';
+	'We typically reply within a few business days.';
+const ig = instagramHref(about.contact.instagram);
+const web = websiteHref(about.contact.website);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -28,35 +30,131 @@ const inquiryDisclaimer =
 		</p>
 	</header>
 
-	<section class="prose-narrow contact-block" aria-labelledby="contact-primary-heading">
-		<h2 id="contact-primary-heading" class="visually-hidden">Email</h2>
-		<p style="margin: 0 0 var(--space-3);">
-			<a href={mailHref} data-testid="contact-mailto-primary">{about.contact.email}</a>
-		</p>
-		<p class="text-muted" style="margin: 0;">
+	<section class="prose-narrow contact-block" aria-labelledby="contact-meta-heading">
+		<h2 id="contact-meta-heading" class="visually-hidden">Studio</h2>
+		<p class="text-muted contact-primary-meta">
 			{about.contact.location && <>{about.contact.location} · </>}
 			Response times vary; thank you for your patience.
 		</p>
+		{
+			(ig || web) && (
+				<ul class="contact-list contact-inline-social">
+					{ig && about.contact.instagram && (
+						<li>
+							<a href={ig} rel="noopener noreferrer me" target="_blank" data-testid="contact-instagram-link">
+								Instagram ({about.contact.instagram})
+							</a>
+						</li>
+					)}
+					{web && (
+						<li>
+							<a href={web} rel="noopener noreferrer me" target="_blank" data-testid="contact-website-link">
+								Website
+							</a>
+						</li>
+					)}
+				</ul>
+			)
+		}
 	</section>
 
-	<section class="prose-narrow" style="margin-top: var(--space-6);" aria-labelledby="contact-form-heading">
-		<h2 id="contact-form-heading" style="font-size: 1.125rem; font-family: var(--font-ui); font-weight: 500; margin-bottom: var(--space-2);">
+	<section class="prose-narrow contact-form-section" aria-labelledby="contact-form-heading">
+		<h2 id="contact-form-heading" class="page-section-heading">
 			{inquiryHeading}
 		</h2>
-		<p class="text-muted" style="margin-top: 0; margin-bottom: var(--space-3); font-size: 0.9375rem;">
+		<p class="text-muted contact-form-intro">
 			{inquiryDisclaimer}
 		</p>
-		<form class="form-contact" name="inquiry" id="contact-inquiry-form" data-testid="contact-inquiry-form" action="#" method="get">
+		<form class="form-contact" name="inquiry" id="contact-inquiry-form" data-testid="contact-inquiry-form">
+			<div class="visually-hidden" aria-hidden="true">
+				<label for="contact-company-hp">Company</label>
+				<input
+					type="text"
+					id="contact-company-hp"
+					name="_company"
+					tabindex="-1"
+					autocomplete="off"
+					data-testid="contact-inquiry-honeypot"
+				/>
+			</div>
 			<label for="contact-name">Name</label>
-			<input id="contact-name" name="name" type="text" autocomplete="name" disabled />
+			<input id="contact-name" name="name" type="text" autocomplete="name" required data-testid="contact-name" />
 
 			<label for="contact-email">Email</label>
-			<input id="contact-email" name="email" type="email" autocomplete="email" disabled />
+			<input id="contact-email" name="email" type="email" autocomplete="email" required data-testid="contact-email" />
 
 			<label for="contact-message">Message</label>
-			<textarea id="contact-message" name="message" disabled />
+			<textarea id="contact-message" name="message" required data-testid="contact-message" />
 
-			<button type="button" disabled>Send (not connected)</button>
+			<button type="submit" id="contact-inquiry-submit" data-testid="contact-inquiry-submit">Send message</button>
+			<p id="contact-form-status" class="form-status" role="status" aria-live="polite" data-testid="contact-form-status" />
 		</form>
 	</section>
 </BaseLayout>
+
+<script is:inline>
+	(function () {
+		const form = document.getElementById('contact-inquiry-form');
+		const statusEl = document.getElementById('contact-form-status');
+		const submitBtn = document.getElementById('contact-inquiry-submit');
+		if (!form || !statusEl || !submitBtn || submitBtn.tagName !== 'BUTTON') return;
+
+		function setStatus(message, kind) {
+			statusEl.textContent = message;
+			statusEl.classList.remove('form-status--error', 'form-status--success');
+			if (kind === 'error') statusEl.classList.add('form-status--error');
+			if (kind === 'success') statusEl.classList.add('form-status--success');
+		}
+
+		form.addEventListener('submit', async function (e) {
+			e.preventDefault();
+			setStatus('', 'idle');
+			const nameInput = form.querySelector('[name="name"]');
+			const emailInput = form.querySelector('[name="email"]');
+			const messageInput = form.querySelector('[name="message"]');
+			const hpInput = form.querySelector('[name="_company"]');
+			if (
+				!(nameInput instanceof HTMLInputElement) ||
+				!(emailInput instanceof HTMLInputElement) ||
+				!(messageInput instanceof HTMLTextAreaElement) ||
+				!(hpInput instanceof HTMLInputElement)
+			) {
+				return;
+			}
+
+			submitBtn.disabled = true;
+			try {
+				const res = await fetch('/api/inquiry', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						name: nameInput.value,
+						email: emailInput.value,
+						message: messageInput.value,
+						_company: hpInput.value,
+					}),
+				});
+				let data = {};
+				try {
+					data = await res.json();
+				} catch {
+					data = {};
+				}
+				if (res.ok && data && data.ok === true) {
+					setStatus('Thank you — your message was sent.', 'success');
+					form.reset();
+				} else {
+					const errMsg =
+						typeof data.error === 'string'
+							? data.error
+							: 'Something went wrong. Please try again in a moment.';
+					setStatus(errMsg, 'error');
+				}
+			} catch {
+				setStatus('Network error. Please try again in a moment.', 'error');
+			} finally {
+				submitBtn.disabled = false;
+			}
+		});
+	})();
+</script>

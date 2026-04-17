@@ -1,6 +1,6 @@
 import type { NeuhoffImage, PrintAvailability, PrintSalesMetadata } from '../../types/neuhoff';
 import type { GalleryImage, GallerySpacingStep, Project, ProjectKind } from '../../types/project';
-import { urlForImage } from './image';
+import { SANITY_IMAGE_MAX_WIDTH_COVER, SANITY_IMAGE_MAX_WIDTH_GALLERY, urlForImage } from './image';
 
 type SanityPrintSales = {
 	printNumber?: string;
@@ -59,7 +59,7 @@ function mapPrintSales(raw: SanityPrintSales | null | undefined): PrintSalesMeta
 }
 
 function mapGalleryRow(row: SanityGalleryRow, kind: ProjectKind): GalleryImage | NeuhoffImage {
-	const src = urlForImage(row.image ?? null);
+	const src = urlForImage(row.image ?? null, { maxWidth: SANITY_IMAGE_MAX_WIDTH_GALLERY });
 	const alt =
 		row.image && typeof row.image === 'object' && 'alt' in row.image && typeof row.image.alt === 'string'
 			? row.image.alt
@@ -88,7 +88,7 @@ function mapGalleryRow(row: SanityGalleryRow, kind: ProjectKind): GalleryImage |
 export function mapSanityProject(doc: SanityProjectDoc): Project {
 	const kind: ProjectKind = doc.kind === 'neuhoff' ? 'neuhoff' : 'standard';
 	const coverImage = {
-		src: urlForImage(doc.coverImage ?? null),
+		src: urlForImage(doc.coverImage ?? null, { maxWidth: SANITY_IMAGE_MAX_WIDTH_COVER }),
 		alt:
 			doc.coverImage &&
 			typeof doc.coverImage === 'object' &&

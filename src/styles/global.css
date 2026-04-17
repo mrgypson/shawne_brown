@@ -493,6 +493,10 @@ h3 {
 	margin-bottom: var(--space-2);
 }
 
+.contact-inline-social {
+	margin-top: var(--space-3);
+}
+
 .form-contact label {
 	display: block;
 	font-size: 0.8125rem;
@@ -532,4 +536,125 @@ h3 {
 
 .form-contact button:hover {
 	opacity: 0.85;
+}
+
+.form-contact button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.form-contact .form-status {
+	margin-top: var(--space-2);
+	font-size: 0.9375rem;
+	max-width: 28rem;
+}
+
+.form-contact .form-status--error {
+	color: #6b1c1c;
+}
+
+.form-contact .form-status--success {
+	color: var(--color-muted);
+}
+
+.page-section {
+	margin-bottom: var(--space-6);
+}
+
+.page-section-heading {
+	font-size: 1.125rem;
+	font-family: var(--font-ui);
+	font-weight: 500;
+	margin-bottom: var(--space-2);
+}
+
+.page-section-body {
+	margin: 0;
+}
+
+.page-section-body--pre {
+	white-space: pre-wrap;
+}
+
+.exhibitions-list {
+	margin: 0;
+	padding-left: 1.25rem;
+}
+
+.exhibitions-list li {
+	margin-bottom: var(--space-2);
+}
+
+.publications-note {
+	margin-top: var(--space-3);
+	margin-bottom: 0;
+}
+
+.contact-primary-email {
+	margin: 0 0 var(--space-3);
+}
+
+.contact-primary-meta {
+	margin: 0;
+}
+
+.contact-form-section {
+	margin-top: var(--space-6);
+}
+
+.contact-form-intro {
+	margin-top: 0;
+	margin-bottom: var(--space-3);
+	font-size: 0.9375rem;
+}
+
+.project-header-year {
+	margin-top: 0;
+	margin-bottom: var(--space-3);
+}
+
+.project-header-lede {
+	margin-bottom: var(--space-3);
+}
+
+.project-header-long {
+	margin: 0;
+	color: var(--color-muted);
+}
+
+.neuhoff-note p {
+	margin: var(--space-2) 0 0;
+}
+
+.site-footer {
+	margin-top: var(--space-7);
+	padding-top: var(--space-5);
+	border-top: 1px solid var(--color-border);
+	font-size: 0.875rem;
+	color: var(--color-muted);
+}
+
+.site-footer-inner {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-3) var(--space-4);
+	align-items: baseline;
+	justify-content: space-between;
+}
+
+.site-footer-social {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2) var(--space-4);
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.site-footer-social a {
+	text-decoration: none;
+}
+
+.site-footer-meta {
+	margin: 0;
 }

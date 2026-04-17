@@ -2,6 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../data/mock/site';
 
+/** Server-rendered so BaseLayout can load contact/footer without prerender header limitations. */
+export const prerender = false;
+
 const title = 'Page not found';
 const description = `The requested page could not be found — ${siteConfig.siteTitle}.`;
 ---
