@@ -1,5 +1,12 @@
 import type { NeuhoffImage, PrintAvailability, PrintSalesMetadata } from '../../types/neuhoff';
-import type { GalleryImage, GallerySpacingStep, Project, ProjectKind } from '../../types/project';
+import type {
+	GalleryAlign,
+	GalleryImage,
+	GallerySpacingStep,
+	GalleryWidth,
+	Project,
+	ProjectKind,
+} from '../../types/project';
 import { SANITY_IMAGE_MAX_WIDTH_COVER, SANITY_IMAGE_MAX_WIDTH_GALLERY, urlForImage } from './image';
 
 type SanityPrintSales = {
@@ -22,16 +29,32 @@ type SanityGalleryRow = {
 	insetRight?: number | null;
 	/** Legacy single inset; used when insetLeft/insetRight are absent. */
 	insetHorizontal?: number | null;
+	width?: string | null;
+	align?: string | null;
+	pairWithNext?: boolean | null;
 };
 
 const DEFAULT_SPACE_ABOVE: GallerySpacingStep = 0;
 const DEFAULT_SPACE_BELOW: GallerySpacingStep = 3;
 const DEFAULT_INSET: GallerySpacingStep = 0;
+const DEFAULT_WIDTH: GalleryWidth = 'medium';
+const DEFAULT_ALIGN: GalleryAlign = 'center';
+
+const GALLERY_WIDTHS: readonly GalleryWidth[] = ['small', 'medium', 'large', 'full'];
+const GALLERY_ALIGNS: readonly GalleryAlign[] = ['left', 'center', 'right'];
 
 function toSpacingStep(value: number | null | undefined, fallback: GallerySpacingStep): GallerySpacingStep {
 	if (typeof value !== 'number' || Number.isNaN(value)) return fallback;
 	const rounded = Math.round(value);
 	return Math.min(4, Math.max(0, rounded)) as GallerySpacingStep;
+}
+
+function toGalleryWidth(value: string | null | undefined): GalleryWidth {
+	return GALLERY_WIDTHS.includes(value as GalleryWidth) ? (value as GalleryWidth) : DEFAULT_WIDTH;
+}
+
+function toGalleryAlign(value: string | null | undefined): GalleryAlign {
+	return GALLERY_ALIGNS.includes(value as GalleryAlign) ? (value as GalleryAlign) : DEFAULT_ALIGN;
 }
 
 export type SanityProjectDoc = {
@@ -74,6 +97,9 @@ function mapGalleryRow(row: SanityGalleryRow, kind: ProjectKind): GalleryImage |
 		spaceBelow: toSpacingStep(row.spaceBelow, DEFAULT_SPACE_BELOW),
 		insetLeft: toSpacingStep(row.insetLeft ?? row.insetHorizontal, DEFAULT_INSET),
 		insetRight: toSpacingStep(row.insetRight ?? row.insetHorizontal, DEFAULT_INSET),
+		width: toGalleryWidth(row.width),
+		align: toGalleryAlign(row.align),
+		pairWithNext: row.pairWithNext === true,
 	};
 
 	if (kind === 'neuhoff') {

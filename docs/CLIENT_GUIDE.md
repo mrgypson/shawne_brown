@@ -77,8 +77,14 @@ Every project on the **Work** page is one document here.
    - **Spacing controls** (0 – 4 scale) to fine-tune layout:
      - **Space above / Space below** — vertical rhythm between images.
      - **Inset left / Inset right** — narrows the image inside the column.
+   - **Layout controls** for size and placement:
+     - **Width** — `Small` (~40% of the column), `Medium` (~70%, the default), `Large` (full column), or `Full` (edge-to-edge, ignores page margins).
+     - **Alignment** — `Left`, `Center` (default), or `Right`. Only takes effect when Width is Small, Medium, or Large. Ignored when Width is Full.
+     - **Pair with next image** — check this on one gallery row to place it side-by-side with the next row on desktop. They always stack on mobile. When paired, each image fills its column and Width/Alignment on those two items are ignored.
    - **Edition / print #** — optional badge.
    - **Print sales (Neuhoff)** — only used when Project type is Neuhoff.
+
+   > Quick tip: the **simplest** way to set layout is Width + Alignment. Inset Left/Right are fine-tuners that apply *inside* the chosen width. If you want an image pushed hard to one side, set Width to Small or Large and Alignment to Left or Right.
 4. **Publish**.
 
 ### Reordering projects on the Work page

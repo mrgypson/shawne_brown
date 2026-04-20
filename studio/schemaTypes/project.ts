@@ -203,6 +203,46 @@ export const project = defineType({
 							validation: (Rule) => Rule.min(0).max(4).integer(),
 						}),
 						defineField({
+							name: 'width',
+							title: 'Width',
+							type: 'string',
+							description: 'Image size relative to the page. Full is edge-to-edge.',
+							options: {
+								list: [
+									{ title: 'Small (~40%)', value: 'small' },
+									{ title: 'Medium (~70%)', value: 'medium' },
+									{ title: 'Large (full container)', value: 'large' },
+									{ title: 'Full (edge-to-edge)', value: 'full' },
+								],
+								layout: 'radio',
+							},
+							initialValue: 'medium',
+						}),
+						defineField({
+							name: 'align',
+							title: 'Alignment',
+							type: 'string',
+							description:
+								'Horizontal alignment when width is small or large. Ignored when width is medium or full.',
+							options: {
+								list: [
+									{ title: 'Left', value: 'left' },
+									{ title: 'Center', value: 'center' },
+									{ title: 'Right', value: 'right' },
+								],
+								layout: 'radio',
+							},
+							initialValue: 'center',
+						}),
+						defineField({
+							name: 'pairWithNext',
+							title: 'Pair with next image',
+							type: 'boolean',
+							description:
+								'Place this image and the next one side-by-side on desktop. They stack on mobile.',
+							initialValue: false,
+						}),
+						defineField({
 							name: 'printNumber',
 							title: 'Edition / print #',
 							type: 'string',

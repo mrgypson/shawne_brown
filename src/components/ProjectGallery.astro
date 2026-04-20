@@ -1,6 +1,7 @@
 ---
 import type { GalleryImage } from '../types/project';
 import type { NeuhoffImage } from '../types/neuhoff';
+import GalleryFigure from './GalleryFigure.astro';
 
 interface Props {
 	images: (GalleryImage | NeuhoffImage)[];
@@ -11,16 +12,26 @@ interface Props {
 
 const { images, showPrintMeta = false, layout = 'single' } = Astro.props;
 
-function hasPrintSales(img: GalleryImage | NeuhoffImage): img is NeuhoffImage {
-	return 'printSales' in img && img.printSales !== undefined && Object.keys(img.printSales).length > 0;
-}
+type Row =
+	| { kind: 'solo'; image: GalleryImage | NeuhoffImage; index: number }
+	| {
+			kind: 'pair';
+			left: GalleryImage | NeuhoffImage;
+			right: GalleryImage | NeuhoffImage;
+			leftIndex: number;
+			rightIndex: number;
+	  };
 
-function spacingAttr(img: GalleryImage | NeuhoffImage): { sa: string; sb: string; insetL: string; insetR: string } {
-	const sa = img.spaceAbove ?? 0;
-	const sb = img.spaceBelow ?? 3;
-	const insetL = img.insetLeft ?? 0;
-	const insetR = img.insetRight ?? 0;
-	return { sa: String(sa), sb: String(sb), insetL: String(insetL), insetR: String(insetR) };
+const rows: Row[] = [];
+for (let i = 0; i < images.length; i += 1) {
+	const current = images[i];
+	const next = images[i + 1];
+	if (current.pairWithNext && next) {
+		rows.push({ kind: 'pair', left: current, right: next, leftIndex: i, rightIndex: i + 1 });
+		i += 1;
+	} else {
+		rows.push({ kind: 'solo', image: current, index: i });
+	}
 }
 ---
 
@@ -30,63 +41,34 @@ function spacingAttr(img: GalleryImage | NeuhoffImage): { sa: string; sb: string
 	data-testid="project-gallery"
 >
 	{
-		images.map((image, index) => {
-			const { sa, sb, insetL, insetR } = spacingAttr(image);
-			return (
-			<figure
-				class="gallery-figure"
-				data-testid={`project-gallery-figure-${index}`}
-				data-space-above={sa}
-				data-space-below={sb}
-			>
-				<div class="gallery-figure__media" data-inset-left={insetL} data-inset-right={insetR}>
-					<img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+		rows.map((row, rowIndex) =>
+			row.kind === 'solo' ? (
+				<GalleryFigure
+					image={row.image}
+					index={row.index}
+					showPrintMeta={showPrintMeta}
+				/>
+			) : (
+				<div
+					class="gallery-pair"
+					data-testid={`project-gallery-pair-${rowIndex}`}
+					data-space-above={String(row.left.spaceAbove ?? 0)}
+					data-space-below={String(row.right.spaceBelow ?? row.left.spaceBelow ?? 3)}
+				>
+					<GalleryFigure
+						image={row.left}
+						index={row.leftIndex}
+						showPrintMeta={showPrintMeta}
+						paired
+					/>
+					<GalleryFigure
+						image={row.right}
+						index={row.rightIndex}
+						showPrintMeta={showPrintMeta}
+						paired
+					/>
 				</div>
-				{(image.caption || image.printNumber) && (
-					<figcaption class="gallery-caption">
-						{image.caption && <span>{image.caption}</span>}
-						{image.caption && image.printNumber && ' · '}
-						{image.printNumber && <span class="text-muted">{image.printNumber}</span>}
-					</figcaption>
-				)}
-				{showPrintMeta && hasPrintSales(image) && image.printSales && (
-					<div class="print-meta" data-testid={`project-gallery-print-meta-${index}`}>
-						<dl>
-							{image.printSales.availability && (
-								<>
-									<dt>Availability</dt>
-									<dd>{image.printSales.availability}</dd>
-								</>
-							)}
-							{image.printSales.price && (
-								<>
-									<dt>Price</dt>
-									<dd>{image.printSales.price}</dd>
-								</>
-							)}
-							{image.printSales.sizeOptions && image.printSales.sizeOptions.length > 0 && (
-								<>
-									<dt>Sizes</dt>
-									<dd>{image.printSales.sizeOptions.join(' · ')}</dd>
-								</>
-							)}
-							<dt>Framing</dt>
-							<dd>{image.printSales.framedOption ? 'Framing available' : 'Print only'}</dd>
-							{image.printSales.inquiryOrPurchase && image.printSales.inquiryOrPurchase !== 'none' && (
-								<>
-									<dt>Inquiry</dt>
-									<dd>
-										{image.printSales.inquiryOrPurchase === 'purchase'
-											? 'Purchase interest (structure only)'
-											: 'Contact for availability'}
-									</dd>
-								</>
-							)}
-						</dl>
-					</div>
-				)}
-			</figure>
-			);
-		})
+			),
+		)
 	}
 </div>

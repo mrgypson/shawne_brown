@@ -30,6 +30,9 @@ export const projectFieldsProjection = `
     insetLeft,
     insetRight,
     insetHorizontal,
+    width,
+    align,
+    pairWithNext,
     printNumber,
     printSales
   }

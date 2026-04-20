@@ -1,0 +1,84 @@
+---
+import type { GalleryImage } from '../types/project';
+import type { NeuhoffImage } from '../types/neuhoff';
+
+interface Props {
+	image: GalleryImage | NeuhoffImage;
+	index: number;
+	showPrintMeta?: boolean;
+	paired?: boolean;
+}
+
+const { image, index, showPrintMeta = false, paired = false } = Astro.props;
+
+function hasPrintSales(img: GalleryImage | NeuhoffImage): img is NeuhoffImage {
+	return 'printSales' in img && img.printSales !== undefined && Object.keys(img.printSales).length > 0;
+}
+
+const spaceAbove = String(image.spaceAbove ?? 0);
+const spaceBelow = String(image.spaceBelow ?? 3);
+const insetLeft = String(image.insetLeft ?? 0);
+const insetRight = String(image.insetRight ?? 0);
+const width = image.width ?? 'medium';
+const align = image.align ?? 'center';
+---
+
+<figure
+	class:list={['gallery-figure', paired && 'gallery-figure--paired']}
+	data-testid={`project-gallery-figure-${index}`}
+	data-space-above={spaceAbove}
+	data-space-below={spaceBelow}
+	data-width={width}
+	data-align={align}
+>
+	<div class="gallery-figure__media" data-inset-left={insetLeft} data-inset-right={insetRight}>
+		<img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+	</div>
+	{
+		(image.caption || image.printNumber) && (
+			<figcaption class="gallery-caption">
+				{image.caption && <span>{image.caption}</span>}
+				{image.caption && image.printNumber && ' · '}
+				{image.printNumber && <span class="text-muted">{image.printNumber}</span>}
+			</figcaption>
+		)
+	}
+	{
+		showPrintMeta && hasPrintSales(image) && image.printSales && (
+			<div class="print-meta" data-testid={`project-gallery-print-meta-${index}`}>
+				<dl>
+					{image.printSales.availability && (
+						<>
+							<dt>Availability</dt>
+							<dd>{image.printSales.availability}</dd>
+						</>
+					)}
+					{image.printSales.price && (
+						<>
+							<dt>Price</dt>
+							<dd>{image.printSales.price}</dd>
+						</>
+					)}
+					{image.printSales.sizeOptions && image.printSales.sizeOptions.length > 0 && (
+						<>
+							<dt>Sizes</dt>
+							<dd>{image.printSales.sizeOptions.join(' · ')}</dd>
+						</>
+					)}
+					<dt>Framing</dt>
+					<dd>{image.printSales.framedOption ? 'Framing available' : 'Print only'}</dd>
+					{image.printSales.inquiryOrPurchase && image.printSales.inquiryOrPurchase !== 'none' && (
+						<>
+							<dt>Inquiry</dt>
+							<dd>
+								{image.printSales.inquiryOrPurchase === 'purchase'
+									? 'Purchase interest (structure only)'
+									: 'Contact for availability'}
+							</dd>
+						</>
+					)}
+				</dl>
+			</div>
+		)
+	}
+</figure>

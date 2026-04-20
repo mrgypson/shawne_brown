@@ -22,6 +22,10 @@
 	--gallery-step-2: var(--space-4);
 	--gallery-step-3: var(--space-6);
 	--gallery-step-4: var(--space-7);
+	/* Gallery width presets (fraction of container) — tune here without schema changes. */
+	--gallery-width-small: 40%;
+	--gallery-width-medium: 70%;
+	--gallery-width-large: 100%;
 	--line-tight: 1.25;
 	--line-body: 1.6;
 }
@@ -34,6 +38,7 @@
 
 html {
 	-webkit-text-size-adjust: 100%;
+	overflow-x: clip;
 }
 
 body {
@@ -435,6 +440,105 @@ h3 {
 	width: 100%;
 	display: block;
 	background: #eee;
+}
+
+/* Width presets: the media wrapper controls width; align centers or sides it. */
+.gallery-figure[data-width='small'] .gallery-figure__media {
+	width: var(--gallery-width-small);
+}
+.gallery-figure[data-width='medium'] .gallery-figure__media {
+	width: var(--gallery-width-medium);
+}
+.gallery-figure[data-width='large'] .gallery-figure__media {
+	width: var(--gallery-width-large);
+}
+
+/* Alignment applies when width is small or large (medium and full fill the row). */
+.gallery-figure[data-width='small'][data-align='left'] .gallery-figure__media,
+.gallery-figure[data-width='medium'][data-align='left'] .gallery-figure__media,
+.gallery-figure[data-width='large'][data-align='left'] .gallery-figure__media {
+	margin-inline: 0 auto;
+}
+.gallery-figure[data-width='small'][data-align='center'] .gallery-figure__media,
+.gallery-figure[data-width='medium'][data-align='center'] .gallery-figure__media,
+.gallery-figure[data-width='large'][data-align='center'] .gallery-figure__media {
+	margin-inline: auto;
+}
+.gallery-figure[data-width='small'][data-align='right'] .gallery-figure__media,
+.gallery-figure[data-width='medium'][data-align='right'] .gallery-figure__media,
+.gallery-figure[data-width='large'][data-align='right'] .gallery-figure__media {
+	margin-inline: auto 0;
+}
+
+/* Full: break out of .layout-main (max-width + padding) to viewport width. */
+.gallery-figure[data-width='full'] .gallery-figure__media {
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	padding-inline: 0;
+	max-width: none;
+}
+
+/* Paired row: two figures side-by-side on desktop, stacked on mobile. */
+.gallery-pair {
+	display: grid;
+	gap: 0;
+}
+
+.gallery-pair > .gallery-figure--paired {
+	margin: 0;
+}
+
+/* Pair-level margin comes from the wrapper; zero out figure margins inside. */
+.gallery-pair[data-space-above='0'] {
+	margin-top: var(--gallery-step-0);
+}
+.gallery-pair[data-space-above='1'] {
+	margin-top: var(--gallery-step-1);
+}
+.gallery-pair[data-space-above='2'] {
+	margin-top: var(--gallery-step-2);
+}
+.gallery-pair[data-space-above='3'] {
+	margin-top: var(--gallery-step-3);
+}
+.gallery-pair[data-space-above='4'] {
+	margin-top: var(--gallery-step-4);
+}
+
+.gallery-pair[data-space-below='0'] {
+	margin-bottom: var(--gallery-step-0);
+}
+.gallery-pair[data-space-below='1'] {
+	margin-bottom: var(--gallery-step-1);
+}
+.gallery-pair[data-space-below='2'] {
+	margin-bottom: var(--gallery-step-2);
+}
+.gallery-pair[data-space-below='3'] {
+	margin-bottom: var(--gallery-step-3);
+}
+.gallery-pair[data-space-below='4'] {
+	margin-bottom: var(--gallery-step-4);
+}
+
+@media (min-width: 52rem) {
+	.gallery-pair {
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-3);
+		align-items: start;
+	}
+}
+
+/* Paired items should fill their column; ignore `full` bleed and width presets inside a pair. */
+.gallery-pair .gallery-figure--paired .gallery-figure__media {
+	width: 100%;
+	margin-inline: 0;
+	max-width: none;
+}
+
+.gallery-pair .gallery-figure--paired[data-width='full'] .gallery-figure__media {
+	margin-left: 0;
+	padding-inline: 0;
 }
 
 .gallery-caption {
