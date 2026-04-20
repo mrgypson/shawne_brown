@@ -1,6 +1,8 @@
+import { HelpCircleIcon } from '@sanity/icons';
 import { defineConfig } from 'sanity';
 import { presentationTool } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
+import HelpGuide from './components/HelpGuide';
 import { schemaTypes } from './schemaTypes';
 
 const ABOUT_PAGE_DOC_ID = 'aboutPage';
@@ -61,6 +63,19 @@ export default defineConfig({
 						),
 					]),
 		}),
+	],
+	/**
+	 * Custom top-nav tool: a read-only "How to use this site" page for editors.
+	 * Lives in `studio/components/HelpGuide.tsx`; mirrors `docs/CLIENT_GUIDE.md`.
+	 */
+	tools: (prev) => [
+		...prev,
+		{
+			name: 'guide',
+			title: 'Guide',
+			icon: HelpCircleIcon,
+			component: HelpGuide,
+		},
 	],
 	schema: {
 		types: schemaTypes,
