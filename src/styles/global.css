@@ -529,6 +529,22 @@ h3 {
 	}
 }
 
+/* Mobile only: the first paired figure uses its own spaceBelow as the stack gap. */
+@media (max-width: 51.9375rem) {
+	.gallery-pair > .gallery-figure--paired:first-child[data-space-below='1'] {
+		margin-bottom: var(--gallery-step-1);
+	}
+	.gallery-pair > .gallery-figure--paired:first-child[data-space-below='2'] {
+		margin-bottom: var(--gallery-step-2);
+	}
+	.gallery-pair > .gallery-figure--paired:first-child[data-space-below='3'] {
+		margin-bottom: var(--gallery-step-3);
+	}
+	.gallery-pair > .gallery-figure--paired:first-child[data-space-below='4'] {
+		margin-bottom: var(--gallery-step-4);
+	}
+}
+
 /* Paired items should fill their column; ignore `full` bleed and width presets inside a pair. */
 .gallery-pair .gallery-figure--paired .gallery-figure__media {
 	width: 100%;

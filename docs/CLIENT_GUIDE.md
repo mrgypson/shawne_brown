@@ -80,7 +80,7 @@ Every project on the **Work** page is one document here.
    - **Layout controls** for size and placement:
      - **Width** — `Small` (~40% of the column), `Medium` (~70%, the default), `Large` (full column), or `Full` (edge-to-edge, ignores page margins).
      - **Alignment** — `Left`, `Center` (default), or `Right`. Only takes effect when Width is Small, Medium, or Large. Ignored when Width is Full.
-     - **Pair with next image** — check this on one gallery row to place it side-by-side with the next row on desktop. They always stack on mobile. When paired, each image fills its column and Width/Alignment on those two items are ignored.
+     - **Pair with next image** — check this on one gallery row to place it side-by-side with the next row on desktop. They always stack on mobile. When paired, each image fills its column and Width/Alignment on those two items are ignored. On mobile, the two paired images stack and the gap between them uses **Space below** of the first image.
    - **Edition / print #** — optional badge.
    - **Print sales (Neuhoff)** — only used when Project type is Neuhoff.
 
