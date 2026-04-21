@@ -71,21 +71,23 @@ Every project on the **Work** page is one document here.
    - **Short description** — 1–3 sentences shown under the title.
    - **Long description** — optional, longer paragraph.
    - **Cover image** — used on the Work index grid and as the project’s default preview. Click **Alternative text** and describe the image for screen readers.
-3. **Gallery** — click **Add item** for each image:
+3. **Gallery layout (top of project)** — two settings apply to the whole gallery at once:
+   - **Space between images** (0 – 4) — the vertical gap between every image, and between image-pair rows. Pick one rhythm for the whole project. Default `3`.
+   - **Pair gap** (0 – 4) — the gap **inside** every pair: the column gap on desktop and the stack gap on mobile. Default `2`.
+4. **Gallery** — click **Add item** for each image:
    - **Image** (required) + **Alternative text** (required).
    - **Caption** — optional text below the image.
-   - **Spacing controls** (0 – 4 scale) to fine-tune layout:
-     - **Space above / Space below** — vertical rhythm between images.
-     - **Inset left / Inset right** — narrows the image inside the column.
-   - **Layout controls** for size and placement:
-     - **Width** — `Small` (~40% of the column), `Medium` (~70%, the default), `Large` (full column), or `Full` (edge-to-edge, ignores page margins).
-     - **Alignment** — `Left`, `Center` (default), or `Right`. Only takes effect when Width is Small, Medium, or Large. Ignored when Width is Full.
-     - **Pair with next image** — check this on one gallery row to place it side-by-side with the next row on desktop. They always stack on mobile. When paired, each image fills its column and Width/Alignment on those two items are ignored. On mobile, the two paired images stack and the gap between them uses **Space below** of the first image.
+   - **Width** — `Small` (~40% of the column), `Medium` (~70%, the default), `Large` (full column), or `Full` (edge-to-edge, ignores page margins).
+   - **Alignment** — `Left`, `Center` (default), or `Right`. Takes effect when Width is Small, Medium, or Large. Ignored when Width is Full.
+   - **Inset left / Inset right (fine-tune)** — optional 0 – 4 padding on either side that narrows the image *inside* the width you chose.
+   - **Pair with next image** — check this on one image to place it side-by-side with the next one on desktop. They always stack on mobile. When paired, each image fills its column, and the individual Width/Alignment/Inset on those two items are ignored. The mobile stack gap and desktop column gap both come from the project-level **Pair gap**. When this is checked, two extra fields appear on the first image of the pair:
+     - **Pair ratio** — `50/50` (equal, default), `60/40` (this image larger), or `40/60` (next image larger). Desktop only; on mobile they stack equally.
+     - **Pair vertical alignment** — `Top` (default), `Center`, or `Bottom`. Controls how the two images line up when their heights differ (desktop only).
    - **Edition / print #** — optional badge.
    - **Print sales (Neuhoff)** — only used when Project type is Neuhoff.
 
    > Quick tip: the **simplest** way to set layout is Width + Alignment. Inset Left/Right are fine-tuners that apply *inside* the chosen width. If you want an image pushed hard to one side, set Width to Small or Large and Alignment to Left or Right.
-4. **Publish**.
+5. **Publish**.
 
 ### Reordering projects on the Work page
 

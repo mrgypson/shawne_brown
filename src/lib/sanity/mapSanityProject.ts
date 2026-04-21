@@ -2,6 +2,8 @@ import type { NeuhoffImage, PrintAvailability, PrintSalesMetadata } from '../../
 import type {
 	GalleryAlign,
 	GalleryImage,
+	GalleryPairAlignVertical,
+	GalleryPairRatio,
 	GallerySpacingStep,
 	GalleryWidth,
 	Project,
@@ -23,8 +25,6 @@ type SanityGalleryRow = {
 	caption?: string | null;
 	printNumber?: string | null;
 	printSales?: SanityPrintSales | null;
-	spaceAbove?: number | null;
-	spaceBelow?: number | null;
 	insetLeft?: number | null;
 	insetRight?: number | null;
 	/** Legacy single inset; used when insetLeft/insetRight are absent. */
@@ -32,16 +32,22 @@ type SanityGalleryRow = {
 	width?: string | null;
 	align?: string | null;
 	pairWithNext?: boolean | null;
+	pairRatio?: string | null;
+	pairAlignVertical?: string | null;
 };
 
-const DEFAULT_SPACE_ABOVE: GallerySpacingStep = 0;
-const DEFAULT_SPACE_BELOW: GallerySpacingStep = 3;
 const DEFAULT_INSET: GallerySpacingStep = 0;
 const DEFAULT_WIDTH: GalleryWidth = 'medium';
 const DEFAULT_ALIGN: GalleryAlign = 'center';
+const DEFAULT_PAIR_RATIO: GalleryPairRatio = '50/50';
+const DEFAULT_PAIR_ALIGN_V: GalleryPairAlignVertical = 'top';
+const DEFAULT_SPACE_BETWEEN: GallerySpacingStep = 3;
+const DEFAULT_PAIR_GAP: GallerySpacingStep = 2;
 
 const GALLERY_WIDTHS: readonly GalleryWidth[] = ['small', 'medium', 'large', 'full'];
 const GALLERY_ALIGNS: readonly GalleryAlign[] = ['left', 'center', 'right'];
+const GALLERY_PAIR_RATIOS: readonly GalleryPairRatio[] = ['50/50', '60/40', '40/60'];
+const GALLERY_PAIR_ALIGN_VS: readonly GalleryPairAlignVertical[] = ['top', 'center', 'bottom'];
 
 function toSpacingStep(value: number | null | undefined, fallback: GallerySpacingStep): GallerySpacingStep {
 	if (typeof value !== 'number' || Number.isNaN(value)) return fallback;
@@ -57,6 +63,18 @@ function toGalleryAlign(value: string | null | undefined): GalleryAlign {
 	return GALLERY_ALIGNS.includes(value as GalleryAlign) ? (value as GalleryAlign) : DEFAULT_ALIGN;
 }
 
+function toPairRatio(value: string | null | undefined): GalleryPairRatio {
+	return GALLERY_PAIR_RATIOS.includes(value as GalleryPairRatio)
+		? (value as GalleryPairRatio)
+		: DEFAULT_PAIR_RATIO;
+}
+
+function toPairAlignVertical(value: string | null | undefined): GalleryPairAlignVertical {
+	return GALLERY_PAIR_ALIGN_VS.includes(value as GalleryPairAlignVertical)
+		? (value as GalleryPairAlignVertical)
+		: DEFAULT_PAIR_ALIGN_V;
+}
+
 export type SanityProjectDoc = {
 	_id: string;
 	title: string;
@@ -66,6 +84,8 @@ export type SanityProjectDoc = {
 	longDescription?: string | null;
 	kind?: string | null;
 	coverImage?: Parameters<typeof urlForImage>[0];
+	spaceBetween?: number | null;
+	pairGap?: number | null;
 	images?: SanityGalleryRow[] | null;
 };
 
@@ -88,18 +108,19 @@ function mapGalleryRow(row: SanityGalleryRow, kind: ProjectKind): GalleryImage |
 			? row.image.alt
 			: '';
 
+	const pairWithNext = row.pairWithNext === true;
 	const base: GalleryImage = {
 		src,
 		alt,
 		caption: row.caption?.trim() || undefined,
 		printNumber: row.printNumber?.trim() || undefined,
-		spaceAbove: toSpacingStep(row.spaceAbove, DEFAULT_SPACE_ABOVE),
-		spaceBelow: toSpacingStep(row.spaceBelow, DEFAULT_SPACE_BELOW),
 		insetLeft: toSpacingStep(row.insetLeft ?? row.insetHorizontal, DEFAULT_INSET),
 		insetRight: toSpacingStep(row.insetRight ?? row.insetHorizontal, DEFAULT_INSET),
 		width: toGalleryWidth(row.width),
 		align: toGalleryAlign(row.align),
-		pairWithNext: row.pairWithNext === true,
+		pairWithNext,
+		pairRatio: pairWithNext ? toPairRatio(row.pairRatio) : undefined,
+		pairAlignVertical: pairWithNext ? toPairAlignVertical(row.pairAlignVertical) : undefined,
 	};
 
 	if (kind === 'neuhoff') {
@@ -134,6 +155,8 @@ export function mapSanityProject(doc: SanityProjectDoc): Project {
 		shortDescription: doc.shortDescription,
 		longDescription: doc.longDescription?.trim() || undefined,
 		coverImage,
+		gallerySpaceBetween: toSpacingStep(doc.spaceBetween, DEFAULT_SPACE_BETWEEN),
+		galleryPairGap: toSpacingStep(doc.pairGap, DEFAULT_PAIR_GAP),
 	};
 
 	if (kind === 'neuhoff') {

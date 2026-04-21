@@ -352,13 +352,12 @@ h3 {
 .project-gallery {
 	display: flex;
 	flex-direction: column;
-	gap: 0;
+	gap: var(--gallery-step-3);
 	margin-top: var(--space-5);
 }
 
 .project-gallery--two-up {
 	display: grid;
-	gap: 0;
 }
 
 @media (min-width: 52rem) {
@@ -368,40 +367,25 @@ h3 {
 	}
 }
 
+/* Gallery-wide vertical rhythm (Sanity: spaceBetween 0–4). */
+.project-gallery[data-space-between='0'] {
+	gap: var(--gallery-step-0);
+}
+.project-gallery[data-space-between='1'] {
+	gap: var(--gallery-step-1);
+}
+.project-gallery[data-space-between='2'] {
+	gap: var(--gallery-step-2);
+}
+.project-gallery[data-space-between='3'] {
+	gap: var(--gallery-step-3);
+}
+.project-gallery[data-space-between='4'] {
+	gap: var(--gallery-step-4);
+}
+
 .gallery-figure {
 	margin: 0;
-}
-
-.gallery-figure[data-space-above='0'] {
-	margin-top: var(--gallery-step-0);
-}
-.gallery-figure[data-space-above='1'] {
-	margin-top: var(--gallery-step-1);
-}
-.gallery-figure[data-space-above='2'] {
-	margin-top: var(--gallery-step-2);
-}
-.gallery-figure[data-space-above='3'] {
-	margin-top: var(--gallery-step-3);
-}
-.gallery-figure[data-space-above='4'] {
-	margin-top: var(--gallery-step-4);
-}
-
-.gallery-figure[data-space-below='0'] {
-	margin-bottom: var(--gallery-step-0);
-}
-.gallery-figure[data-space-below='1'] {
-	margin-bottom: var(--gallery-step-1);
-}
-.gallery-figure[data-space-below='2'] {
-	margin-bottom: var(--gallery-step-2);
-}
-.gallery-figure[data-space-below='3'] {
-	margin-bottom: var(--gallery-step-3);
-}
-.gallery-figure[data-space-below='4'] {
-	margin-bottom: var(--gallery-step-4);
 }
 
 .gallery-figure__media[data-inset-left='0'] {
@@ -481,67 +465,54 @@ h3 {
 /* Paired row: two figures side-by-side on desktop, stacked on mobile. */
 .gallery-pair {
 	display: grid;
-	gap: 0;
+	gap: var(--gallery-step-2);
 }
 
 .gallery-pair > .gallery-figure--paired {
 	margin: 0;
 }
 
-/* Pair-level margin comes from the wrapper; zero out figure margins inside. */
-.gallery-pair[data-space-above='0'] {
-	margin-top: var(--gallery-step-0);
+/* Gap inside the pair (Sanity: pairGap 0–4) — drives desktop column gap and mobile row gap. */
+.gallery-pair[data-pair-gap='0'] {
+	gap: var(--gallery-step-0);
 }
-.gallery-pair[data-space-above='1'] {
-	margin-top: var(--gallery-step-1);
+.gallery-pair[data-pair-gap='1'] {
+	gap: var(--gallery-step-1);
 }
-.gallery-pair[data-space-above='2'] {
-	margin-top: var(--gallery-step-2);
+.gallery-pair[data-pair-gap='2'] {
+	gap: var(--gallery-step-2);
 }
-.gallery-pair[data-space-above='3'] {
-	margin-top: var(--gallery-step-3);
+.gallery-pair[data-pair-gap='3'] {
+	gap: var(--gallery-step-3);
 }
-.gallery-pair[data-space-above='4'] {
-	margin-top: var(--gallery-step-4);
-}
-
-.gallery-pair[data-space-below='0'] {
-	margin-bottom: var(--gallery-step-0);
-}
-.gallery-pair[data-space-below='1'] {
-	margin-bottom: var(--gallery-step-1);
-}
-.gallery-pair[data-space-below='2'] {
-	margin-bottom: var(--gallery-step-2);
-}
-.gallery-pair[data-space-below='3'] {
-	margin-bottom: var(--gallery-step-3);
-}
-.gallery-pair[data-space-below='4'] {
-	margin-bottom: var(--gallery-step-4);
+.gallery-pair[data-pair-gap='4'] {
+	gap: var(--gallery-step-4);
 }
 
 @media (min-width: 52rem) {
 	.gallery-pair {
 		grid-template-columns: 1fr 1fr;
-		gap: var(--space-3);
 		align-items: start;
 	}
-}
 
-/* Mobile only: the first paired figure uses its own spaceBelow as the stack gap. */
-@media (max-width: 51.9375rem) {
-	.gallery-pair > .gallery-figure--paired:first-child[data-space-below='1'] {
-		margin-bottom: var(--gallery-step-1);
+	.gallery-pair[data-ratio='50/50'] {
+		grid-template-columns: 1fr 1fr;
 	}
-	.gallery-pair > .gallery-figure--paired:first-child[data-space-below='2'] {
-		margin-bottom: var(--gallery-step-2);
+	.gallery-pair[data-ratio='60/40'] {
+		grid-template-columns: 6fr 4fr;
 	}
-	.gallery-pair > .gallery-figure--paired:first-child[data-space-below='3'] {
-		margin-bottom: var(--gallery-step-3);
+	.gallery-pair[data-ratio='40/60'] {
+		grid-template-columns: 4fr 6fr;
 	}
-	.gallery-pair > .gallery-figure--paired:first-child[data-space-below='4'] {
-		margin-bottom: var(--gallery-step-4);
+
+	.gallery-pair[data-align-v='top'] {
+		align-items: start;
+	}
+	.gallery-pair[data-align-v='center'] {
+		align-items: center;
+	}
+	.gallery-pair[data-align-v='bottom'] {
+		align-items: end;
 	}
 }
 

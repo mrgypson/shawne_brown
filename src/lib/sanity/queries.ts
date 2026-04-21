@@ -21,18 +21,20 @@ export const projectFieldsProjection = `
   kind,
   order,
   coverImage,
+  spaceBetween,
+  pairGap,
   images[] {
     _key,
     image,
     caption,
-    spaceAbove,
-    spaceBelow,
     insetLeft,
     insetRight,
     insetHorizontal,
     width,
     align,
     pairWithNext,
+    pairRatio,
+    pairAlignVertical,
     printNumber,
     printSales
   }

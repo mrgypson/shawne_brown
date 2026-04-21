@@ -17,6 +17,12 @@ export type GalleryWidth = 'small' | 'medium' | 'large' | 'full';
 /** Horizontal alignment used when width is smaller than 100% of the container. */
 export type GalleryAlign = 'left' | 'center' | 'right';
 
+/** Relative column widths for a pair on desktop. */
+export type GalleryPairRatio = '50/50' | '60/40' | '40/60';
+
+/** Vertical alignment of two paired images when their heights differ (desktop only). */
+export type GalleryPairAlignVertical = 'top' | 'center' | 'bottom';
+
 /**
  * Base gallery image fields (CMS-mappable).
  */
@@ -26,10 +32,6 @@ export interface GalleryImage {
 	caption?: string;
 	/** Edition / inventory label (optional on standard projects). */
 	printNumber?: string;
-	/** Extra margin above this figure. */
-	spaceAbove?: GallerySpacingStep;
-	/** Margin below this figure (after caption / print meta). */
-	spaceBelow?: GallerySpacingStep;
 	/** Padding on the left (shrinks image from that side). */
 	insetLeft?: GallerySpacingStep;
 	/** Padding on the right (shrinks image from that side). */
@@ -40,6 +42,10 @@ export interface GalleryImage {
 	align?: GalleryAlign;
 	/** When true, this image pairs with the next one into a 2-up row on desktop. */
 	pairWithNext?: boolean;
+	/** Relative widths of the pair on desktop (only meaningful when `pairWithNext`). */
+	pairRatio?: GalleryPairRatio;
+	/** Vertical alignment within the pair row on desktop. */
+	pairAlignVertical?: GalleryPairAlignVertical;
 }
 
 export type ProjectKind = 'standard' | 'neuhoff';
@@ -52,6 +58,10 @@ interface ProjectBase {
 	longDescription?: string;
 	coverImage: CoverImage;
 	kind: ProjectKind;
+	/** Gallery-wide vertical gap between images (and between pair rows). */
+	gallerySpaceBetween?: GallerySpacingStep;
+	/** Gap inside every pair: desktop column gap + mobile stack gap. */
+	galleryPairGap?: GallerySpacingStep;
 }
 
 export interface StandardProject extends ProjectBase {

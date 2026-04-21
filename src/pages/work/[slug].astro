@@ -44,6 +44,12 @@ const showPrintMeta = isNeuhoffProject(project);
 			)
 		}
 
-		<ProjectGallery images={project.images} showPrintMeta={showPrintMeta} layout="single" />
+		<ProjectGallery
+			images={project.images}
+			showPrintMeta={showPrintMeta}
+			layout="single"
+			spaceBetween={project.gallerySpaceBetween}
+			pairGap={project.galleryPairGap}
+		/>
 	</article>
 </BaseLayout>

@@ -1,5 +1,5 @@
 ---
-import type { GalleryImage } from '../types/project';
+import type { GalleryImage, GallerySpacingStep } from '../types/project';
 import type { NeuhoffImage } from '../types/neuhoff';
 import GalleryFigure from './GalleryFigure.astro';
 
@@ -8,9 +8,19 @@ interface Props {
 	/** When true (e.g. Neuhoff), show optional print-sales metadata blocks. */
 	showPrintMeta?: boolean;
 	layout?: 'single' | 'two-up';
+	/** Gallery-wide vertical gap between rows (0–4). */
+	spaceBetween?: GallerySpacingStep;
+	/** Gap inside every pair — desktop column gap and mobile stack gap (0–4). */
+	pairGap?: GallerySpacingStep;
 }
 
-const { images, showPrintMeta = false, layout = 'single' } = Astro.props;
+const {
+	images,
+	showPrintMeta = false,
+	layout = 'single',
+	spaceBetween = 3,
+	pairGap = 2,
+} = Astro.props;
 
 type Row =
 	| { kind: 'solo'; image: GalleryImage | NeuhoffImage; index: number }
@@ -39,21 +49,19 @@ for (let i = 0; i < images.length; i += 1) {
 	class:list={['project-gallery', layout === 'two-up' && 'project-gallery--two-up']}
 	id="project-gallery"
 	data-testid="project-gallery"
+	data-space-between={String(spaceBetween)}
 >
 	{
 		rows.map((row, rowIndex) =>
 			row.kind === 'solo' ? (
-				<GalleryFigure
-					image={row.image}
-					index={row.index}
-					showPrintMeta={showPrintMeta}
-				/>
+				<GalleryFigure image={row.image} index={row.index} showPrintMeta={showPrintMeta} />
 			) : (
 				<div
 					class="gallery-pair"
 					data-testid={`project-gallery-pair-${rowIndex}`}
-					data-space-above={String(row.left.spaceAbove ?? 0)}
-					data-space-below={String(row.right.spaceBelow ?? row.left.spaceBelow ?? 3)}
+					data-pair-gap={String(pairGap)}
+					data-ratio={row.left.pairRatio ?? '50/50'}
+					data-align-v={row.left.pairAlignVertical ?? 'top'}
 				>
 					<GalleryFigure
 						image={row.left}

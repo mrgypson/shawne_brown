@@ -15,8 +15,6 @@ function hasPrintSales(img: GalleryImage | NeuhoffImage): img is NeuhoffImage {
 	return 'printSales' in img && img.printSales !== undefined && Object.keys(img.printSales).length > 0;
 }
 
-const spaceAbove = String(image.spaceAbove ?? 0);
-const spaceBelow = String(image.spaceBelow ?? 3);
 const insetLeft = String(image.insetLeft ?? 0);
 const insetRight = String(image.insetRight ?? 0);
 const width = image.width ?? 'medium';
@@ -26,8 +24,6 @@ const align = image.align ?? 'center';
 <figure
 	class:list={['gallery-figure', paired && 'gallery-figure--paired']}
 	data-testid={`project-gallery-figure-${index}`}
-	data-space-above={spaceAbove}
-	data-space-below={spaceBelow}
 	data-width={width}
 	data-align={align}
 >

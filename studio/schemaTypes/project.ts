@@ -136,6 +136,25 @@ export const project = defineType({
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
+			name: 'spaceBetween',
+			title: 'Space between images',
+			type: 'number',
+			description: 'Vertical gap between every image (and between image pair rows) across this gallery.',
+			options: { list: [...gallerySpacingList] },
+			initialValue: 3,
+			validation: (Rule) => Rule.min(0).max(4).integer(),
+		}),
+		defineField({
+			name: 'pairGap',
+			title: 'Gap inside image pairs',
+			type: 'number',
+			description:
+				'Gap between the two images of a pair. Used as the column gap on desktop and the stack gap on mobile.',
+			options: { list: [...gallerySpacingList] },
+			initialValue: 2,
+			validation: (Rule) => Rule.min(0).max(4).integer(),
+		}),
+		defineField({
 			name: 'images',
 			title: 'Gallery',
 			type: 'array',
@@ -163,44 +182,6 @@ export const project = defineType({
 							name: 'caption',
 							title: 'Caption',
 							type: 'string',
-						}),
-						defineField({
-							name: 'spaceAbove',
-							title: 'Space above image',
-							type: 'number',
-							description: 'Extra margin above this image (stacked with the previous image’s space below).',
-							options: { list: [...gallerySpacingList] },
-							initialValue: 0,
-							validation: (Rule) => Rule.min(0).max(4).integer(),
-						}),
-						defineField({
-							name: 'spaceBelow',
-							title: 'Space below image',
-							type: 'number',
-							description: 'Margin below this block (image, caption, and optional print details).',
-							options: { list: [...gallerySpacingList] },
-							initialValue: 3,
-							validation: (Rule) => Rule.min(0).max(4).integer(),
-						}),
-						defineField({
-							name: 'insetLeft',
-							title: 'Inset left',
-							type: 'number',
-							description:
-								'Padding on the left narrows the image inside the column without changing page width.',
-							options: { list: [...gallerySpacingList] },
-							initialValue: 0,
-							validation: (Rule) => Rule.min(0).max(4).integer(),
-						}),
-						defineField({
-							name: 'insetRight',
-							title: 'Inset right',
-							type: 'number',
-							description:
-								'Padding on the right narrows the image inside the column without changing page width.',
-							options: { list: [...gallerySpacingList] },
-							initialValue: 0,
-							validation: (Rule) => Rule.min(0).max(4).integer(),
 						}),
 						defineField({
 							name: 'width',
@@ -235,12 +216,65 @@ export const project = defineType({
 							initialValue: 'center',
 						}),
 						defineField({
+							name: 'insetLeft',
+							title: 'Inset left (fine-tune)',
+							type: 'number',
+							description:
+								'Optional padding on the left — narrows the image inside its chosen width.',
+							options: { list: [...gallerySpacingList] },
+							initialValue: 0,
+							validation: (Rule) => Rule.min(0).max(4).integer(),
+						}),
+						defineField({
+							name: 'insetRight',
+							title: 'Inset right (fine-tune)',
+							type: 'number',
+							description:
+								'Optional padding on the right — narrows the image inside its chosen width.',
+							options: { list: [...gallerySpacingList] },
+							initialValue: 0,
+							validation: (Rule) => Rule.min(0).max(4).integer(),
+						}),
+						defineField({
 							name: 'pairWithNext',
 							title: 'Pair with next image',
 							type: 'boolean',
 							description:
 								'Place this image and the next one side-by-side on desktop. They stack on mobile.',
 							initialValue: false,
+						}),
+						defineField({
+							name: 'pairRatio',
+							title: 'Pair ratio',
+							type: 'string',
+							description: 'Relative widths of the two images on desktop.',
+							options: {
+								list: [
+									{ title: '50 / 50 (equal)', value: '50/50' },
+									{ title: '60 / 40 (this image larger)', value: '60/40' },
+									{ title: '40 / 60 (next image larger)', value: '40/60' },
+								],
+								layout: 'radio',
+							},
+							initialValue: '50/50',
+							hidden: ({ parent }) => !parent?.pairWithNext,
+						}),
+						defineField({
+							name: 'pairAlignVertical',
+							title: 'Pair vertical alignment',
+							type: 'string',
+							description:
+								'How the two images align vertically when they have different heights (desktop only).',
+							options: {
+								list: [
+									{ title: 'Top', value: 'top' },
+									{ title: 'Center', value: 'center' },
+									{ title: 'Bottom', value: 'bottom' },
+								],
+								layout: 'radio',
+							},
+							initialValue: 'top',
+							hidden: ({ parent }) => !parent?.pairWithNext,
 						}),
 						defineField({
 							name: 'printNumber',
