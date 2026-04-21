@@ -1,9 +1,12 @@
 import { aboutContent } from '../data/mock/about';
 import { mockProjects } from '../data/mock/projects';
+import { workPageContent } from '../data/mock/workPage';
 import type { AboutContent } from '../types/about';
 import type { Project } from '../types/project';
+import type { WorkPageContent } from '../types/workPage';
 import { fetchAboutFromSanity } from './sanity/fetchAbout';
 import { fetchProjectBySlugFromSanity, fetchProjectsFromSanity } from './sanity/fetchProjects';
+import { fetchWorkPageFromSanity } from './sanity/fetchWorkPage';
 
 export type ContentFetchOptions = {
 	/** When true, uses preview API perspective (drafts). Requires `SANITY_READ_TOKEN`. */
@@ -51,5 +54,21 @@ export async function getAbout(options?: ContentFetchOptions): Promise<AboutCont
 	} catch (err) {
 		console.warn('[content] Sanity fetch failed; using mock about.', err);
 		return aboutContent;
+	}
+}
+
+/**
+ * Work page singleton (title + subheading, each optional with show/hide toggles).
+ * Uses Sanity when configured; set `SANITY_USE_MOCK=true` to force mock data.
+ */
+export async function getWorkPage(options?: ContentFetchOptions): Promise<WorkPageContent> {
+	if (import.meta.env.SANITY_USE_MOCK === 'true') {
+		return workPageContent;
+	}
+	try {
+		return await fetchWorkPageFromSanity({ preview: options?.preview });
+	} catch (err) {
+		console.warn('[content] Sanity fetch failed; using mock work page.', err);
+		return workPageContent;
 	}
 }

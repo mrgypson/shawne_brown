@@ -24,6 +24,7 @@ The **website** pulls its text and images from **Studio** (powered by Sanity). W
 2. Sign in with the email that was invited.
 3. After sign-in you land on the **Content** list with three main areas:
    - **About & Contact** — the About page and where inquiry emails are delivered.
+   - **Work page** — the heading and subheading that appear at the top of the Work index.
    - **Project** — each series / body of work that appears under **Work**.
 
 ---
@@ -50,6 +51,23 @@ Under **Contact** on the same document:
 - **Website** — optional external site. Appears on About and in the footer.
 
 > Tip: to change where inquiries are delivered, the **only** thing you change is the **Email** field here. No code or settings elsewhere.
+
+---
+
+## Updating the Work page
+
+The Work page has a short header above the grid of projects. Both pieces of copy are optional and can be hidden without deleting them.
+
+1. In Studio, click **Work page**.
+2. Edit any of:
+   - **Title** — the large heading at the top of the Work page. Leave blank to fall back to `Work`.
+   - **Show title** — toggle off to hide the heading entirely (keeps your text saved for later).
+   - **Subheading** — the line of copy under the title.
+   - **Show subheading** — toggle off to hide the subheading (keeps your text saved for later).
+3. Click **Publish**.
+4. Open the site and reload — if both toggles are off, the entire header row above the projects is removed.
+
+> Tip: the projects themselves are still edited under **Project** — this page only controls the header text above the grid.
 
 ---
 

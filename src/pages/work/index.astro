@@ -1,21 +1,32 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { siteConfig } from '../../data/mock/site';
-import { getProjects } from '../../lib/content';
+import { getProjects, getWorkPage } from '../../lib/content';
 
 export const prerender = false;
 
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
-const projects = await getProjects({ preview: useDraftPerspective });
-const title = 'Work';
+const [projects, workPage] = await Promise.all([
+	getProjects({ preview: useDraftPerspective }),
+	getWorkPage({ preview: useDraftPerspective }),
+]);
+
+const resolvedTitle = workPage.title?.trim() || 'Work';
+const showTitle = workPage.showTitle && Boolean(resolvedTitle);
+const showSubheading = workPage.showSubheading && Boolean(workPage.subheading?.trim());
+const showHeader = showTitle || showSubheading;
+
+const title = resolvedTitle;
 const description = `Selected projects and series by ${siteConfig.siteTitle}.`;
 ---
 
 <BaseLayout title={title} description={description}>
-	<header class="prose-narrow">
-		<h1 class="page-title">Work</h1>
-		<p class="page-lede">Series and projects, listed in current order of emphasis.</p>
-	</header>
+	{showHeader && (
+		<header class="prose-narrow">
+			{showTitle && <h1 class="page-title">{resolvedTitle}</h1>}
+			{showSubheading && <p class="page-lede">{workPage.subheading}</p>}
+		</header>
+	)}
 	<div class="work-grid">
 		{
 			projects.map((project) => (
@@ -30,11 +41,10 @@ const description = `Selected projects and series by ${siteConfig.siteTitle}.`;
 							width="960"
 							height="720"
 						/>
+						<div class="work-item-overlay">
+							<h2 class="work-item-title">{project.title}</h2>
+						</div>
 					</figure>
-					<div class="work-item-meta">
-						<h2 class="work-item-title">{project.title}</h2>
-						<p class="work-item-year">{project.yearLabel}</p>
-					</div>
 				</a>
 			))
 		}

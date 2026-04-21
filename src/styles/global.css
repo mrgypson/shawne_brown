@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap');
 
 :root {
 	--color-bg: #fafaf9;
 	--color-text: #1a1a1a;
 	--color-muted: #5c5c5c;
 	--color-border: #e0ded9;
-	--font-display: 'Newsreader', 'Times New Roman', serif;
+	--font-display: 'Playfair Display', 'Times New Roman', serif;
 	--font-ui: 'Inter', system-ui, sans-serif;
 	--max-content: 42rem;
 	--max-wide: 72rem;
@@ -320,9 +320,11 @@ h3 {
 }
 
 .work-item-figure {
+	position: relative;
 	margin: 0;
 	aspect-ratio: 4 / 3;
 	background: #eee;
+	overflow: hidden;
 }
 
 .work-item-figure img {
@@ -332,15 +334,29 @@ h3 {
 	display: block;
 }
 
+.work-item-overlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--space-3);
+	pointer-events: none;
+}
+
 .work-item-meta {
 	margin-top: var(--space-2);
 }
 
 .work-item-title {
 	font-family: var(--font-display);
-	font-size: 1.25rem;
-	margin: 0 0 var(--space-1);
+	font-size: clamp(2rem, 4.5vw, 3.25rem);
+	line-height: 1.05;
+	margin: 0;
 	font-weight: 400;
+	color: #fff;
+	text-align: center;
+	letter-spacing: -0.01em;
 }
 
 .work-item-year {

@@ -91,7 +91,6 @@ export const project = defineType({
 			title: 'Year / span',
 			type: 'string',
 			description: 'e.g. 2021 or 2018–2020',
-			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
 			name: 'kind',
@@ -112,7 +111,6 @@ export const project = defineType({
 			title: 'Short description',
 			type: 'text',
 			rows: 3,
-			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
 			name: 'longDescription',

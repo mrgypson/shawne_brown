@@ -6,6 +6,7 @@ import HelpGuide from './components/HelpGuide';
 import { schemaTypes } from './schemaTypes';
 
 const ABOUT_PAGE_DOC_ID = 'aboutPage';
+const WORK_PAGE_DOC_ID = 'workPage';
 
 /** Deployed Astro site (Vercel). Presentation `initial` must be this origin, not `/api/preview/enable`. */
 const BROWN_ASTRO_SITE_ORIGIN = 'https://shawne-brown.vercel.app';
@@ -58,8 +59,14 @@ export default defineConfig({
 							.child(
 								S.document().schemaType('aboutPage').documentId(ABOUT_PAGE_DOC_ID),
 							),
+						S.listItem()
+							.title('Work page')
+							.id('singleton-workPage')
+							.child(
+								S.document().schemaType('workPage').documentId(WORK_PAGE_DOC_ID),
+							),
 						...S.documentTypeListItems().filter(
-							(listItem) => listItem.getId() !== 'aboutPage',
+							(listItem) => !['aboutPage', 'workPage'].includes(listItem.getId() ?? ''),
 						),
 					]),
 		}),
