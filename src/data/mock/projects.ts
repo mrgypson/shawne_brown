@@ -50,6 +50,7 @@ export const mockProjects: Project[] = [
 			src: PLACEHOLDER,
 			alt: 'The Neuhoff Project — cover (placeholder)',
 		},
+		showOnHome: true,
 		images: buildNeuhoffImages(25),
 	},
 	{
@@ -64,6 +65,7 @@ export const mockProjects: Project[] = [
 			src: PLACEHOLDER,
 			alt: 'River Notes — cover (placeholder)',
 		},
+		showOnHome: true,
 		images: Array.from({ length: 8 }, (_, i) => ({
 			src: PLACEHOLDER,
 			alt: `River Notes, frame ${i + 1} (placeholder)`,
@@ -81,6 +83,7 @@ export const mockProjects: Project[] = [
 			src: PLACEHOLDER,
 			alt: 'Interior Weather — cover (placeholder)',
 		},
+		showOnHome: true,
 		images: Array.from({ length: 12 }, (_, i) => ({
 			src: PLACEHOLDER,
 			alt: `Interior Weather, study ${i + 1} (placeholder)`,
@@ -96,6 +99,7 @@ export const mockProjects: Project[] = [
 			src: PLACEHOLDER,
 			alt: 'Plain Air — cover (placeholder)',
 		},
+		showOnHome: true,
 		images: Array.from({ length: 10 }, (_, i) => ({
 			src: PLACEHOLDER,
 			alt: `Plain Air, plate ${i + 1} (placeholder)`,

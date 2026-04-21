@@ -1,15 +1,15 @@
 import { defineField, defineType } from 'sanity';
 
-export const workPage = defineType({
-	name: 'workPage',
-	title: 'Work page',
+export const homePage = defineType({
+	name: 'homePage',
+	title: 'Home page',
 	type: 'document',
 	fields: [
 		defineField({
 			name: 'title',
 			title: 'Title',
 			type: 'string',
-			description: 'Heading at the top of the Work page. Leave blank to fall back to "Work".',
+			description: 'Heading shown above the portfolio grid on the home page. Leave blank to hide.',
 		}),
 		defineField({
 			name: 'showTitle',
@@ -35,7 +35,7 @@ export const workPage = defineType({
 	],
 	preview: {
 		prepare() {
-			return { title: 'Work page' };
+			return { title: 'Home page' };
 		},
 	},
 });

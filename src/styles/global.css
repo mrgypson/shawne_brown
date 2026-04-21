@@ -286,6 +286,90 @@ h3 {
 	text-underline-offset: 0.25em;
 }
 
+.site-nav-item {
+	display: contents;
+}
+
+.site-nav-trigger {
+	appearance: none;
+	background: transparent;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	font: inherit;
+	color: inherit;
+	letter-spacing: inherit;
+	text-transform: inherit;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.site-nav-trigger:focus-visible {
+	outline: 1px solid var(--color-text);
+	outline-offset: 2px;
+}
+
+.site-nav-trigger[aria-current='page'] {
+	text-decoration: underline;
+	text-underline-offset: 0.25em;
+}
+
+.site-nav-submenu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: var(--space-1);
+	font-size: 0.8125rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.site-nav-submenu[hidden] {
+	display: none;
+}
+
+.site-nav-submenu a {
+	text-decoration: none;
+	color: var(--color-muted);
+}
+
+.site-nav-submenu a:hover,
+.site-nav-submenu a:focus-visible {
+	color: var(--color-text);
+}
+
+.site-nav-submenu a[aria-current='page'] {
+	color: var(--color-text);
+	text-decoration: underline;
+	text-underline-offset: 0.25em;
+}
+
+@media (min-width: 48rem) {
+	.site-nav-item {
+		display: block;
+		position: relative;
+	}
+
+	.site-nav-submenu {
+		position: absolute;
+		top: calc(100% + var(--space-2));
+		right: 0;
+		min-width: 14rem;
+		align-items: flex-start;
+		gap: var(--space-1);
+		padding: var(--space-2) var(--space-3);
+		background: var(--color-bg);
+		border: 1px solid var(--color-border);
+		text-transform: none;
+		letter-spacing: normal;
+		font-size: 0.9375rem;
+		z-index: 10;
+	}
+}
+
 .page-title {
 	font-size: clamp(1.75rem, 4vw, 2.25rem);
 	margin: 0 0 var(--space-3);

@@ -1,7 +1,10 @@
 ---
 import { siteConfig } from '../data/mock/site';
+import { getProjects } from '../lib/content';
 
 const pathname = Astro.url.pathname;
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
+const projects = await getProjects({ preview: useDraftPerspective });
 
 function isActive(href: string): boolean {
 	if (href === '/') {
@@ -10,11 +13,12 @@ function isActive(href: string): boolean {
 	return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-const links = [
-	{ href: '/work', label: 'Work' },
+const secondaryLinks = [
 	{ href: '/about', label: 'About' },
 	{ href: '/contact', label: 'Contact' },
 ] as const;
+
+const workIsActive = pathname.startsWith('/work/');
 ---
 
 <header class="site-header" id="site-header">
@@ -35,9 +39,49 @@ const links = [
 		<span class="site-nav-toggle-bar" aria-hidden="true"></span>
 	</button>
 	<nav class="site-nav" aria-label="Primary" id="site-header-nav" data-testid="site-header-nav">
+		<div class="site-nav-item site-nav-item--work" id="site-header-work">
+			<button
+				type="button"
+				class="site-nav-trigger"
+				id="site-header-work-trigger"
+				aria-haspopup="menu"
+				aria-expanded="false"
+				aria-controls="site-header-work-menu"
+				aria-current={workIsActive ? 'page' : undefined}
+				data-testid="site-header-link-work"
+			>
+				Work
+			</button>
+			<ul
+				class="site-nav-submenu"
+				id="site-header-work-menu"
+				role="menu"
+				aria-labelledby="site-header-work-trigger"
+				hidden
+			>
+				{
+					projects.map((project) => (
+						<li role="none">
+							<a
+								role="menuitem"
+								href={`/work/${project.slug}`}
+								aria-current={pathname === `/work/${project.slug}` ? 'page' : undefined}
+								data-testid={`site-header-work-item-${project.slug}`}
+							>
+								{project.title}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</div>
 		{
-			links.map(({ href, label }) => (
-				<a href={href} aria-current={isActive(href) ? 'page' : undefined} data-testid={`site-header-link-${label.toLowerCase()}`}>
+			secondaryLinks.map(({ href, label }) => (
+				<a
+					href={href}
+					aria-current={isActive(href) ? 'page' : undefined}
+					data-testid={`site-header-link-${label.toLowerCase()}`}
+				>
 					{label}
 				</a>
 			))
@@ -50,29 +94,67 @@ const links = [
 		const header = document.getElementById('site-header');
 		const toggle = document.getElementById('site-header-menu-toggle');
 		const nav = document.getElementById('site-header-nav');
-		if (!header || !toggle || !nav) return;
+		const workWrap = document.getElementById('site-header-work');
+		const workTrigger = document.getElementById('site-header-work-trigger');
+		const workMenu = document.getElementById('site-header-work-menu');
+		if (!header || !toggle || !nav || !workWrap || !workTrigger || !workMenu) return;
 
 		const desktopMq = window.matchMedia('(min-width: 48rem)');
+
+		function setSubmenuOpen(open) {
+			workTrigger.setAttribute('aria-expanded', String(open));
+			if (open) {
+				workMenu.removeAttribute('hidden');
+			} else {
+				workMenu.setAttribute('hidden', '');
+			}
+		}
 
 		function setNavOpen(open) {
 			header.classList.toggle('site-header--nav-open', open);
 			toggle.setAttribute('aria-expanded', String(open));
+			if (!open) setSubmenuOpen(false);
 		}
 
 		toggle.addEventListener('click', () => {
 			setNavOpen(!header.classList.contains('site-header--nav-open'));
 		});
 
-		nav.querySelectorAll('a').forEach((link) => {
+		workTrigger.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const isOpen = workTrigger.getAttribute('aria-expanded') === 'true';
+			setSubmenuOpen(!isOpen);
+		});
+
+		workMenu.querySelectorAll('a').forEach((link) => {
+			link.addEventListener('click', () => {
+				setSubmenuOpen(false);
+				setNavOpen(false);
+			});
+		});
+
+		nav.querySelectorAll(':scope > a').forEach((link) => {
 			link.addEventListener('click', () => setNavOpen(false));
 		});
 
+		document.addEventListener('click', (e) => {
+			const target = e.target;
+			if (!target) return;
+			if (!workWrap.contains(target)) {
+				setSubmenuOpen(false);
+			}
+		});
+
 		document.addEventListener('keydown', (e) => {
-			if (e.key === 'Escape') setNavOpen(false);
+			if (e.key === 'Escape') {
+				setSubmenuOpen(false);
+				setNavOpen(false);
+			}
 		});
 
 		function onViewportChange() {
 			if (desktopMq.matches) setNavOpen(false);
+			setSubmenuOpen(false);
 		}
 		desktopMq.addEventListener('change', onViewportChange);
 	})();

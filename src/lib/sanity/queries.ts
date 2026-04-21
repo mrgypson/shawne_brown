@@ -10,8 +10,8 @@ export const aboutPageQuery = `*[_type == "aboutPage" && _id == "aboutPage"][0] 
   contactInquiryDisclaimer
 }`;
 
-/** Singleton Work page copy (Studio: Work page, document id `workPage`). */
-export const workPageQuery = `*[_type == "workPage" && _id == "workPage"][0] {
+/** Singleton Home page copy (Studio: Home page, document id `homePage`). */
+export const homePageQuery = `*[_type == "homePage" && _id == "homePage"][0] {
   title,
   showTitle,
   subheading,
@@ -28,6 +28,7 @@ export const projectFieldsProjection = `
   longDescription,
   kind,
   order,
+  showOnHome,
   coverImage,
   spaceBetween,
   pairGap,

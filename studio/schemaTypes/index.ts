@@ -1,5 +1,5 @@
 import { aboutPage } from './aboutPage';
+import { homePage } from './homePage';
 import { project } from './project';
-import { workPage } from './workPage';
 
-export const schemaTypes = [aboutPage, workPage, project];
+export const schemaTypes = [aboutPage, homePage, project];

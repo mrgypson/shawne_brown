@@ -1,4 +1,4 @@
-export interface WorkPageContent {
+export interface HomePageContent {
 	title?: string;
 	showTitle: boolean;
 	subheading?: string;

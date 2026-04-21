@@ -1,12 +1,12 @@
 import { aboutContent } from '../data/mock/about';
+import { homePageContent } from '../data/mock/homePage';
 import { mockProjects } from '../data/mock/projects';
-import { workPageContent } from '../data/mock/workPage';
 import type { AboutContent } from '../types/about';
+import type { HomePageContent } from '../types/homePage';
 import type { Project } from '../types/project';
-import type { WorkPageContent } from '../types/workPage';
 import { fetchAboutFromSanity } from './sanity/fetchAbout';
+import { fetchHomePageFromSanity } from './sanity/fetchHomePage';
 import { fetchProjectBySlugFromSanity, fetchProjectsFromSanity } from './sanity/fetchProjects';
-import { fetchWorkPageFromSanity } from './sanity/fetchWorkPage';
 
 export type ContentFetchOptions = {
 	/** When true, uses preview API perspective (drafts). Requires `SANITY_READ_TOKEN`. */
@@ -58,17 +58,17 @@ export async function getAbout(options?: ContentFetchOptions): Promise<AboutCont
 }
 
 /**
- * Work page singleton (title + subheading, each optional with show/hide toggles).
+ * Home page singleton (title + subheading, each optional with show/hide toggles).
  * Uses Sanity when configured; set `SANITY_USE_MOCK=true` to force mock data.
  */
-export async function getWorkPage(options?: ContentFetchOptions): Promise<WorkPageContent> {
+export async function getHomePage(options?: ContentFetchOptions): Promise<HomePageContent> {
 	if (import.meta.env.SANITY_USE_MOCK === 'true') {
-		return workPageContent;
+		return homePageContent;
 	}
 	try {
-		return await fetchWorkPageFromSanity({ preview: options?.preview });
+		return await fetchHomePageFromSanity({ preview: options?.preview });
 	} catch (err) {
-		console.warn('[content] Sanity fetch failed; using mock work page.', err);
-		return workPageContent;
+		console.warn('[content] Sanity fetch failed; using mock home page.', err);
+		return homePageContent;
 	}
 }

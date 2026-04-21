@@ -1,34 +1,56 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../data/mock/site';
-import { getProjects } from '../lib/content';
+import { getHomePage, getProjects } from '../lib/content';
 
 /** Server-rendered so Presentation + `/api/preview/enable` can swap in draft content without a separate preview build. */
 export const prerender = false;
 
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
+const [projects, homePage] = await Promise.all([
+	getProjects({ preview: useDraftPerspective }),
+	getHomePage({ preview: useDraftPerspective }),
+]);
+
+const homeProjects = projects.filter((p) => p.showOnHome !== false);
+
+const headingTitle = homePage.title?.trim() ?? '';
+const headingSubheading = homePage.subheading?.trim() ?? '';
+const showTitle = homePage.showTitle && Boolean(headingTitle);
+const showSubheading = homePage.showSubheading && Boolean(headingSubheading);
+const showHeader = showTitle || showSubheading;
+
 const title = siteConfig.siteTitle;
 const description = siteConfig.defaultDescription;
-const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
-const projects = await getProjects({ preview: useDraftPerspective });
 ---
 
 <BaseLayout title={title} description={description}>
-	<section class="home-projects" aria-labelledby="home-heading">
-		<h1 id="home-heading" class="visually-hidden">{title}</h1>
-		<ul class="home-project-list">
-			{
-				projects.map((project) => (
-					<li>
-						<a
-							href={`/work/${project.slug}`}
-							class="home-project-link"
-							data-testid={`home-project-${project.slug}`}
-						>
-							{project.title}
-						</a>
-					</li>
-				))
-			}
-		</ul>
-	</section>
+	{showHeader && (
+		<header class="prose-narrow">
+			{showTitle && <h1 class="page-title">{headingTitle}</h1>}
+			{showSubheading && <p class="page-lede">{headingSubheading}</p>}
+		</header>
+	)}
+	<div class="work-grid">
+		{
+			homeProjects.map((project) => (
+				<a class="work-item" href={`/work/${project.slug}`} data-testid={`home-project-${project.slug}`}>
+					<figure class="work-item-figure">
+						<img
+							src={project.coverImage.src}
+							alt={project.coverImage.alt}
+							loading="lazy"
+							decoding="async"
+							sizes="(min-width: 40rem) 50vw, 100vw"
+							width="960"
+							height="720"
+						/>
+						<div class="work-item-overlay">
+							<h2 class="work-item-title">{project.title}</h2>
+						</div>
+					</figure>
+				</a>
+			))
+		}
+	</div>
 </BaseLayout>

@@ -24,8 +24,8 @@ The **website** pulls its text and images from **Studio** (powered by Sanity). W
 2. Sign in with the email that was invited.
 3. After sign-in you land on the **Content** list with three main areas:
    - **About & Contact** — the About page and where inquiry emails are delivered.
-   - **Work page** — the heading and subheading that appear at the top of the Work index.
-   - **Project** — each series / body of work that appears under **Work**.
+   - **Home page** — the optional heading and subheading above the portfolio grid on the home page.
+   - **Project** — each series / body of work. Every project is always listed in the **Work** dropdown in the site header; individual projects can be toggled on or off the home page grid.
 
 ---
 
@@ -54,26 +54,26 @@ Under **Contact** on the same document:
 
 ---
 
-## Updating the Work page
+## Updating the Home page
 
-The Work page has a short header above the grid of projects. Both pieces of copy are optional and can be hidden without deleting them.
+The home page shows your portfolio grid. An optional short header can sit above it; both pieces of copy are optional and can be hidden without deleting them.
 
-1. In Studio, click **Work page**.
+1. In Studio, click **Home page**.
 2. Edit any of:
-   - **Title** — the large heading at the top of the Work page. Leave blank to fall back to `Work`.
+   - **Title** — the large heading above the portfolio grid. Leave blank (or toggle off) to hide the heading.
    - **Show title** — toggle off to hide the heading entirely (keeps your text saved for later).
    - **Subheading** — the line of copy under the title.
    - **Show subheading** — toggle off to hide the subheading (keeps your text saved for later).
 3. Click **Publish**.
-4. Open the site and reload — if both toggles are off, the entire header row above the projects is removed.
+4. Open the site and reload — if both toggles are off (or both fields are empty), the grid shows with no header.
 
-> Tip: the projects themselves are still edited under **Project** — this page only controls the header text above the grid.
+> Tip: the projects themselves are still edited under **Project** — this page only controls the header text above the grid, not which projects appear there. For that, see the **Show on home page** toggle on each project.
 
 ---
 
 ## Adding or editing a Project (a body of work)
 
-Every project on the **Work** page is one document here.
+Every project is one document here. All projects appear in the **Work** dropdown menu in the site header regardless of their settings. Projects can also be featured on the home page grid with a per-project toggle.
 
 ### Create a new project
 
@@ -81,7 +81,8 @@ Every project on the **Work** page is one document here.
 2. Fill in:
    - **Title** — shown as the project heading.
    - **Slug** — click **Generate** to auto-fill from the title. This is the URL piece (e.g. `/work/your-slug`). Changing it later will break existing links.
-   - **Sort order** — a number. Lower numbers appear **first** on the Work page. Leave `0` to use defaults.
+   - **Show on home page** — toggle on to include this project in the home page grid (cover image + title). Toggle off to keep the project live and reachable from the Work dropdown but hidden from the home grid. Default: on.
+   - **Sort order** — a number. Lower numbers appear **first** on the home page grid and in the Work dropdown. Leave `0` to use defaults.
    - **Year / span** — e.g. `2021` or `2018–2020`.
    - **Project type**:
      - **Standard** — normal project.

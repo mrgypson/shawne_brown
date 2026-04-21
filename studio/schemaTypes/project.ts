@@ -80,10 +80,18 @@ export const project = defineType({
 			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
+			name: 'showOnHome',
+			title: 'Show on home page',
+			type: 'boolean',
+			description:
+				'When on, this project appears in the home page grid. Still accessible from the Work dropdown in the header either way.',
+			initialValue: true,
+		}),
+		defineField({
 			name: 'order',
 			title: 'Sort order',
 			type: 'number',
-			description: 'Lower numbers appear first on the Work page.',
+			description: 'Lower numbers appear first on the home page grid and in the header dropdown.',
 			initialValue: 0,
 		}),
 		defineField({

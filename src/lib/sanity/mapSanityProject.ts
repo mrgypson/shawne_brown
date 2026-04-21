@@ -83,6 +83,7 @@ export type SanityProjectDoc = {
 	shortDescription: string;
 	longDescription?: string | null;
 	kind?: string | null;
+	showOnHome?: boolean | null;
 	coverImage?: Parameters<typeof urlForImage>[0];
 	spaceBetween?: number | null;
 	pairGap?: number | null;
@@ -154,6 +155,7 @@ export function mapSanityProject(doc: SanityProjectDoc): Project {
 		yearLabel: doc.yearLabel,
 		shortDescription: doc.shortDescription,
 		longDescription: doc.longDescription?.trim() || undefined,
+		showOnHome: doc.showOnHome ?? true,
 		coverImage,
 		gallerySpaceBetween: toSpacingStep(doc.spaceBetween, DEFAULT_SPACE_BETWEEN),
 		galleryPairGap: toSpacingStep(doc.pairGap, DEFAULT_PAIR_GAP),

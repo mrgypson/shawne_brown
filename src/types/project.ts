@@ -58,6 +58,8 @@ interface ProjectBase {
 	longDescription?: string;
 	coverImage: CoverImage;
 	kind: ProjectKind;
+	/** When true (default), this project appears in the home page grid. Always listed in the Work dropdown. */
+	showOnHome?: boolean;
 	/** Gallery-wide vertical gap between images (and between pair rows). */
 	gallerySpaceBetween?: GallerySpacingStep;
 	/** Gap inside every pair: desktop column gap + mobile stack gap. */

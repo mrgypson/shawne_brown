@@ -1,17 +1,17 @@
-import type { WorkPageContent } from '../../types/workPage';
+import type { HomePageContent } from '../../types/homePage';
 
-export type SanityWorkPageDoc = {
+export type SanityHomePageDoc = {
 	title?: string | null;
 	showTitle?: boolean | null;
 	subheading?: string | null;
 	showSubheading?: boolean | null;
 };
 
-export function mapSanityWorkPage(doc: SanityWorkPageDoc | null): WorkPageContent {
+export function mapSanityHomePage(doc: SanityHomePageDoc | null): HomePageContent {
 	if (!doc) {
 		return { showTitle: true, showSubheading: true };
 	}
-	const out: WorkPageContent = {
+	const out: HomePageContent = {
 		showTitle: doc.showTitle ?? true,
 		showSubheading: doc.showSubheading ?? true,
 	};
