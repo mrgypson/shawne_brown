@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Playfair:ital,wght@0,300;1,300&family=Inter:wght@400;500&display=swap');
 
 :root {
 	--color-bg: #fafaf9;
@@ -397,10 +397,8 @@ h3 {
 .work-item {
 	display: block;
 	text-decoration: none;
-}
-
-.work-item:hover .work-item-title {
-	opacity: 0.72;
+	--work-item-fade-duration: 1200ms;
+	--work-item-fade-easing: ease;
 }
 
 .work-item-figure {
@@ -409,6 +407,9 @@ h3 {
 	aspect-ratio: 4 / 3;
 	background: #eee;
 	overflow: hidden;
+	outline: 1px solid transparent;
+	outline-offset: 0;
+	transition: outline-color 0s linear var(--work-item-fade-duration);
 }
 
 .work-item-figure img {
@@ -416,6 +417,27 @@ h3 {
 	height: 100%;
 	object-fit: cover;
 	display: block;
+}
+
+.work-item-figure::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: #fff;
+	opacity: 0;
+	pointer-events: none;
+	z-index: 1;
+	transition: opacity var(--work-item-fade-duration) var(--work-item-fade-easing);
+}
+
+.work-item:hover .work-item-figure::after,
+.work-item:focus-visible .work-item-figure::after {
+	opacity: 1;
+}
+
+.work-item:hover .work-item-figure,
+.work-item:focus-visible .work-item-figure {
+	outline-color: #fff;
 }
 
 .work-item-overlay {
@@ -426,6 +448,17 @@ h3 {
 	justify-content: center;
 	padding: var(--space-3);
 	pointer-events: none;
+	z-index: 2;
+}
+
+.work-item:active .work-item-figure::after {
+	opacity: 1;
+	transition-duration: 0s;
+}
+
+.work-item:active .work-item-figure {
+	outline-color: #9a9a9a;
+	transition-delay: 0s;
 }
 
 .work-item-meta {
@@ -433,14 +466,34 @@ h3 {
 }
 
 .work-item-title {
-	font-family: var(--font-display);
+	font-family: 'Playfair', var(--font-display);
 	font-size: clamp(2rem, 4.5vw, 3.25rem);
 	line-height: 1.05;
 	margin: 0;
-	font-weight: 400;
+	font-weight: 300;
 	color: #fff;
 	text-align: center;
 	letter-spacing: -0.01em;
+	transition: color var(--work-item-fade-duration) var(--work-item-fade-easing);
+}
+
+.work-item:hover .work-item-title,
+.work-item:focus-visible .work-item-title {
+	color: #000;
+}
+
+.work-item:active .work-item-title {
+	color: #000;
+	transition-duration: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.work-item-figure,
+	.work-item-figure::after,
+	.work-item-title {
+		transition-duration: 0s !important;
+		transition-delay: 0s !important;
+	}
 }
 
 .work-item-year {
@@ -486,6 +539,64 @@ h3 {
 
 .gallery-figure {
 	margin: 0;
+}
+
+/* Project page reveal: fade each figure in/out around viewport center, with a
+ * gentle scroll-snap pause when a figure (or pair) is centered. */
+html:has(.project-gallery) {
+	scroll-snap-type: y proximity;
+}
+
+.project-gallery > .gallery-figure,
+.project-gallery > .gallery-pair {
+	scroll-snap-align: center;
+	scroll-snap-stop: normal;
+}
+
+/* Preferred path: CSS scroll-driven animations drive opacity from the
+ * figure's own position in the viewport. 0% = just entering (bottom),
+ * ~40-60% = centered, 100% = fully exited (top). */
+@supports (animation-timeline: view()) {
+	.project-gallery .gallery-figure {
+		animation: gallery-figure-fade linear both;
+		animation-timeline: view(block);
+		animation-range: entry 0% exit 100%;
+	}
+
+	@keyframes gallery-figure-fade {
+		0% {
+			opacity: 0;
+		}
+		40%,
+		60% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+}
+
+/* Fallback for browsers without scroll-driven animations: fade in on enter. */
+@supports not (animation-timeline: view()) {
+	.project-gallery .gallery-figure {
+		opacity: 0;
+		transition: opacity 600ms ease;
+	}
+	.project-gallery .gallery-figure.is-revealed {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html:has(.project-gallery) {
+		scroll-snap-type: none;
+	}
+	.project-gallery .gallery-figure {
+		animation: none;
+		opacity: 1;
+		transition: none;
+	}
 }
 
 .gallery-figure__media[data-inset-left='0'] {

@@ -164,6 +164,8 @@ export const project = defineType({
 			name: 'images',
 			title: 'Gallery',
 			type: 'array',
+			description:
+				'Tip: you can drag and drop multiple image files onto this field (or select many at once in the file picker) to add several gallery items at once.',
 			of: [
 				defineArrayMember({
 					type: 'object',
@@ -179,7 +181,6 @@ export const project = defineType({
 									name: 'alt',
 									type: 'string',
 									title: 'Alternative text',
-									validation: (Rule) => Rule.required(),
 								}),
 							],
 							validation: (Rule) => Rule.required(),
