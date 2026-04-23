@@ -553,6 +553,15 @@ html:has(.project-gallery) {
 	scroll-snap-stop: normal;
 }
 
+/* The first row must not snap — otherwise proximity snapping pulls the
+ * viewport down onto it and the user can't scroll up to reveal the site
+ * header and project title (most visible on mobile where the header is
+ * already within the snap-pull zone). */
+.project-gallery > .gallery-figure:first-child,
+.project-gallery > .gallery-pair:first-child {
+	scroll-snap-align: none;
+}
+
 /* Preferred path: CSS scroll-driven animations drive opacity from the
  * figure's own position in the viewport. 0% = just entering (bottom),
  * ~40-60% = centered, 100% = fully exited (top). */
