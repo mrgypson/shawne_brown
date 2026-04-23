@@ -562,26 +562,46 @@ html:has(.project-gallery) {
 	scroll-snap-align: none;
 }
 
-/* Preferred path: CSS scroll-driven animations drive opacity from the
- * figure's own position in the viewport. 0% = just entering (bottom),
+/* Figure opacity is the product of two independent signals so scroll-driven
+ * fade and linger-to-focus never fight each other in the cascade. */
+@property --scroll-opacity {
+	syntax: '<number>';
+	inherits: false;
+	initial-value: 1;
+}
+
+@property --focus-opacity {
+	syntax: '<number>';
+	inherits: false;
+	initial-value: 1;
+}
+
+.project-gallery {
+	--gallery-linger-duration: 1500ms;
+}
+
+/* Preferred path: CSS scroll-driven animations drive --scroll-opacity from
+ * the figure's own position in the viewport. 0% = just entering (bottom),
  * ~40-60% = centered, 100% = fully exited (top). */
 @supports (animation-timeline: view()) {
 	.project-gallery .gallery-figure {
+		opacity: calc(var(--scroll-opacity) * var(--focus-opacity));
 		animation: gallery-figure-fade linear both;
 		animation-timeline: view(block);
 		animation-range: entry 0% exit 100%;
+		transition: --focus-opacity var(--gallery-linger-duration) ease;
 	}
 
 	@keyframes gallery-figure-fade {
 		0% {
-			opacity: 0;
+			--scroll-opacity: 0;
 		}
 		40%,
 		60% {
-			opacity: 1;
+			--scroll-opacity: 1;
 		}
 		100% {
-			opacity: 0;
+			--scroll-opacity: 0;
 		}
 	}
 }
@@ -595,6 +615,17 @@ html:has(.project-gallery) {
 	.project-gallery .gallery-figure.is-revealed {
 		opacity: 1;
 	}
+	.project-gallery.is-idle .gallery-figure.is-revealed:not(.is-focused) {
+		opacity: 0;
+		transition-duration: var(--gallery-linger-duration);
+	}
+}
+
+/* Linger-to-focus: while the user is idle, every figure except the centered
+ * one fades away. JS toggles `.is-idle` on the gallery and `.is-focused` on
+ * the centered figure (or both siblings of a pair). */
+.project-gallery.is-idle .gallery-figure:not(.is-focused) {
+	--focus-opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -605,6 +636,10 @@ html:has(.project-gallery) {
 		animation: none;
 		opacity: 1;
 		transition: none;
+	}
+	.project-gallery.is-idle .gallery-figure:not(.is-focused) {
+		--focus-opacity: 1;
+		opacity: 1;
 	}
 }
 

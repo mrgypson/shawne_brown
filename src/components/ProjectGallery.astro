@@ -82,37 +82,104 @@ for (let i = 0; i < images.length; i += 1) {
 </div>
 
 <script>
-	// Fallback fade-in for browsers without CSS scroll-driven animations.
-	// When `animation-timeline: view()` is supported, CSS drives the effect
-	// and this observer is a no-op.
 	const supportsViewTimeline =
 		typeof CSS !== 'undefined' && CSS.supports('animation-timeline: view()');
+	const prefersReducedMotion = window.matchMedia(
+		'(prefers-reduced-motion: reduce)',
+	).matches;
 
-	if (!supportsViewTimeline) {
-		const figures = document.querySelectorAll<HTMLElement>(
-			'.project-gallery .gallery-figure',
+	const IDLE_DELAY_MS = 900;
+
+	document.querySelectorAll<HTMLElement>('.project-gallery').forEach((gallery) => {
+		const figures = Array.from(
+			gallery.querySelectorAll<HTMLElement>('.gallery-figure'),
 		);
+		if (figures.length === 0) return;
 
-		const prefersReducedMotion = window.matchMedia(
-			'(prefers-reduced-motion: reduce)',
-		).matches;
-
-		if (prefersReducedMotion) {
-			figures.forEach((figure) => figure.classList.add('is-revealed'));
-		} else {
-			const observer = new IntersectionObserver(
-				(entries) => {
-					entries.forEach((entry) => {
-						if (entry.isIntersecting) {
-							entry.target.classList.add('is-revealed');
-							observer.unobserve(entry.target);
-						}
-					});
-				},
-				{ rootMargin: '0px 0px -10% 0px', threshold: 0.1 },
-			);
-
-			figures.forEach((figure) => observer.observe(figure));
+		// Browsers without view-timeline support: one-shot fade-in via IO.
+		if (!supportsViewTimeline) {
+			if (prefersReducedMotion) {
+				figures.forEach((f) => f.classList.add('is-revealed'));
+			} else {
+				const revealObserver = new IntersectionObserver(
+					(entries) => {
+						entries.forEach((entry) => {
+							if (entry.isIntersecting) {
+								entry.target.classList.add('is-revealed');
+								revealObserver.unobserve(entry.target);
+							}
+						});
+					},
+					{ rootMargin: '0px 0px -10% 0px', threshold: 0.1 },
+				);
+				figures.forEach((f) => revealObserver.observe(f));
+			}
 		}
-	}
+
+		// Reduced-motion users opt out of the linger-to-focus effect.
+		if (prefersReducedMotion) return;
+
+		let idleTimer: ReturnType<typeof setTimeout> | undefined;
+
+		const clearFocus = () => {
+			figures.forEach((f) => f.classList.remove('is-focused'));
+		};
+
+		const findCenteredFigure = (): HTMLElement | null => {
+			const viewportCenter = window.innerHeight / 2;
+			let closest: HTMLElement | null = null;
+			let minDist = Infinity;
+			for (const fig of figures) {
+				const rect = fig.getBoundingClientRect();
+				if (rect.bottom < 0 || rect.top > window.innerHeight) continue;
+				const center = rect.top + rect.height / 2;
+				const dist = Math.abs(center - viewportCenter);
+				if (dist < minDist) {
+					minDist = dist;
+					closest = fig;
+				}
+			}
+			return closest;
+		};
+
+		const enterIdle = () => {
+			const focused = findCenteredFigure();
+			if (!focused) return;
+			clearFocus();
+			// When the focused figure is part of a pair, keep both siblings
+			// lit so the composed row reads as a single subject.
+			const pair =
+				focused.classList.contains('gallery-figure--paired') &&
+				focused.parentElement?.classList.contains('gallery-pair')
+					? focused.parentElement
+					: null;
+			if (pair) {
+				pair
+					.querySelectorAll<HTMLElement>('.gallery-figure')
+					.forEach((f) => f.classList.add('is-focused'));
+			} else {
+				focused.classList.add('is-focused');
+			}
+			gallery.classList.add('is-idle');
+		};
+
+		const exitIdle = () => {
+			if (idleTimer) {
+				clearTimeout(idleTimer);
+				idleTimer = undefined;
+			}
+			gallery.classList.remove('is-idle');
+			clearFocus();
+		};
+
+		const scheduleIdle = () => {
+			exitIdle();
+			idleTimer = setTimeout(enterIdle, IDLE_DELAY_MS);
+		};
+
+		window.addEventListener('scroll', scheduleIdle, { passive: true });
+		// Cancel pending idle if the user navigates away via tab/blur so we
+		// don't lock in a stale focused state when they return.
+		window.addEventListener('blur', exitIdle);
+	});
 </script>
