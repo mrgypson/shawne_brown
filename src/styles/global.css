@@ -26,6 +26,8 @@
 	--gallery-width-small: 40%;
 	--gallery-width-medium: 70%;
 	--gallery-width-large: 100%;
+	/* Cap very tall images so a single figure fits the viewport (pair columns share the same cap). */
+	--gallery-img-max-height: min(90dvh, 100svh);
 	--line-tight: 1.25;
 	--line-body: 1.6;
 }
@@ -387,13 +389,6 @@ h3 {
 	gap: var(--space-6);
 }
 
-@media (min-width: 40rem) {
-	.work-grid {
-		grid-template-columns: repeat(2, 1fr);
-		gap: var(--space-5) var(--space-4);
-	}
-}
-
 .work-item {
 	display: block;
 	text-decoration: none;
@@ -511,13 +506,12 @@ h3 {
 
 .project-gallery--two-up {
 	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	align-items: start;
 }
 
-@media (min-width: 52rem) {
-	.project-gallery--two-up {
-		grid-template-columns: repeat(2, 1fr);
-		align-items: start;
-	}
+.project-gallery--two-up > :is(.gallery-figure, .gallery-pair) {
+	min-width: 0;
 }
 
 /* Gallery-wide vertical rhythm (Sanity: spaceBetween 0–4). */
@@ -643,6 +637,24 @@ html:has(.project-gallery) {
 	}
 }
 
+/* Flex keeps width-% layout on the box while the img may shrink to satisfy max-height. */
+.gallery-figure__media {
+	display: flex;
+	flex-direction: column;
+}
+
+.gallery-figure[data-align='left'] .gallery-figure__media {
+	align-items: flex-start;
+}
+
+.gallery-figure[data-align='center'] .gallery-figure__media {
+	align-items: center;
+}
+
+.gallery-figure[data-align='right'] .gallery-figure__media {
+	align-items: flex-end;
+}
+
 .gallery-figure__media[data-inset-left='0'] {
 	padding-left: var(--gallery-step-0);
 }
@@ -676,8 +688,13 @@ html:has(.project-gallery) {
 }
 
 .gallery-figure__media img {
-	width: 100%;
 	display: block;
+	max-width: 100%;
+	width: auto;
+	height: auto;
+	max-height: var(--gallery-img-max-height);
+	min-width: 0;
+	object-fit: contain;
 	background: #eee;
 }
 
@@ -692,7 +709,7 @@ html:has(.project-gallery) {
 	width: var(--gallery-width-large);
 }
 
-/* Alignment applies when width is small or large (medium and full fill the row). */
+/* Alignment positions the media block when width is below full bleed (not used for Full). */
 .gallery-figure[data-width='small'][data-align='left'] .gallery-figure__media,
 .gallery-figure[data-width='medium'][data-align='left'] .gallery-figure__media,
 .gallery-figure[data-width='large'][data-align='left'] .gallery-figure__media {
@@ -717,17 +734,44 @@ html:has(.project-gallery) {
 	max-width: none;
 }
 
-/* Paired row: two figures side-by-side on desktop, stacked on mobile. */
+/* Paired row: two figures side-by-side at all breakpoints (ratio from CMS). */
 .gallery-pair {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	align-items: start;
 	gap: var(--gallery-step-2);
+}
+
+.gallery-pair[data-ratio='50/50'] {
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.gallery-pair[data-ratio='60/40'] {
+	grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
+}
+
+.gallery-pair[data-ratio='40/60'] {
+	grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+}
+
+.gallery-pair[data-align-v='top'] {
+	align-items: start;
+}
+
+.gallery-pair[data-align-v='center'] {
+	align-items: center;
+}
+
+.gallery-pair[data-align-v='bottom'] {
+	align-items: end;
 }
 
 .gallery-pair > .gallery-figure--paired {
 	margin: 0;
+	min-width: 0;
 }
 
-/* Gap inside the pair (Sanity: pairGap 0–4) — drives desktop column gap and mobile row gap. */
+/* Gap inside the pair (Sanity: pairGap 0–4) — horizontal gap between the two columns. */
 .gallery-pair[data-pair-gap='0'] {
 	gap: var(--gallery-step-0);
 }
@@ -744,33 +788,6 @@ html:has(.project-gallery) {
 	gap: var(--gallery-step-4);
 }
 
-@media (min-width: 52rem) {
-	.gallery-pair {
-		grid-template-columns: 1fr 1fr;
-		align-items: start;
-	}
-
-	.gallery-pair[data-ratio='50/50'] {
-		grid-template-columns: 1fr 1fr;
-	}
-	.gallery-pair[data-ratio='60/40'] {
-		grid-template-columns: 6fr 4fr;
-	}
-	.gallery-pair[data-ratio='40/60'] {
-		grid-template-columns: 4fr 6fr;
-	}
-
-	.gallery-pair[data-align-v='top'] {
-		align-items: start;
-	}
-	.gallery-pair[data-align-v='center'] {
-		align-items: center;
-	}
-	.gallery-pair[data-align-v='bottom'] {
-		align-items: end;
-	}
-}
-
 /* Paired items should fill their column; ignore `full` bleed and width presets inside a pair. */
 .gallery-pair .gallery-figure--paired .gallery-figure__media {
 	width: 100%;
@@ -781,6 +798,10 @@ html:has(.project-gallery) {
 .gallery-pair .gallery-figure--paired[data-width='full'] .gallery-figure__media {
 	margin-left: 0;
 	padding-inline: 0;
+}
+
+.gallery-pair .gallery-caption {
+	max-width: 100%;
 }
 
 .gallery-caption {
