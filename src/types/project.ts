@@ -20,7 +20,7 @@ export type GalleryAlign = 'left' | 'center' | 'right';
 /** Relative column widths for a pair on desktop. */
 export type GalleryPairRatio = '50/50' | '60/40' | '40/60';
 
-/** Vertical alignment of two paired images when their heights differ (desktop only). */
+/** Vertical alignment of two paired images when their heights differ. */
 export type GalleryPairAlignVertical = 'top' | 'center' | 'bottom';
 
 /**
@@ -40,11 +40,11 @@ export interface GalleryImage {
 	width?: GalleryWidth;
 	/** Horizontal alignment; only applied when `width` is `small` or `large`. */
 	align?: GalleryAlign;
-	/** When true, this image pairs with the next one into a 2-up row on desktop. */
+	/** When true, this image pairs with the next one into a two-column row at all breakpoints. */
 	pairWithNext?: boolean;
-	/** Relative widths of the pair on desktop (only meaningful when `pairWithNext`). */
+	/** Relative widths of the two columns when `pairWithNext` (same on mobile and desktop). */
 	pairRatio?: GalleryPairRatio;
-	/** Vertical alignment within the pair row on desktop. */
+	/** Vertical alignment within the pair row when heights differ. */
 	pairAlignVertical?: GalleryPairAlignVertical;
 }
 
@@ -62,7 +62,7 @@ interface ProjectBase {
 	showOnHome?: boolean;
 	/** Gallery-wide vertical gap between images (and between pair rows). */
 	gallerySpaceBetween?: GallerySpacingStep;
-	/** Gap inside every pair: desktop column gap + mobile stack gap. */
+	/** Gap inside every pair: horizontal space between the two columns. */
 	galleryPairGap?: GallerySpacingStep;
 }
 

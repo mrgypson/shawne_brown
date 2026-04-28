@@ -155,7 +155,7 @@ export const project = defineType({
 			title: 'Gap inside image pairs',
 			type: 'number',
 			description:
-				'Gap between the two images of a pair. Used as the column gap on desktop and the stack gap on mobile.',
+				'Gap between the two images of a pair (horizontal space between the two columns at every screen size).',
 			options: { list: [...gallerySpacingList] },
 			initialValue: 2,
 			validation: (Rule) => Rule.min(0).max(4).integer(),
@@ -211,7 +211,7 @@ export const project = defineType({
 							title: 'Alignment',
 							type: 'string',
 							description:
-								'Horizontal alignment when width is small or large. Ignored when width is medium or full.',
+								'Horizontal alignment for Small, Medium, and Large widths. Ignored for Full (edge-to-edge).',
 							options: {
 								list: [
 									{ title: 'Left', value: 'left' },
@@ -247,14 +247,14 @@ export const project = defineType({
 							title: 'Pair with next image',
 							type: 'boolean',
 							description:
-								'Place this image and the next one side-by-side on desktop. They stack on mobile.',
+								'Place this image and the next one side-by-side in one row (same layout on mobile and desktop).',
 							initialValue: false,
 						}),
 						defineField({
 							name: 'pairRatio',
 							title: 'Pair ratio',
 							type: 'string',
-							description: 'Relative widths of the two images on desktop.',
+							description: 'Relative widths of the two columns (applies on all screen sizes).',
 							options: {
 								list: [
 									{ title: '50 / 50 (equal)', value: '50/50' },
@@ -271,7 +271,7 @@ export const project = defineType({
 							title: 'Pair vertical alignment',
 							type: 'string',
 							description:
-								'How the two images align vertically when they have different heights (desktop only).',
+								'How the two images align vertically when they have different heights.',
 							options: {
 								list: [
 									{ title: 'Top', value: 'top' },
