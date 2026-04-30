@@ -39,15 +39,17 @@ function mapContact(raw: SanityAboutDoc['contact']): AboutContact {
 }
 
 export function mapSanityAbout(doc: SanityAboutDoc): AboutContent {
-	if (!doc.bio?.trim() || !doc.statement?.trim()) {
-		throw new Error('aboutPage requires bio and statement');
+	if (!doc.bio?.trim()) {
+		throw new Error('aboutPage.bio is required');
 	}
 	const out: AboutContent = {
 		bio: doc.bio.trim(),
-		statement: doc.statement.trim(),
 		exhibitions: mapExhibitions(doc.exhibitions),
 		contact: mapContact(doc.contact),
 	};
+	if (doc.statement?.trim()) {
+		out.statement = doc.statement.trim();
+	}
 	if (doc.publicationsNote?.trim()) {
 		out.publicationsNote = doc.publicationsNote.trim();
 	}

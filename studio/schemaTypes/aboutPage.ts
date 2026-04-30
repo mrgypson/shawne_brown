@@ -17,7 +17,6 @@ export const aboutPage = defineType({
 			title: 'Artist statement',
 			type: 'text',
 			rows: 8,
-			validation: (Rule) => Rule.required(),
 		}),
 		defineField({
 			name: 'exhibitions',

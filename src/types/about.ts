@@ -12,7 +12,7 @@ export interface AboutContact {
 
 export interface AboutContent {
 	bio: string;
-	statement: string;
+	statement?: string;
 	exhibitions: ExhibitionEntry[];
 	publicationsNote?: string;
 	contact: AboutContact;
