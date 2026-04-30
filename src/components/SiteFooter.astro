@@ -14,32 +14,54 @@ const siteSettings = await getSiteSettings({ preview: useDraftPerspective });
 const ig = instagramHref(contact.instagram);
 const web = websiteHref(contact.website);
 const hasSocial = Boolean(ig || web);
+const hasLogo = Boolean(siteSettings.logoUrl);
 ---
 
 <footer class="site-footer" id="site-footer" data-testid="site-footer">
 	<div class="site-footer-inner">
-		{
-			hasSocial ? (
-				<ul class="site-footer-social" aria-label="Social and web">
-					{ig && contact.instagram && (
-						<li>
-							<a href={ig} rel="noopener noreferrer" target="_blank" data-testid="site-footer-instagram">
-								Instagram
-							</a>
-						</li>
-					)}
-					{web && (
-						<li>
-							<a href={web} rel="noopener noreferrer" target="_blank" data-testid="site-footer-website">
-								Website
-							</a>
-						</li>
-					)}
-				</ul>
-			) : (
-				<p class="site-footer-meta">{siteSettings.siteName || siteConfig.siteName}</p>
-			)
-		}
-		{contact.location && <p class="site-footer-meta">{contact.location}</p>}
+		<div class="site-footer-left">
+			{
+				hasSocial ? (
+					<ul class="site-footer-social" aria-label="Social and web">
+						{ig && contact.instagram && (
+							<li>
+								<a href={ig} rel="noopener noreferrer" target="_blank" data-testid="site-footer-instagram">
+									Instagram
+								</a>
+							</li>
+						)}
+						{web && (
+							<li>
+								<a href={web} rel="noopener noreferrer" target="_blank" data-testid="site-footer-website">
+									Website
+								</a>
+							</li>
+						)}
+					</ul>
+				) : (
+					<p class="site-footer-meta">{siteSettings.siteName || siteConfig.siteName}</p>
+				)
+			}
+		</div>
+		<div class="site-footer-center">
+			{
+				hasLogo ? (
+					<img
+						src={siteSettings.logoUrl}
+						alt={siteSettings.siteName || siteConfig.siteName}
+						class="site-footer-logo"
+						id="site-footer-logo-image"
+						data-testid="site-footer-logo-image"
+						loading="lazy"
+						decoding="async"
+					/>
+				) : (
+					<p class="site-footer-meta">{siteSettings.siteName || siteConfig.siteName}</p>
+				)
+			}
+		</div>
+		<div class="site-footer-right">
+			{contact.location && <p class="site-footer-meta">{contact.location}</p>}
+		</div>
 	</div>
 </footer>

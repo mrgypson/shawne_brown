@@ -1011,8 +1011,32 @@ html:has(.project-gallery).project-gallery-snap-active {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--space-3) var(--space-4);
-	align-items: baseline;
+	align-items: center;
 	justify-content: space-between;
+}
+
+.site-footer-left,
+.site-footer-center,
+.site-footer-right {
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+.site-footer-center {
+	display: flex;
+	justify-content: center;
+}
+
+.site-footer-right {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.site-footer-logo {
+	display: block;
+	max-height: 40px;
+	width: auto;
+	max-width: min(220px, 100%);
 }
 
 .site-footer-social {
@@ -1030,4 +1054,19 @@ html:has(.project-gallery).project-gallery-snap-active {
 
 .site-footer-meta {
 	margin: 0;
+}
+
+@media (max-width: 720px) {
+	.site-footer-inner {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.site-footer-left,
+	.site-footer-center,
+	.site-footer-right {
+		flex: none;
+		width: 100%;
+		justify-content: flex-start;
+	}
 }
