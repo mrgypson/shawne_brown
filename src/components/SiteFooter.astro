@@ -2,12 +2,15 @@
 import type { AboutContact } from '../types/about';
 import { instagramHref, websiteHref } from '../lib/contact/socialUrls';
 import { siteConfig } from '../data/mock/site';
+import { getSiteSettings } from '../lib/content';
 
 interface Props {
 	contact: AboutContact;
 }
 
 const { contact } = Astro.props;
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
+const siteSettings = await getSiteSettings({ preview: useDraftPerspective });
 const ig = instagramHref(contact.instagram);
 const web = websiteHref(contact.website);
 const hasSocial = Boolean(ig || web);
@@ -34,7 +37,7 @@ const hasSocial = Boolean(ig || web);
 					)}
 				</ul>
 			) : (
-				<p class="site-footer-meta">{siteConfig.siteTitle}</p>
+				<p class="site-footer-meta">{siteSettings.siteName || siteConfig.siteName}</p>
 			)
 		}
 		{contact.location && <p class="site-footer-meta">{contact.location}</p>}

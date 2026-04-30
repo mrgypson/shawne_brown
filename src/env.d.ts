@@ -14,7 +14,7 @@ interface ImportMetaEnv {
 	readonly SANITY_USE_MOCK?: string;
 	/** Resend API key (server-only). Inquiry emails are sent to `aboutPage.contact.email` from Sanity. */
 	readonly RESEND_API_KEY?: string;
-	/** Verified sender, e.g. `Shawne Brown <mail@yourdomain.com>`. */
+	/** Verified sender, e.g. `Studio Team <mail@yourdomain.com>`. */
 	readonly RESEND_FROM_EMAIL?: string;
 }
 

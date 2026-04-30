@@ -5,7 +5,7 @@ import SeoHead from '../components/SeoHead.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import { siteConfig } from '../data/mock/site';
-import { getAbout } from '../lib/content';
+import { getAbout, getSiteSettings } from '../lib/content';
 
 interface Props {
 	title: string;
@@ -15,19 +15,25 @@ interface Props {
 
 const { title, description, ogImage } = Astro.props;
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
-const about = await getAbout({ preview: useDraftPerspective });
+const [about, siteSettings] = await Promise.all([
+	getAbout({ preview: useDraftPerspective }),
+	getSiteSettings({ preview: useDraftPerspective }),
+]);
 const sanityPreview = Boolean(Astro.locals.sanityPreview);
 const visualEditingEnabled =
 	sanityPreview || Astro.url.searchParams.has('sanity-preview-perspective');
 const pageTitle =
-	title.includes(siteConfig.siteTitle) ? title : `${title} — ${siteConfig.siteTitle}`;
+	title.includes(siteSettings.siteName) ? title : `${title} — ${siteSettings.siteName}`;
+const pageDescription = description || siteSettings.defaultDescription || siteConfig.defaultDescription;
+const pageOgImage = ogImage || siteSettings.defaultOgImageUrl;
+const faviconHref = siteSettings.faviconUrl || siteConfig.faviconUrl || '/favicon.svg';
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<SeoHead title={pageTitle} description={description} ogImage={ogImage} />
+		<link rel="icon" href={faviconHref} />
+		<SeoHead title={pageTitle} description={pageDescription} ogImage={pageOgImage} />
 	</head>
 	<body>
 		<a class="skip-link" href="#main-content">Skip to content</a>

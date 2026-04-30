@@ -77,7 +77,7 @@ export default function HelpGuide() {
 				<Stack space={6}>
 					<Stack space={3}>
 						<Heading as="h1" size={4}>
-							Editing the Shawne Brown site
+							Editing your photography site
 						</Heading>
 						<P>
 							A short reference for keeping content up to date. Day-to-day edits all happen
@@ -136,7 +136,7 @@ export default function HelpGuide() {
 								footer.
 							</Bullet>
 							<Bullet>
-								<Strong>Instagram</Strong> — your handle (e.g. <Code>@shawnebrown</Code>);
+								<Strong>Instagram</Strong> — your handle (e.g. <Code>@yourhandle</Code>);
 								appears on About and in the footer as a link.
 							</Bullet>
 							<Bullet>

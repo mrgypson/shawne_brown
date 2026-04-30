@@ -1,15 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../data/mock/site';
-import { getHomePage, getProjects } from '../lib/content';
+import { getHomePage, getProjects, getSiteSettings } from '../lib/content';
 
 /** Server-rendered so Presentation + `/api/preview/enable` can swap in draft content without a separate preview build. */
 export const prerender = false;
 
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
-const [projects, homePage] = await Promise.all([
+const [projects, homePage, siteSettings] = await Promise.all([
 	getProjects({ preview: useDraftPerspective }),
 	getHomePage({ preview: useDraftPerspective }),
+	getSiteSettings({ preview: useDraftPerspective }),
 ]);
 
 const homeProjects = projects.filter((p) => p.showOnHome !== false);
@@ -20,8 +21,8 @@ const showTitle = homePage.showTitle && Boolean(headingTitle);
 const showSubheading = homePage.showSubheading && Boolean(headingSubheading);
 const showHeader = showTitle || showSubheading;
 
-const title = siteConfig.siteTitle;
-const description = siteConfig.defaultDescription;
+const title = siteSettings.defaultTitle || siteSettings.siteName || siteConfig.siteName;
+const description = siteSettings.defaultDescription || siteConfig.defaultDescription;
 ---
 
 <BaseLayout title={title} description={description}>

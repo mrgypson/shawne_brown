@@ -1,12 +1,15 @@
 import { aboutContent } from '../data/mock/about';
+import { siteConfig } from '../data/mock/site';
 import { homePageContent } from '../data/mock/homePage';
 import { mockProjects } from '../data/mock/projects';
 import type { AboutContent } from '../types/about';
 import type { HomePageContent } from '../types/homePage';
 import type { Project } from '../types/project';
+import type { SiteSettings } from '../types/siteSettings';
 import { fetchAboutFromSanity } from './sanity/fetchAbout';
 import { fetchHomePageFromSanity } from './sanity/fetchHomePage';
 import { fetchProjectBySlugFromSanity, fetchProjectsFromSanity } from './sanity/fetchProjects';
+import { fetchSiteSettingsFromSanity } from './sanity/fetchSiteSettings';
 
 export type ContentFetchOptions = {
 	/** When true, uses preview API perspective (drafts). Requires `SANITY_READ_TOKEN`. */
@@ -70,5 +73,20 @@ export async function getHomePage(options?: ContentFetchOptions): Promise<HomePa
 	} catch (err) {
 		console.warn('[content] Sanity fetch failed; using mock home page.', err);
 		return homePageContent;
+	}
+}
+
+/**
+ * Site-level branding + SEO defaults. Uses Sanity when configured; set `SANITY_USE_MOCK=true` to force mock data.
+ */
+export async function getSiteSettings(options?: ContentFetchOptions): Promise<SiteSettings> {
+	if (import.meta.env.SANITY_USE_MOCK === 'true') {
+		return siteConfig;
+	}
+	try {
+		return await fetchSiteSettingsFromSanity({ preview: options?.preview });
+	} catch (err) {
+		console.warn('[content] Sanity fetch failed; using mock site settings.', err);
+		return siteConfig;
 	}
 }

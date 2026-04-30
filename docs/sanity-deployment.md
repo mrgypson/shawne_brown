@@ -52,7 +52,7 @@ Set in the host’s build environment (see [`.env.example`](../.env.example)).
 
 ### Hosted Studio (`*.sanity.studio`)
 
-`previewUrl.initial` and default `allowOrigins` are set in [`studio/sanity.config.ts`](../studio/sanity.config.ts) (production Astro origin + `https://*.vercel.app`). You **do not** need `studio/.env.production` unless you override for another host.
+`previewUrl.initial` and default `allowOrigins` are set in [`studio/sanity.config.ts`](../studio/sanity.config.ts) from environment variables. You only need `studio/.env.production` when setting deployment-specific values.
 
 1. From `studio/`, run **`npm run deploy`**. Optional: copy [`studio/.env.production.example`](../studio/.env.production.example) to **`studio/.env.production`** only if you set `SANITY_STUDIO_PREVIEW_URL` / `SANITY_STUDIO_ALLOW_ORIGINS` there (CI or multi-environment).
 2. Open **Presentation** on `*.sanity.studio`; Studio loads your site origin in the iframe, then calls `/api/preview/enable?…` with a signed `sanity-preview-secret`.
@@ -63,9 +63,9 @@ Set in the host’s build environment (see [`.env.example`](../.env.example)).
 
 | Step | This repo | You still do in dashboards |
 |------|-----------|----------------------------|
-| **`presentationTool` + `previewUrl`** | Done in [`studio/sanity.config.ts`](../studio/sanity.config.ts) — defaults to `https://shawne-brown.vercel.app`, `allowOrigins` includes `*.vercel.app`. | If you use another production URL, change `BROWN_ASTRO_SITE_ORIGIN` in that file and redeploy Studio. Remove bad overrides from `studio/.env.production` if present. |
+| **`presentationTool` + `previewUrl`** | Done in [`studio/sanity.config.ts`](../studio/sanity.config.ts) using `SANITY_SITE_ORIGIN_DEFAULT`, optional `SANITY_STUDIO_PREVIEW_URL`, and `SANITY_STUDIO_ALLOW_ORIGINS`. | Set those vars for each deployment and redeploy Studio. |
 | **`SANITY_STUDIO_PREVIEW_URL`** | Optional: defaults are in `sanity.config.ts`. Set env only for **local Astro** (`http://localhost:4321` in `studio/.env`). | — |
-| **CORS (Sanity Manage)** | Not in repo. | [Sanity Manage](https://www.sanity.io/manage) → **yrca4rxr** → **API** → **CORS origins** → add **`https://shawne-brown.vercel.app`** and **`http://localhost:4321`** (credentials / browser requests from the preview iframe often need this). Keep `https://*.sanity.studio` if listed. |
+| **CORS (Sanity Manage)** | Not in repo. | [Sanity Manage](https://www.sanity.io/manage) → selected project → **API** → **CORS origins** → add your live `SITE_URL` and `http://localhost:4321` (for local preview). Keep `https://*.sanity.studio` if listed. |
 | **Cookies / cross-site Studio** | [`/api/preview/enable`](../src/pages/api/preview/enable.ts) sets `sanity-preview` with **`SameSite=None; Secure`** in production. | Browsers that block third-party cookies may still break Presentation; then use “Open in new tab” or embed Studio on your domain. |
 | **`SANITY_READ_TOKEN` on the Astro host** | Not in repo. | **Vercel** → Environment variables → Production **and** Preview → redeploy. |
 | **`next-sanity`** | **N/A** — this app is **Astro**, not Next.js. | Use `@sanity/client`, `@sanity/visual-editing`, `sanity` versions in root [`package.json`](../package.json); bump when you choose, not required for “latest” unless you hit a known bug. |
