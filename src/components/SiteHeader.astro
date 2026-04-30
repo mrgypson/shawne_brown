@@ -1,10 +1,13 @@
 ---
 import { siteConfig } from '../data/mock/site';
-import { getProjects } from '../lib/content';
+import { getProjects, getSiteSettings } from '../lib/content';
 
 const pathname = Astro.url.pathname;
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
-const projects = await getProjects({ preview: useDraftPerspective });
+const [projects, siteSettings] = await Promise.all([
+	getProjects({ preview: useDraftPerspective }),
+	getSiteSettings({ preview: useDraftPerspective }),
+]);
 
 function isActive(href: string): boolean {
 	if (href === '/') {
@@ -23,7 +26,9 @@ const workIsActive = pathname.startsWith('/work/');
 
 <header class="site-header" id="site-header">
 	<p class="site-title">
-		<a href="/" id="site-header-title" data-testid="site-header-title-link">{siteConfig.siteTitle}</a>
+		<a href="/" id="site-header-title" data-testid="site-header-title-link">
+			{siteSettings.siteName || siteConfig.siteName}
+		</a>
 	</p>
 	<button
 		type="button"
@@ -98,49 +103,56 @@ const workIsActive = pathname.startsWith('/work/');
 		const workTrigger = document.getElementById('site-header-work-trigger');
 		const workMenu = document.getElementById('site-header-work-menu');
 		if (!header || !toggle || !nav || !workWrap || !workTrigger || !workMenu) return;
+		const headerEl = header;
+		const toggleEl = toggle;
+		const navEl = nav;
+		const workWrapEl = workWrap;
+		const workTriggerEl = workTrigger;
+		const workMenuEl = workMenu;
 
 		const desktopMq = window.matchMedia('(min-width: 48rem)');
 
-		function setSubmenuOpen(open) {
-			workTrigger.setAttribute('aria-expanded', String(open));
+		function setSubmenuOpen(open: boolean) {
+			workTriggerEl.setAttribute('aria-expanded', String(open));
 			if (open) {
-				workMenu.removeAttribute('hidden');
+				workMenuEl.removeAttribute('hidden');
 			} else {
-				workMenu.setAttribute('hidden', '');
+				workMenuEl.setAttribute('hidden', '');
 			}
 		}
 
-		function setNavOpen(open) {
-			header.classList.toggle('site-header--nav-open', open);
-			toggle.setAttribute('aria-expanded', String(open));
+		function setNavOpen(open: boolean) {
+			headerEl.classList.toggle('site-header--nav-open', open);
+			toggleEl.setAttribute('aria-expanded', String(open));
 			if (!open) setSubmenuOpen(false);
 		}
 
-		toggle.addEventListener('click', () => {
-			setNavOpen(!header.classList.contains('site-header--nav-open'));
+		toggleEl.addEventListener('click', () => {
+			setNavOpen(!headerEl.classList.contains('site-header--nav-open'));
 		});
 
-		workTrigger.addEventListener('click', (e) => {
+		workTriggerEl.addEventListener('click', (e) => {
 			e.stopPropagation();
-			const isOpen = workTrigger.getAttribute('aria-expanded') === 'true';
+			const isOpen = workTriggerEl.getAttribute('aria-expanded') === 'true';
 			setSubmenuOpen(!isOpen);
 		});
 
-		workMenu.querySelectorAll('a').forEach((link) => {
+		workMenuEl.querySelectorAll('a').forEach((link) => {
 			link.addEventListener('click', () => {
 				setSubmenuOpen(false);
 				setNavOpen(false);
 			});
 		});
 
-		nav.querySelectorAll(':scope > a').forEach((link) => {
+		navEl.querySelectorAll(':scope > a').forEach((link) => {
 			link.addEventListener('click', () => setNavOpen(false));
 		});
 
 		document.addEventListener('click', (e) => {
 			const target = e.target;
 			if (!target) return;
-			if (!workWrap.contains(target)) {
+			if (!(target instanceof Node)) return;
+			if (!workWrapEl.contains(target)) {
 				setSubmenuOpen(false);
 			}
 		});

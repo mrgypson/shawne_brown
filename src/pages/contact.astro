@@ -2,14 +2,18 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../data/mock/site';
 import { instagramHref, websiteHref } from '../lib/contact/socialUrls';
-import { getAbout } from '../lib/content';
+import { getAbout, getSiteSettings } from '../lib/content';
 
 export const prerender = false;
 
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
-const about = await getAbout({ preview: useDraftPerspective });
+const [about, siteSettings] = await Promise.all([
+	getAbout({ preview: useDraftPerspective }),
+	getSiteSettings({ preview: useDraftPerspective }),
+]);
 const title = 'Contact';
-const description = `Inquire about work, exhibitions, and editions — ${siteConfig.siteTitle}.`;
+const siteName = siteSettings.siteName || siteConfig.siteName;
+const description = `Inquire about work, exhibitions, and editions — ${siteName}.`;
 
 const contactLede =
 	about.contactPageLede ??

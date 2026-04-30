@@ -18,6 +18,18 @@ export const homePageQuery = `*[_type == "homePage" && _id == "homePage"][0] {
   showSubheading
 }`;
 
+/** Singleton site settings (Studio: Site settings, document id `siteSettings`). */
+export const siteSettingsQuery = `*[_type == "siteSettings" && _id == "siteSettings"][0] {
+  siteName,
+  tagline,
+  defaultTitle,
+  defaultDescription,
+  contactEmail,
+  "logoUrl": logo.asset->url,
+  "faviconUrl": favicon.asset->url,
+  "defaultOgImageUrl": defaultOgImage.asset->url
+}`;
+
 /** Shared projection for project documents (list + detail). */
 export const projectFieldsProjection = `
   _id,

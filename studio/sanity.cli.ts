@@ -6,8 +6,8 @@ import { defineCliConfig } from 'sanity/cli';
  */
 export default defineCliConfig({
 	api: {
-		projectId: 'yrca4rxr',
-		dataset: 'production',
+		projectId: process.env.SANITY_PROJECT_ID ?? 'yrca4rxr',
+		dataset: process.env.SANITY_DATASET ?? 'production',
 	},
-	studioHost: 'shawne-brown',
+	studioHost: process.env.SANITY_STUDIO_HOST ?? 'photography-site',
 });

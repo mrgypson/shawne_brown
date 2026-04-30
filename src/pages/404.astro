@@ -1,12 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteConfig } from '../data/mock/site';
+import { getSiteSettings } from '../lib/content';
 
 /** Server-rendered so BaseLayout can load contact/footer without prerender header limitations. */
 export const prerender = false;
 
 const title = 'Page not found';
-const description = `The requested page could not be found — ${siteConfig.siteTitle}.`;
+const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
+const siteSettings = await getSiteSettings({ preview: useDraftPerspective });
+const description = `The requested page could not be found — ${siteSettings.siteName || siteConfig.siteName}.`;
 ---
 
 <BaseLayout title={title} description={description}>

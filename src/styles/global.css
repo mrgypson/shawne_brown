@@ -537,7 +537,12 @@ h3 {
 
 /* Project page reveal: fade each figure in/out around viewport center, with a
  * gentle scroll-snap pause when a figure (or pair) is centered. */
-html:has(.project-gallery) {
+/* Only enable snap after first user scroll, so fresh navigations start at top. */
+html:has(.project-gallery):not(.project-gallery-snap-active) {
+	scroll-snap-type: none;
+}
+
+html:has(.project-gallery).project-gallery-snap-active {
 	scroll-snap-type: y proximity;
 }
 
@@ -623,7 +628,8 @@ html:has(.project-gallery) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	html:has(.project-gallery) {
+	html:has(.project-gallery),
+	html:has(.project-gallery).project-gallery-snap-active {
 		scroll-snap-type: none;
 	}
 	.project-gallery .gallery-figure {

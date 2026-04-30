@@ -104,7 +104,7 @@ export const GET: APIRoute = async ({ url }) => {
 				[
 					'Missing preview credentials on this URL.',
 					'',
-					'Fix: set SANITY_STUDIO_PREVIEW_URL to your Astro site origin (e.g. https://shawne-brown.vercel.app), not /api/preview/enable.',
+					'Fix: set SANITY_STUDIO_PREVIEW_URL to your Astro site origin (e.g. https://portfolio.example), not /api/preview/enable.',
 					'Sanity Presentation will call this route with a sanity-preview-secret query param automatically.',
 				].join('\n'),
 				{
@@ -131,7 +131,7 @@ export const GET: APIRoute = async ({ url }) => {
 		} catch (err: unknown) {
 			if (isUnauthorizedError(err)) {
 				return new Response(
-					'Sanity rejected this API token (401/403). Use a Viewer or Editor token for project yrca4rxr dataset production in SANITY_READ_TOKEN. Deploy tokens or tokens for another project will fail. Match SANITY_PROJECT_ID and SANITY_DATASET in .env if you override them.',
+					'Sanity rejected this API token (401/403). Use a Viewer or Editor token for the configured SANITY_PROJECT_ID and SANITY_DATASET in SANITY_READ_TOKEN. Deploy tokens or tokens for another project will fail.',
 					{ status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
 				);
 			}

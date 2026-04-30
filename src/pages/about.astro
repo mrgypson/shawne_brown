@@ -2,14 +2,18 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { instagramHref, websiteHref } from '../lib/contact/socialUrls';
 import { siteConfig } from '../data/mock/site';
-import { getAbout } from '../lib/content';
+import { getAbout, getSiteSettings } from '../lib/content';
 
 export const prerender = false;
 
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
-const about = await getAbout({ preview: useDraftPerspective });
+const [about, siteSettings] = await Promise.all([
+	getAbout({ preview: useDraftPerspective }),
+	getSiteSettings({ preview: useDraftPerspective }),
+]);
 const title = 'About';
-const description = `Artist biography, statement, and contact for ${siteConfig.siteTitle}.`;
+const siteName = siteSettings.siteName || siteConfig.siteName;
+const description = `Artist biography and contact for ${siteName}.`;
 const ig = instagramHref(about.contact.instagram);
 const web = websiteHref(about.contact.website);
 ---
@@ -24,10 +28,14 @@ const web = websiteHref(about.contact.website);
 		<p class="page-section-body">{about.bio}</p>
 	</section>
 
-	<section class="prose-narrow page-section" aria-labelledby="about-statement-heading">
-		<h2 id="about-statement-heading" class="page-section-heading">Statement</h2>
-		<p class="page-section-body page-section-body--pre">{about.statement}</p>
-	</section>
+	{
+		about.statement && (
+			<section class="prose-narrow page-section" aria-labelledby="about-statement-heading">
+				<h2 id="about-statement-heading" class="page-section-heading">Statement</h2>
+				<p class="page-section-body page-section-body--pre">{about.statement}</p>
+			</section>
+		)
+	}
 
 	<section class="prose-narrow page-section" aria-labelledby="about-exhibitions-heading">
 		<h2 id="about-exhibitions-heading" class="page-section-heading">Exhibitions &amp; publications</h2>

@@ -1,6 +1,6 @@
-# Editing the Shawne Brown site
+# Editing your photography site
 
-A plain-English guide to updating content on [shawne-brown.vercel.app](https://shawne-brown.vercel.app) (or the final domain once it's set). Keep this document handy the first few times you make changes.
+A plain-English guide to updating content on your live domain. Keep this document handy the first few times you make changes.
 
 ## What you need
 
@@ -22,10 +22,23 @@ The **website** pulls its text and images from **Studio** (powered by Sanity). W
 
 1. Open your Studio URL.
 2. Sign in with the email that was invited.
-3. After sign-in you land on the **Content** list with three main areas:
+3. After sign-in you land on the **Content** list with four main areas:
+   - **Site settings** — site name, tagline, SEO defaults, and brand images.
    - **About & Contact** — the About page and where inquiry emails are delivered.
    - **Home page** — the optional heading and subheading above the portfolio grid on the home page.
    - **Project** — each series / body of work. Every project is always listed in the **Work** dropdown in the site header; individual projects can be toggled on or off the home page grid.
+
+---
+
+## Updating branding and SEO defaults
+
+1. In Studio, click **Site settings**.
+2. Edit any of:
+   - **Site name** — used in header and page titles.
+   - **Tagline** — optional short brand line for templates/components that reference it.
+   - **Default SEO title / description** — homepage and fallback metadata.
+   - **Logo / Favicon / Default Open Graph image** — brand assets used in shared layout metadata.
+3. Click **Publish**.
 
 ---
 
@@ -47,7 +60,7 @@ Under **Contact** on the same document:
 
 - **Email** — this is the inbox that receives messages from the Contact form. **It is not shown on the public Contact page.** Update it any time your preferred inbox changes, then **Publish**.
 - **Location** — optional short label shown on Contact and in the footer.
-- **Instagram** — your handle, e.g. `@shawnebrown`. Appears on About and in the footer as a link.
+- **Instagram** — your handle, e.g. `@yourhandle`. Appears on About and in the footer as a link.
 - **Website** — optional external site. Appears on About and in the footer.
 
 > Tip: to change where inquiries are delivered, the **only** thing you change is the **Email** field here. No code or settings elsewhere.

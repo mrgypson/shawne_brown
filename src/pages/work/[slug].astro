@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectGallery from '../../components/ProjectGallery.astro';
 import { siteConfig } from '../../data/mock/site';
-import { getProjectBySlug } from '../../lib/content';
+import { getProjectBySlug, getSiteSettings } from '../../lib/content';
 import { isNeuhoffProject } from '../../types/project';
 import type { Project } from '../../types/project';
 
@@ -10,9 +10,13 @@ export const prerender = false;
 
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
 const slug = Astro.params.slug;
-const project: Project | undefined = slug
-	? await getProjectBySlug(slug, { preview: useDraftPerspective })
-	: undefined;
+const [project, siteSettings]: [Project | undefined, Awaited<ReturnType<typeof getSiteSettings>>] =
+	slug
+		? await Promise.all([
+				getProjectBySlug(slug, { preview: useDraftPerspective }),
+				getSiteSettings({ preview: useDraftPerspective }),
+			])
+		: [undefined, siteConfig];
 
 if (!project) {
 	return Astro.redirect('/404');
@@ -35,7 +39,7 @@ const showPrintMeta = isNeuhoffProject(project);
 		{
 			showPrintMeta && (
 				<div class="neuhoff-note prose-narrow" role="note" data-testid="neuhoff-print-note">
-					<strong>{siteConfig.siteTitle} — edition structure</strong>
+					<strong>{siteSettings.siteName || siteConfig.siteName} — edition structure</strong>
 					<p>
 						This series may include limited editions and print sales. Availability, sizing, and framing below are
 						placeholder fields for a future inquiry flow — no purchases are processed on this site yet.

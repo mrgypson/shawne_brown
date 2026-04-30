@@ -88,6 +88,32 @@ for (let i = 0; i < images.length; i += 1) {
 		'(prefers-reduced-motion: reduce)',
 	).matches;
 
+	// Keep initial navigation pinned to top; enable snap only after real scroll intent.
+	const root = document.documentElement;
+	const enableSnapAfterIntent = () => {
+		if (root.classList.contains('project-gallery-snap-active')) return;
+		root.classList.add('project-gallery-snap-active');
+		window.removeEventListener('wheel', enableSnapAfterIntent);
+		window.removeEventListener('touchmove', enableSnapAfterIntent);
+		window.removeEventListener('keydown', onSnapIntentKey);
+	};
+	const onSnapIntentKey = (event: KeyboardEvent) => {
+		const scrollKeys = new Set([
+			'ArrowDown',
+			'ArrowUp',
+			'PageDown',
+			'PageUp',
+			'Home',
+			'End',
+			' ',
+		]);
+		if (!scrollKeys.has(event.key)) return;
+		enableSnapAfterIntent();
+	};
+	window.addEventListener('wheel', enableSnapAfterIntent, { passive: true });
+	window.addEventListener('touchmove', enableSnapAfterIntent, { passive: true });
+	window.addEventListener('keydown', onSnapIntentKey);
+
 	const IDLE_DELAY_MS = 900;
 
 	document.querySelectorAll<HTMLElement>('.project-gallery').forEach((gallery) => {
