@@ -2,6 +2,8 @@
 
 Astro + Sanity: the public site reads content from Sanity; [Sanity Studio](studio/) is the editorial UI. This repository is designed to support multiple photographer deployments from one codebase.
 
+**HBMuir:** Hosted Studio at https://hbmuir-studio.sanity.studio/ is deployed only from the separate **hbmuir** canonical repository (Sanity project `1ogerp1o`). Do not point this repo’s Vercel envs or `studio:deploy` at that project or hostname.
+
 ## Scripts
 
 | Command | Action |
