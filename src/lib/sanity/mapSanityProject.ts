@@ -87,6 +87,8 @@ export type SanityProjectDoc = {
 	coverImage?: Parameters<typeof urlForImage>[0];
 	spaceBetween?: number | null;
 	pairGap?: number | null;
+	/** Sanity sort order (lower first). */
+	order?: number | null;
 	images?: SanityGalleryRow[] | null;
 };
 
@@ -149,6 +151,9 @@ export function mapSanityProject(doc: SanityProjectDoc): Project {
 	const rows = doc.images ?? [];
 	const images = rows.map((row) => mapGalleryRow(row, kind));
 
+	const sortOrder =
+		typeof doc.order === 'number' && !Number.isNaN(doc.order) ? Math.round(doc.order) : undefined;
+
 	const base = {
 		title: doc.title,
 		slug: doc.slug,
@@ -156,6 +161,7 @@ export function mapSanityProject(doc: SanityProjectDoc): Project {
 		shortDescription: doc.shortDescription,
 		longDescription: doc.longDescription?.trim() || undefined,
 		showOnHome: doc.showOnHome ?? true,
+		...(sortOrder !== undefined ? { sortOrder } : {}),
 		coverImage,
 		gallerySpaceBetween: toSpacingStep(doc.spaceBetween, DEFAULT_SPACE_BETWEEN),
 		galleryPairGap: toSpacingStep(doc.pairGap, DEFAULT_PAIR_GAP),

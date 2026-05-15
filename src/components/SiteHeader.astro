@@ -16,10 +16,7 @@ function isActive(href: string): boolean {
 	return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-const secondaryLinks = [
-	{ href: '/about', label: 'About' },
-	{ href: '/contact', label: 'Contact' },
-] as const;
+const secondaryLinks = [{ href: '/about', label: 'About & Contact', testId: 'about-contact' }] as const;
 
 const workIsActive = pathname.startsWith('/work/');
 ---
@@ -81,11 +78,11 @@ const workIsActive = pathname.startsWith('/work/');
 			</ul>
 		</div>
 		{
-			secondaryLinks.map(({ href, label }) => (
+			secondaryLinks.map(({ href, label, testId }) => (
 				<a
 					href={href}
 					aria-current={isActive(href) ? 'page' : undefined}
-					data-testid={`site-header-link-${label.toLowerCase()}`}
+					data-testid={`site-header-link-${testId}`}
 				>
 					{label}
 				</a>

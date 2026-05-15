@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PortfolioArticleNav from '../../components/PortfolioArticleNav.astro';
 import ProjectGallery from '../../components/ProjectGallery.astro';
 import { siteConfig } from '../../data/mock/site';
-import { getProjectBySlug, getSiteSettings } from '../../lib/content';
+import { getProjectBySlug, getProjects, getSiteSettings } from '../../lib/content';
 import { isNeuhoffProject } from '../../types/project';
 import type { Project } from '../../types/project';
 
@@ -10,17 +11,28 @@ export const prerender = false;
 
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
 const slug = Astro.params.slug;
-const [project, siteSettings]: [Project | undefined, Awaited<ReturnType<typeof getSiteSettings>>] =
-	slug
-		? await Promise.all([
-				getProjectBySlug(slug, { preview: useDraftPerspective }),
-				getSiteSettings({ preview: useDraftPerspective }),
-			])
-		: [undefined, siteConfig];
+const [project, siteSettings, allProjects]: [
+	Project | undefined,
+	Awaited<ReturnType<typeof getSiteSettings>>,
+	Project[],
+] = slug
+	? await Promise.all([
+			getProjectBySlug(slug, { preview: useDraftPerspective }),
+			getSiteSettings({ preview: useDraftPerspective }),
+			getProjects({ preview: useDraftPerspective }),
+		])
+	: [undefined, siteConfig, []];
 
 if (!project) {
 	return Astro.redirect('/404');
 }
+
+const projectIndex = allProjects.findIndex((p) => p.slug === project.slug);
+/** Circular “next”: following project, or first when on the last. Omit when only one project (no self-link). */
+const nextProject =
+	allProjects.length > 1 && projectIndex >= 0
+		? allProjects[(projectIndex + 1) % allProjects.length]
+		: undefined;
 
 const title = project.title;
 const description = project.shortDescription;
@@ -54,6 +66,10 @@ const showPrintMeta = isNeuhoffProject(project);
 			layout="single"
 			spaceBetween={project.gallerySpaceBetween}
 			pairGap={project.galleryPairGap}
+		/>
+
+		<PortfolioArticleNav
+			nextProject={nextProject ? { slug: nextProject.slug, title: nextProject.title } : undefined}
 		/>
 	</article>
 </BaseLayout>

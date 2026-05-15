@@ -1,0 +1,57 @@
+---
+interface Props {
+	/** Next project in site display order (wraps to first after last). Omitted when there is only one project. */
+	nextProject?: { slug: string; title: string };
+}
+
+const { nextProject } = Astro.props;
+---
+
+<nav
+	class="portfolio-article-nav"
+	aria-label="Project navigation"
+	data-testid="portfolio-article-nav"
+>
+	<a href="/" class="portfolio-article-nav-link" data-testid="portfolio-nav-home">Home</a>
+	<a
+		href="#site-header"
+		class="portfolio-article-nav-top"
+		aria-label="Back to top"
+		data-testid="portfolio-nav-back-to-top"
+	>
+		<span class="portfolio-article-nav-top-inner">
+			<span class="portfolio-article-nav-top-visual" aria-hidden="true">
+				<svg
+					class="portfolio-article-nav-top-svg"
+					viewBox="0 0 100 22"
+					width="100"
+					height="22"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M 6 19 L 50 4 L 94 19"
+						stroke="currentColor"
+						stroke-width="1.25"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						vector-effect="non-scaling-stroke"
+					/>
+				</svg>
+			</span>
+			<span class="portfolio-article-nav-top-label" aria-hidden="true">back to top</span>
+		</span>
+	</a>
+	{
+		nextProject && (
+			<a
+				href={`/work/${nextProject.slug}`}
+				class="portfolio-article-nav-link"
+				data-testid="portfolio-nav-next"
+				aria-label={`Next gallery: ${nextProject.title}`}
+			>
+				Next: {nextProject.title}
+			</a>
+		)
+	}
+</nav>

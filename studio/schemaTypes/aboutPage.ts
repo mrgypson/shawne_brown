@@ -70,7 +70,7 @@ export const aboutPage = defineType({
 					title: 'Email',
 					type: 'string',
 					description:
-						'Inbox for inquiry form submissions. Not shown on the public Contact page; keep it current.',
+						'Inbox for inquiry form submissions; also shown as a mailto link in the Contact section on the public site. Keep it current.',
 					validation: (Rule) => Rule.required(),
 				}),
 				defineField({
@@ -94,19 +94,19 @@ export const aboutPage = defineType({
 		}),
 		defineField({
 			name: 'contactPageLede',
-			title: 'Contact page — intro',
+			title: 'About & Contact page — intro',
 			type: 'text',
 			rows: 3,
-			description: 'Opening paragraph on the Contact page only.',
+			description: 'Opening paragraph in the Contact section on /about (below biography).',
 		}),
 		defineField({
 			name: 'contactInquiryHeading',
-			title: 'Contact page — inquiry section title',
+			title: 'About & Contact page — inquiry section title',
 			type: 'string',
 		}),
 		defineField({
 			name: 'contactInquiryDisclaimer',
-			title: 'Contact page — inquiry disclaimer',
+			title: 'About & Contact page — inquiry disclaimer',
 			type: 'text',
 			rows: 3,
 			description:

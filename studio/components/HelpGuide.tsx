@@ -96,8 +96,8 @@ export default function HelpGuide() {
 					<Section title="Where to edit what">
 						<List>
 							<Bullet>
-								<Strong>About &amp; Contact</Strong> — the About page, plus the inbox that
-								receives contact-form messages.
+								<Strong>About &amp; Contact</Strong> — biography, statement, exhibitions, studio
+								contact details, and the inquiry form on one page (<Code>/about</Code>).
 							</Bullet>
 							<Bullet>
 								<Strong>Project</Strong> — each body of work that appears on the Work page.
@@ -105,7 +105,7 @@ export default function HelpGuide() {
 						</List>
 					</Section>
 
-					<Section title="Updating the About page">
+					<Section title="Updating the About &amp; Contact page">
 						<Ol>
 							<Bullet>
 								Open <Strong>About &amp; Contact</Strong> in the Content list.
@@ -113,7 +113,7 @@ export default function HelpGuide() {
 							<Bullet>
 								Edit <Strong>Biography</Strong>, <Strong>Artist statement</Strong>,
 								<Strong> Exhibitions &amp; publications</Strong> (click <Strong>Add item</Strong>
-								for a new row; drag to reorder), and any of the Contact-page copy fields.
+								for a new row; drag to reorder), and any of the Contact / inquiry copy fields.
 							</Bullet>
 							<Bullet>
 								Click <Strong>Publish</Strong> (top right).
@@ -127,20 +127,21 @@ export default function HelpGuide() {
 						</P>
 						<List>
 							<Bullet>
-								<Strong>Email</Strong> — the inbox that receives contact-form messages. It is
-								<Strong> not</Strong> shown on the public Contact page. Change it any time and
-								publish; no other change is needed.
+								<Strong>Email</Strong> — the inbox that receives inquiry form messages; it also
+								appears as a mailto link in the Contact section on <Code>/about</Code>. Change it
+								any time and publish; no other change is needed.
 							</Bullet>
 							<Bullet>
-								<Strong>Location</Strong> — optional short label shown on Contact and in the
-								footer.
+								<Strong>Location</Strong> — optional short label shown in the Contact section and
+								in the footer.
 							</Bullet>
 							<Bullet>
 								<Strong>Instagram</Strong> — your handle (e.g. <Code>@yourhandle</Code>);
-								appears on About and in the footer as a link.
+								appears on <Code>/about</Code> and in the footer as a link.
 							</Bullet>
 							<Bullet>
-								<Strong>Website</Strong> — optional external site link.
+								<Strong>Website</Strong> — optional external site link; appears on <Code>/about</Code>{' '}
+								and in the footer.
 							</Bullet>
 						</List>
 					</Section>
@@ -230,7 +231,8 @@ export default function HelpGuide() {
 					<Section title="The contact form">
 						<List>
 							<Bullet>
-								Visitors submit Name, Email, and Message on the Contact page.
+								Visitors submit Name, Email, and Message on the <Strong>About &amp; Contact</Strong>{' '}
+								page (<Code>/about</Code>), in the inquiry section.
 							</Bullet>
 							<Bullet>
 								Messages are delivered to the <Strong>Email</Strong> field in{' '}

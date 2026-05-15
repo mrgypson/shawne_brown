@@ -60,6 +60,8 @@ interface ProjectBase {
 	kind: ProjectKind;
 	/** When true (default), this project appears in the home page grid. Always listed in the Work dropdown. */
 	showOnHome?: boolean;
+	/** Sanity "Sort order" (lower first). Used after priority slug ordering. */
+	sortOrder?: number;
 	/** Gallery-wide vertical gap between images (and between pair rows). */
 	gallerySpaceBetween?: GallerySpacingStep;
 	/** Gap inside every pair: horizontal space between the two columns. */

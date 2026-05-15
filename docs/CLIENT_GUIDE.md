@@ -42,15 +42,15 @@ The **website** pulls its text and images from **Studio** (powered by Sanity). W
 
 ---
 
-## Updating the About page
+## Updating the About & Contact page
 
 1. In Studio, click **About & Contact**.
 2. Edit any of:
-   - **Biography** — short paragraph at the top of the About page.
+   - **Biography** — short paragraph at the top of the page.
    - **Artist statement** — longer statement below the biography.
    - **Exhibitions & publications** — click **Add item** to add a new row (year + detail). Drag rows to reorder.
    - **Publications note** — optional short paragraph below the exhibitions list.
-   - **Contact page — intro / inquiry heading / inquiry disclaimer** — the small pieces of copy that appear on the Contact page. Leave blank to keep site defaults.
+   - **About & Contact page — intro / inquiry heading / inquiry disclaimer** — copy for the Contact section and inquiry form on the same page (`/about`). Leave blank to keep site defaults.
 3. Click **Publish** (top right).
 4. Open the site and reload — the change should be visible.
 
@@ -58,10 +58,10 @@ The **website** pulls its text and images from **Studio** (powered by Sanity). W
 
 Under **Contact** on the same document:
 
-- **Email** — this is the inbox that receives messages from the Contact form. **It is not shown on the public Contact page.** Update it any time your preferred inbox changes, then **Publish**.
-- **Location** — optional short label shown on Contact and in the footer.
-- **Instagram** — your handle, e.g. `@yourhandle`. Appears on About and in the footer as a link.
-- **Website** — optional external site. Appears on About and in the footer.
+- **Email** — the inbox that receives inquiry form messages; it also appears as a **mailto** link in the Contact section on `/about`. Update it any time your preferred inbox changes, then **Publish**.
+- **Location** — optional short label shown in the Contact section and in the footer.
+- **Instagram** — your handle, e.g. `@yourhandle`. Appears on `/about` and in the footer as a link.
+- **Website** — optional external site. Appears on `/about` and in the footer.
 
 > Tip: to change where inquiries are delivered, the **only** thing you change is the **Email** field here. No code or settings elsewhere.
 
@@ -162,7 +162,7 @@ Open the project → menu (`⋮`) → **Delete** → confirm. The page `/work/<s
 
 ## The Contact form
 
-- Visitors fill out Name, Email, Message on `/contact`.
+- Visitors fill out Name, Email, Message on the **About & Contact** page (`/about`), in the inquiry section below the biography.
 - The message is delivered to whatever email address is set in **About & Contact → Email**.
 - You do **not** get notifications from any third-party service dashboard — messages arrive in your inbox directly.
 - If you stop receiving form messages:

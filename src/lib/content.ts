@@ -6,6 +6,7 @@ import type { AboutContent } from '../types/about';
 import type { HomePageContent } from '../types/homePage';
 import type { Project } from '../types/project';
 import type { SiteSettings } from '../types/siteSettings';
+import { sortProjectsForDisplay } from './projectDisplayOrder';
 import { fetchAboutFromSanity } from './sanity/fetchAbout';
 import { fetchHomePageFromSanity } from './sanity/fetchHomePage';
 import { fetchProjectBySlugFromSanity, fetchProjectsFromSanity } from './sanity/fetchProjects';
@@ -22,13 +23,14 @@ export type ContentFetchOptions = {
  */
 export async function getProjects(options?: ContentFetchOptions): Promise<Project[]> {
 	if (import.meta.env.SANITY_USE_MOCK === 'true') {
-		return mockProjects;
+		return sortProjectsForDisplay(mockProjects);
 	}
 	try {
-		return await fetchProjectsFromSanity({ preview: options?.preview });
+		const projects = await fetchProjectsFromSanity({ preview: options?.preview });
+		return sortProjectsForDisplay(projects);
 	} catch (err) {
 		console.warn('[content] Sanity fetch failed; using mock projects.', err);
-		return mockProjects;
+		return sortProjectsForDisplay(mockProjects);
 	}
 }
 

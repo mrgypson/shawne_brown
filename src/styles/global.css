@@ -157,6 +157,103 @@ h3 {
 	opacity: 0.72;
 }
 
+.portfolio-article-nav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2);
+	width: 100%;
+	margin-top: var(--space-8);
+	padding-top: var(--space-5);
+	border-top: 1px solid var(--color-border);
+	font-size: 0.9375rem;
+	color: var(--color-muted);
+}
+
+.portfolio-article-nav-link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.portfolio-article-nav-link:hover {
+	opacity: 0.72;
+}
+
+.portfolio-article-nav-link:focus-visible {
+	outline: 1px solid var(--color-text);
+	outline-offset: 2px;
+}
+
+.portfolio-article-nav-top {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: min(100%, 7.5rem);
+	padding: var(--space-1) var(--space-2);
+	margin: calc(var(--space-1) * -1) 0;
+	color: inherit;
+	text-decoration: none;
+}
+
+.portfolio-article-nav-top-inner {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: clamp(4.5rem, 20vw, 11rem);
+	min-height: 1.375rem;
+}
+
+.portfolio-article-nav-top-visual {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	transition: opacity 0.2s ease;
+}
+
+.portfolio-article-nav-top-svg {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 1.25rem;
+}
+
+.portfolio-article-nav-top-label {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.6875rem;
+	font-family: var(--font-ui);
+	letter-spacing: 0.03em;
+	color: inherit;
+	text-align: center;
+	line-height: 1.2;
+	white-space: nowrap;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	pointer-events: none;
+}
+
+.portfolio-article-nav-top:hover .portfolio-article-nav-top-visual,
+.portfolio-article-nav-top:focus-visible .portfolio-article-nav-top-visual {
+	opacity: 0;
+}
+
+.portfolio-article-nav-top:hover .portfolio-article-nav-top-label,
+.portfolio-article-nav-top:focus-visible .portfolio-article-nav-top-label {
+	opacity: 1;
+}
+
+.portfolio-article-nav-top:focus-visible {
+	outline: 1px solid var(--color-text);
+	outline-offset: 3px;
+}
+
 .text-muted {
 	color: var(--color-muted);
 	font-size: 0.9375rem;
@@ -535,6 +632,117 @@ h3 {
 	margin: 0;
 }
 
+/* Row-level prev/next chevrons; anchored to image media (solo) or pair image row. */
+.gallery-row-nav {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		opacity 200ms ease,
+		visibility 200ms ease;
+}
+
+.gallery-row-nav__btn {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	margin: 0;
+	border: none;
+	border-radius: 999px;
+	color: var(--color-text);
+	background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+	box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+	pointer-events: auto;
+	cursor: pointer;
+}
+
+.gallery-row-nav__btn--prev {
+	top: auto;
+	bottom: 100%;
+	margin-bottom: var(--space-2);
+}
+
+.gallery-row-nav__btn--next {
+	top: 100%;
+	bottom: auto;
+	margin-top: var(--space-2);
+}
+
+.gallery-row-nav__btn:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--color-bg) 95%, transparent);
+}
+
+.gallery-row-nav__btn:focus-visible {
+	outline: 2px solid var(--color-text);
+	outline-offset: 2px;
+}
+
+.gallery-row-nav__btn:disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+}
+
+.project-gallery.is-idle .gallery-figure.is-focused:not(.gallery-figure--paired) .gallery-row-nav,
+.project-gallery.is-idle .gallery-pair:has(.gallery-figure.is-focused) .gallery-row-nav {
+	opacity: 1;
+	visibility: visible;
+}
+
+/* Desktop: fade chevrons after pointer inactivity; :focus-within keeps them visible for keyboard. */
+@media (min-width: 48rem) and (hover: hover) and (pointer: fine) {
+	.project-gallery.is-idle.is-nav-asleep
+		.gallery-figure.is-focused:not(.gallery-figure--paired)
+		.gallery-row-nav:not(:focus-within),
+	.project-gallery.is-idle.is-nav-asleep
+		.gallery-pair:has(.gallery-figure.is-focused)
+		.gallery-row-nav:not(:focus-within) {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+/* Mobile: pin controls to viewport top/bottom, away from the centered image. */
+@media (max-width: 47.99rem) {
+	.project-gallery.is-idle .gallery-row-nav {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+	}
+
+	.project-gallery.is-idle .gallery-row-nav__btn {
+		position: fixed;
+		left: 50%;
+		transform: translateX(-50%);
+		margin: 0;
+	}
+
+	.project-gallery.is-idle .gallery-row-nav__btn--prev {
+		top: max(var(--space-2), env(safe-area-inset-top, 0px));
+		bottom: auto;
+	}
+
+	.project-gallery.is-idle .gallery-row-nav__btn--next {
+		top: auto;
+		bottom: max(var(--space-2), env(safe-area-inset-bottom, 0px));
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.gallery-row-nav {
+		display: none !important;
+	}
+}
+
 /* Project page reveal: fade each figure in/out around viewport center, with a
  * gentle scroll-snap pause when a figure (or pair) is centered. */
 /* Only enable snap after first user scroll, so fresh navigations start at top. */
@@ -558,6 +766,14 @@ html:has(.project-gallery).project-gallery-snap-active {
  * already within the snap-pull zone). */
 .project-gallery > .gallery-figure:first-child,
 .project-gallery > .gallery-pair:first-child {
+	scroll-snap-align: none;
+}
+
+/* Last row: same idea at the document end — proximity snap would otherwise
+ * pull the viewport back up to center the final figure after the user reaches
+ * the bottom (scroll-driven fade / idle focus are unchanged). */
+.project-gallery > .gallery-figure:last-child,
+.project-gallery > .gallery-pair:last-child {
 	scroll-snap-align: none;
 }
 
@@ -645,6 +861,7 @@ html:has(.project-gallery).project-gallery-snap-active {
 
 /* Flex keeps width-% layout on the box while the img may shrink to satisfy max-height. */
 .gallery-figure__media {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 }
@@ -742,55 +959,61 @@ html:has(.project-gallery).project-gallery-snap-active {
 
 /* Paired row: two figures side-by-side at all breakpoints (ratio from CMS). */
 .gallery-pair {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+}
+
+.gallery-pair__row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	align-items: start;
 	gap: var(--gallery-step-2);
 }
 
-.gallery-pair[data-ratio='50/50'] {
+.gallery-pair[data-ratio='50/50'] .gallery-pair__row {
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
-.gallery-pair[data-ratio='60/40'] {
+.gallery-pair[data-ratio='60/40'] .gallery-pair__row {
 	grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
 }
 
-.gallery-pair[data-ratio='40/60'] {
+.gallery-pair[data-ratio='40/60'] .gallery-pair__row {
 	grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
 }
 
-.gallery-pair[data-align-v='top'] {
+.gallery-pair[data-align-v='top'] .gallery-pair__row {
 	align-items: start;
 }
 
-.gallery-pair[data-align-v='center'] {
+.gallery-pair[data-align-v='center'] .gallery-pair__row {
 	align-items: center;
 }
 
-.gallery-pair[data-align-v='bottom'] {
+.gallery-pair[data-align-v='bottom'] .gallery-pair__row {
 	align-items: end;
 }
 
-.gallery-pair > .gallery-figure--paired {
+.gallery-pair__row > .gallery-figure--paired {
 	margin: 0;
 	min-width: 0;
 }
 
 /* Gap inside the pair (Sanity: pairGap 0–4) — horizontal gap between the two columns. */
-.gallery-pair[data-pair-gap='0'] {
+.gallery-pair[data-pair-gap='0'] .gallery-pair__row {
 	gap: var(--gallery-step-0);
 }
-.gallery-pair[data-pair-gap='1'] {
+.gallery-pair[data-pair-gap='1'] .gallery-pair__row {
 	gap: var(--gallery-step-1);
 }
-.gallery-pair[data-pair-gap='2'] {
+.gallery-pair[data-pair-gap='2'] .gallery-pair__row {
 	gap: var(--gallery-step-2);
 }
-.gallery-pair[data-pair-gap='3'] {
+.gallery-pair[data-pair-gap='3'] .gallery-pair__row {
 	gap: var(--gallery-step-3);
 }
-.gallery-pair[data-pair-gap='4'] {
+.gallery-pair[data-pair-gap='4'] .gallery-pair__row {
 	gap: var(--gallery-step-4);
 }
 
@@ -881,6 +1104,7 @@ html:has(.project-gallery).project-gallery-snap-active {
 
 .form-contact input,
 .form-contact textarea {
+	display: block;
 	width: 100%;
 	max-width: 28rem;
 	font: inherit;
@@ -896,6 +1120,9 @@ html:has(.project-gallery).project-gallery-snap-active {
 }
 
 .form-contact button {
+	display: block;
+	width: fit-content;
+	max-width: 28rem;
 	font: inherit;
 	font-size: 0.875rem;
 	letter-spacing: 0.04em;
@@ -947,20 +1174,6 @@ html:has(.project-gallery).project-gallery-snap-active {
 
 .page-section-body--pre {
 	white-space: pre-wrap;
-}
-
-.exhibitions-list {
-	margin: 0;
-	padding-left: 1.25rem;
-}
-
-.exhibitions-list li {
-	margin-bottom: var(--space-2);
-}
-
-.publications-note {
-	margin-top: var(--space-3);
-	margin-bottom: 0;
 }
 
 .contact-primary-email {
