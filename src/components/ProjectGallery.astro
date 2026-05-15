@@ -160,6 +160,7 @@ for (let i = 0; i < images.length; i += 1) {
 
 		let idleTimer: ReturnType<typeof setTimeout> | undefined;
 		let navHideTimer: ReturnType<typeof setTimeout> | undefined;
+		let programmaticNavActive = false;
 
 		const clearNavHideTimer = () => {
 			if (navHideTimer) {
@@ -246,12 +247,8 @@ for (let i = 0; i < images.length; i += 1) {
 			clearFocus();
 			// When the focused figure is part of a pair, keep both siblings
 			// lit so the composed row reads as a single subject.
-			const pair =
-				focused.classList.contains('gallery-figure--paired') &&
-				focused.parentElement?.classList.contains('gallery-pair')
-					? focused.parentElement
-					: null;
-			if (pair) {
+			const pair = focused.closest('.gallery-pair');
+			if (pair && gallery.contains(pair)) {
 				pair
 					.querySelectorAll<HTMLElement>('.gallery-figure')
 					.forEach((f) => f.classList.add('is-focused'));
@@ -305,6 +302,7 @@ for (let i = 0; i < images.length; i += 1) {
 
 			const nextRow = rows[targetIdx];
 			exitIdle();
+			programmaticNavActive = true;
 			nextRow.scrollIntoView({
 				behavior: 'smooth',
 				block: 'center',
@@ -319,13 +317,21 @@ for (let i = 0; i < images.length; i += 1) {
 				if (scrollDoneFallback !== undefined) {
 					window.clearTimeout(scrollDoneFallback);
 				}
+				programmaticNavActive = false;
 				scheduleIdle();
 			};
 			scrollDoneFallback = window.setTimeout(onScrollDone, 900);
 			window.addEventListener('scrollend', onScrollDone, { passive: true });
 		});
 
-		window.addEventListener('scroll', scheduleIdle, { passive: true });
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (programmaticNavActive) return;
+				scheduleIdle();
+			},
+			{ passive: true },
+		);
 		// Cancel pending idle if the user navigates away via tab/blur so we
 		// don't lock in a stale focused state when they return.
 		window.addEventListener('blur', exitIdle);
