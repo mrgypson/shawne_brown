@@ -1,6 +1,7 @@
 ---
 import type { GalleryImage } from '../types/project';
 import type { NeuhoffImage } from '../types/neuhoff';
+import GalleryRowNav from './GalleryRowNav.astro';
 
 interface Props {
 	image: GalleryImage | NeuhoffImage;
@@ -29,6 +30,7 @@ const align = image.align ?? 'center';
 >
 	<div class="gallery-figure__media" data-inset-left={insetLeft} data-inset-right={insetRight}>
 		<img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+		{!paired && <GalleryRowNav />}
 	</div>
 	{
 		(image.caption || image.printNumber) && (

@@ -42,6 +42,7 @@ export const mockProjects: Project[] = [
 		title: 'The Neuhoff Project',
 		slug: 'the-neuhoff-project',
 		yearLabel: '2019–2024',
+		sortOrder: 0,
 		shortDescription:
 			'A sustained study of an industrial site in transition — surfaces, weather, and the residue of labor.',
 		longDescription:
@@ -58,6 +59,7 @@ export const mockProjects: Project[] = [
 		title: 'River Notes',
 		slug: 'river-notes',
 		yearLabel: '2021',
+		sortOrder: 1,
 		shortDescription: 'Small-format observations along a single waterway through winter.',
 		longDescription:
 			'River Notes began as a daily walk and became a ledger of minor changes: ice, mist, debris, the same bend seen until it became unfamiliar.',
@@ -78,6 +80,7 @@ export const mockProjects: Project[] = [
 		title: 'Interior Weather',
 		slug: 'interior-weather',
 		yearLabel: '2018–2020',
+		sortOrder: 2,
 		shortDescription: 'Domestic interiors read through window light and slow seasons.',
 		coverImage: {
 			src: PLACEHOLDER,
@@ -94,6 +97,7 @@ export const mockProjects: Project[] = [
 		title: 'Plain Air',
 		slug: 'plain-air',
 		yearLabel: '2016',
+		sortOrder: 3,
 		shortDescription: 'Horizon-led landscapes from the high plains — spare, high-key, wind-shaped.',
 		coverImage: {
 			src: PLACEHOLDER,

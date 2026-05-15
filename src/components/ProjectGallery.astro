@@ -2,6 +2,7 @@
 import type { GalleryImage, GallerySpacingStep } from '../types/project';
 import type { NeuhoffImage } from '../types/neuhoff';
 import GalleryFigure from './GalleryFigure.astro';
+import GalleryRowNav from './GalleryRowNav.astro';
 
 interface Props {
 	images: (GalleryImage | NeuhoffImage)[];
@@ -63,18 +64,21 @@ for (let i = 0; i < images.length; i += 1) {
 					data-ratio={row.left.pairRatio ?? '50/50'}
 					data-align-v={row.left.pairAlignVertical ?? 'top'}
 				>
-					<GalleryFigure
-						image={row.left}
-						index={row.leftIndex}
-						showPrintMeta={showPrintMeta}
-						paired
-					/>
-					<GalleryFigure
-						image={row.right}
-						index={row.rightIndex}
-						showPrintMeta={showPrintMeta}
-						paired
-					/>
+					<div class="gallery-pair__row">
+						<GalleryFigure
+							image={row.left}
+							index={row.leftIndex}
+							showPrintMeta={showPrintMeta}
+							paired
+						/>
+						<GalleryFigure
+							image={row.right}
+							index={row.rightIndex}
+							showPrintMeta={showPrintMeta}
+							paired
+						/>
+					</div>
+					<GalleryRowNav />
 				</div>
 			),
 		)
@@ -115,6 +119,11 @@ for (let i = 0; i < images.length; i += 1) {
 	window.addEventListener('keydown', onSnapIntentKey);
 
 	const IDLE_DELAY_MS = 900;
+	const NAV_HIDE_DELAY_MS = 2000;
+
+	const isDesktopNavContext = () =>
+		window.matchMedia('(min-width: 48rem)').matches &&
+		window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 	document.querySelectorAll<HTMLElement>('.project-gallery').forEach((gallery) => {
 		const figures = Array.from(
@@ -145,7 +154,70 @@ for (let i = 0; i < images.length; i += 1) {
 		// Reduced-motion users opt out of the linger-to-focus effect.
 		if (prefersReducedMotion) return;
 
+		const rows = Array.from(
+			gallery.querySelectorAll<HTMLElement>(':scope > .gallery-figure, :scope > .gallery-pair'),
+		);
+
 		let idleTimer: ReturnType<typeof setTimeout> | undefined;
+		let navHideTimer: ReturnType<typeof setTimeout> | undefined;
+
+		const clearNavHideTimer = () => {
+			if (navHideTimer) {
+				clearTimeout(navHideTimer);
+				navHideTimer = undefined;
+			}
+		};
+
+		const wakeNavControls = () => {
+			gallery.classList.remove('is-nav-asleep');
+			clearNavHideTimer();
+			if (!gallery.classList.contains('is-idle') || !isDesktopNavContext()) return;
+			navHideTimer = setTimeout(() => {
+				if (gallery.classList.contains('is-idle') && isDesktopNavContext()) {
+					gallery.classList.add('is-nav-asleep');
+				}
+			}, NAV_HIDE_DELAY_MS);
+		};
+
+		/** Desktop: hide chevrons until pointer activity; mobile: show with idle focus. */
+		const resetNavControlsForIdle = () => {
+			clearNavHideTimer();
+			if (isDesktopNavContext()) {
+				gallery.classList.add('is-nav-asleep');
+			} else {
+				gallery.classList.remove('is-nav-asleep');
+			}
+		};
+
+		const sleepNavControls = () => {
+			clearNavHideTimer();
+			gallery.classList.remove('is-nav-asleep');
+		};
+
+		const rowFromFigure = (fig: HTMLElement): HTMLElement => {
+			const pair = fig.closest('.gallery-pair');
+			if (pair && gallery.contains(pair)) {
+				return pair as HTMLElement;
+			}
+			return fig;
+		};
+
+		const updateNavDisabled = () => {
+			rows.forEach((row, i) => {
+				const prevBtn = row.querySelector<HTMLButtonElement>('[data-gallery-nav="prev"]');
+				const nextBtn = row.querySelector<HTMLButtonElement>('[data-gallery-nav="next"]');
+				const atFirst = i === 0;
+				const atLast = i === rows.length - 1;
+				if (prevBtn) {
+					prevBtn.disabled = atFirst;
+					prevBtn.setAttribute('aria-disabled', String(atFirst));
+				}
+				if (nextBtn) {
+					nextBtn.disabled = atLast;
+					nextBtn.setAttribute('aria-disabled', String(atLast));
+				}
+			});
+		};
 
 		const clearFocus = () => {
 			figures.forEach((f) => f.classList.remove('is-focused'));
@@ -187,6 +259,8 @@ for (let i = 0; i < images.length; i += 1) {
 				focused.classList.add('is-focused');
 			}
 			gallery.classList.add('is-idle');
+			updateNavDisabled();
+			resetNavControlsForIdle();
 		};
 
 		const exitIdle = () => {
@@ -194,6 +268,7 @@ for (let i = 0; i < images.length; i += 1) {
 				clearTimeout(idleTimer);
 				idleTimer = undefined;
 			}
+			sleepNavControls();
 			gallery.classList.remove('is-idle');
 			clearFocus();
 		};
@@ -203,9 +278,63 @@ for (let i = 0; i < images.length; i += 1) {
 			idleTimer = setTimeout(enterIdle, IDLE_DELAY_MS);
 		};
 
+		gallery.addEventListener('click', (event: MouseEvent) => {
+			const target = event.target as HTMLElement | null;
+			if (!target) return;
+			const btn = target.closest<HTMLElement>('[data-gallery-nav]');
+			if (!btn || !gallery.contains(btn)) return;
+			if (!gallery.classList.contains('is-idle')) return;
+
+			const navButton = btn.closest('button');
+			if (navButton?.disabled) return;
+
+			const dir = btn.getAttribute('data-gallery-nav');
+			if (dir !== 'prev' && dir !== 'next') return;
+
+			const focusedFig = gallery.querySelector<HTMLElement>('.gallery-figure.is-focused');
+			if (!focusedFig) return;
+
+			const currentRow = rowFromFigure(focusedFig);
+			const idx = rows.indexOf(currentRow);
+			if (idx < 0) return;
+
+			const targetIdx = dir === 'prev' ? idx - 1 : idx + 1;
+			if (targetIdx < 0 || targetIdx >= rows.length) return;
+
+			event.preventDefault();
+
+			const nextRow = rows[targetIdx];
+			exitIdle();
+			nextRow.scrollIntoView({
+				behavior: 'smooth',
+				block: 'center',
+			});
+
+			let settled = false;
+			let scrollDoneFallback: ReturnType<typeof setTimeout> | undefined;
+			const onScrollDone = () => {
+				if (settled) return;
+				settled = true;
+				window.removeEventListener('scrollend', onScrollDone);
+				if (scrollDoneFallback !== undefined) {
+					window.clearTimeout(scrollDoneFallback);
+				}
+				scheduleIdle();
+			};
+			scrollDoneFallback = window.setTimeout(onScrollDone, 900);
+			window.addEventListener('scrollend', onScrollDone, { passive: true });
+		});
+
 		window.addEventListener('scroll', scheduleIdle, { passive: true });
 		// Cancel pending idle if the user navigates away via tab/blur so we
 		// don't lock in a stale focused state when they return.
 		window.addEventListener('blur', exitIdle);
+
+		const onPointerActivity = () => {
+			if (!gallery.classList.contains('is-idle') || !isDesktopNavContext()) return;
+			wakeNavControls();
+		};
+		window.addEventListener('mousemove', onPointerActivity, { passive: true });
+		gallery.addEventListener('mouseenter', onPointerActivity, { passive: true });
 	});
 </script>

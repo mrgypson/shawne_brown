@@ -2,6 +2,8 @@
 
 Astro + Sanity: the public site reads content from Sanity; [Sanity Studio](studio/) is the editorial UI. This repository is designed to support multiple photographer deployments from one codebase.
 
+**HBMuir:** Hosted Studio at https://hbmuir-studio.sanity.studio/ is deployed only from the separate **hbmuir** canonical repository (Sanity project `1ogerp1o`). Do not point this repo’s Vercel envs or `studio:deploy` at that project or hostname.
+
 ## Scripts
 
 | Command | Action |
@@ -45,7 +47,7 @@ Use `studio/.env` (local) or `studio/.env.production` (hosted Studio deploy):
 
 ### Inquiry email (Resend)
 
-The contact form `POST`s to [`/api/inquiry`](src/pages/api/inquiry.ts). Mail is sent with [Resend](https://resend.com); the **To** address is `contact.email` from the Sanity **About & Contact** document (`aboutPage`). That address is **not** shown on the public Contact page—it is only used server-side for delivery.
+The contact form `POST`s to [`/api/inquiry`](src/pages/api/inquiry.ts). Mail is sent with [Resend](https://resend.com); the **To** address is `contact.email` from the Sanity **About & Contact** document (`aboutPage`). The same field may appear as a public `mailto` link on the **About & Contact** page (`/about`); delivery always uses the value from Sanity server-side.
 
 | Variable | Required (prod) | Notes |
 | --- | --- | --- |
@@ -70,7 +72,7 @@ The contact form `POST`s to [`/api/inquiry`](src/pages/api/inquiry.ts). Mail is 
 
 ## Project layout
 
-- [`src/pages/`](src/pages/) — routes (Work, About, Contact, preview API)
+- [`src/pages/`](src/pages/) — routes (Work, About & Contact, preview API; `/contact` redirects to `/about#contact`)
 - [`src/lib/sanity/`](src/lib/sanity/) — client, queries, image URLs, mappers
 - [`studio/schemaTypes/`](studio/schemaTypes/) — Sanity schemas
 - [`docs/deployment-matrix.md`](docs/deployment-matrix.md) — per-photographer env matrix for shared-code deployments

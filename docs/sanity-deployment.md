@@ -1,5 +1,7 @@
 # Sanity: publish webhooks and preview
 
+**HBMuir:** Hosted Studio at https://hbmuir-studio.sanity.studio/ is owned by the separate **hbmuir** repository only — do not deploy or update it from this Brown repo.
+
 Content routes (home, Work, project detail, About, Contact) are **server-rendered** (this repo uses [`@astrojs/vercel`](../astro.config.mjs) for Vercel) so that after `/api/preview/enable` runs, the same deployment can show **draft** content when `SANITY_READ_TOKEN` is configured. Published visitors still see published documents; drafts require a valid preview session from Studio’s Presentation tool (or the legacy manual secret flow).
 
 ## 1. Automatic deploy when content is published

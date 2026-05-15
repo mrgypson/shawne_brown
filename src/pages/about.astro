@@ -11,16 +11,22 @@ const [about, siteSettings] = await Promise.all([
 	getAbout({ preview: useDraftPerspective }),
 	getSiteSettings({ preview: useDraftPerspective }),
 ]);
-const title = 'About';
+const title = 'About & Contact';
 const siteName = siteSettings.siteName || siteConfig.siteName;
-const description = `Artist biography and contact for ${siteName}.`;
+const description = `Artist biography, studio contact, and inquiries — ${siteName}.`;
+const contactLede =
+	about.contactPageLede ??
+	'For studio inquiries, commissions, and availability, use the form below.';
+const inquiryHeading = about.contactInquiryHeading ?? 'Inquiry';
+const inquiryDisclaimer =
+	about.contactInquiryDisclaimer ?? 'We typically reply within a few business days.';
 const ig = instagramHref(about.contact.instagram);
 const web = websiteHref(about.contact.website);
 ---
 
 <BaseLayout title={title} description={description}>
 	<header class="prose-narrow">
-		<h1 class="page-title">About</h1>
+		<h1 class="page-title">About & Contact</h1>
 	</header>
 
 	<section class="prose-narrow page-section" aria-labelledby="about-bio-heading">
@@ -37,20 +43,12 @@ const web = websiteHref(about.contact.website);
 		)
 	}
 
-	<section class="prose-narrow page-section" aria-labelledby="about-exhibitions-heading">
-		<h2 id="about-exhibitions-heading" class="page-section-heading">Exhibitions &amp; publications</h2>
-		<ul class="exhibitions-list">
-			{about.exhibitions.map((entry) => (
-				<li>
-					<span class="text-muted">{entry.year}</span> — {entry.detail}
-				</li>
-			))}
-		</ul>
-		{about.publicationsNote && <p class="text-muted page-section-body publications-note">{about.publicationsNote}</p>}
-	</section>
-
-	<section class="prose-narrow contact-block" aria-labelledby="about-contact-heading">
+	<section class="prose-narrow contact-block" id="contact" aria-labelledby="about-contact-heading">
 		<h2 id="about-contact-heading" class="page-section-heading">Contact</h2>
+		<p class="page-lede">{contactLede}</p>
+		<p class="text-muted contact-primary-meta">
+			Response times vary; thank you for your patience.
+		</p>
 		<ul class="contact-list">
 			<li>
 				<a href={`mailto:${about.contact.email}`} data-testid="about-mailto">{about.contact.email}</a>
@@ -84,4 +82,104 @@ const web = websiteHref(about.contact.website);
 			}
 		</ul>
 	</section>
+
+	<section class="prose-narrow contact-form-section" aria-labelledby="contact-form-heading">
+		<h2 id="contact-form-heading" class="page-section-heading">
+			{inquiryHeading}
+		</h2>
+		<p class="text-muted contact-form-intro">
+			{inquiryDisclaimer}
+		</p>
+		<form class="form-contact" name="inquiry" id="contact-inquiry-form" data-testid="contact-inquiry-form">
+			<div class="visually-hidden" aria-hidden="true">
+				<label for="contact-company-hp">Company</label>
+				<input
+					type="text"
+					id="contact-company-hp"
+					name="_company"
+					tabindex="-1"
+					autocomplete="off"
+					data-testid="contact-inquiry-honeypot"
+				/>
+			</div>
+			<label for="contact-name">Name</label>
+			<input id="contact-name" name="name" type="text" autocomplete="name" required data-testid="contact-name" />
+
+			<label for="contact-email">Email</label>
+			<input id="contact-email" name="email" type="email" autocomplete="email" required data-testid="contact-email" />
+
+			<label for="contact-message">Message</label>
+			<textarea id="contact-message" name="message" required data-testid="contact-message" />
+
+			<button type="submit" id="contact-inquiry-submit" data-testid="contact-inquiry-submit">Send message</button>
+			<p id="contact-form-status" class="form-status" role="status" aria-live="polite" data-testid="contact-form-status" />
+		</form>
+	</section>
 </BaseLayout>
+
+<script is:inline>
+	(function () {
+		const form = document.getElementById('contact-inquiry-form');
+		const statusEl = document.getElementById('contact-form-status');
+		const submitBtn = document.getElementById('contact-inquiry-submit');
+		if (!form || !statusEl || !submitBtn || submitBtn.tagName !== 'BUTTON') return;
+
+		function setStatus(message, kind) {
+			statusEl.textContent = message;
+			statusEl.classList.remove('form-status--error', 'form-status--success');
+			if (kind === 'error') statusEl.classList.add('form-status--error');
+			if (kind === 'success') statusEl.classList.add('form-status--success');
+		}
+
+		form.addEventListener('submit', async function (e) {
+			e.preventDefault();
+			setStatus('', 'idle');
+			const nameInput = form.querySelector('[name="name"]');
+			const emailInput = form.querySelector('[name="email"]');
+			const messageInput = form.querySelector('[name="message"]');
+			const hpInput = form.querySelector('[name="_company"]');
+			if (
+				!(nameInput instanceof HTMLInputElement) ||
+				!(emailInput instanceof HTMLInputElement) ||
+				!(messageInput instanceof HTMLTextAreaElement) ||
+				!(hpInput instanceof HTMLInputElement)
+			) {
+				return;
+			}
+
+			submitBtn.disabled = true;
+			try {
+				const res = await fetch('/api/inquiry', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						name: nameInput.value,
+						email: emailInput.value,
+						message: messageInput.value,
+						_company: hpInput.value,
+					}),
+				});
+				let data = {};
+				try {
+					data = await res.json();
+				} catch {
+					data = {};
+				}
+				if (res.ok && data && data.ok === true) {
+					setStatus('Thank you — your message was sent.', 'success');
+					form.reset();
+				} else {
+					const errMsg =
+						typeof data.error === 'string'
+							? data.error
+							: 'Something went wrong. Please try again in a moment.';
+					setStatus(errMsg, 'error');
+				}
+			} catch {
+				setStatus('Network error. Please try again in a moment.', 'error');
+			} finally {
+				submitBtn.disabled = false;
+			}
+		});
+	})();
+</script>
