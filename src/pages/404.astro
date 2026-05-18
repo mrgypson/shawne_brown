@@ -12,7 +12,7 @@ const siteSettings = await getSiteSettings({ preview: useDraftPerspective });
 const description = `The requested page could not be found — ${siteSettings.siteName || siteConfig.siteName}.`;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} noindex>
 	<section class="prose-narrow">
 		<h1 class="page-title">Page not found</h1>
 		<p class="page-lede">This URL does not match a page on this site.</p>

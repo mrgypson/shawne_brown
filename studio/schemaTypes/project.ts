@@ -181,6 +181,7 @@ export const project = defineType({
 									name: 'alt',
 									type: 'string',
 									title: 'Alternative text',
+									validation: (Rule) => Rule.required(),
 								}),
 							],
 							validation: (Rule) => Rule.required(),

@@ -1,19 +1,24 @@
 ---
 import '../styles/global.css';
+import StructuredData from '../components/JsonLd.astro';
 import SanityVisualEditing from '../components/SanityVisualEditing.astro';
 import SeoHead from '../components/SeoHead.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import { siteConfig } from '../data/mock/site';
 import { getAbout, getSiteSettings } from '../lib/content';
+import { absoluteUrl, buildWebSiteJsonLd, type JsonLd } from '../lib/seo/jsonLd';
 
 interface Props {
 	title: string;
 	description: string;
 	ogImage?: string;
+	ogImageAlt?: string;
+	jsonLd?: JsonLd | JsonLd[];
+	noindex?: boolean;
 }
 
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, ogImageAlt, jsonLd, noindex: noindexProp = false } = Astro.props;
 const useDraftPerspective = Boolean(Astro.locals.sanityDraftPerspective);
 const [about, siteSettings] = await Promise.all([
 	getAbout({ preview: useDraftPerspective }),
@@ -25,15 +30,44 @@ const visualEditingEnabled =
 const pageTitle =
 	title.includes(siteSettings.siteName) ? title : `${title} — ${siteSettings.siteName}`;
 const pageDescription = description || siteSettings.defaultDescription || siteConfig.defaultDescription;
-const pageOgImage = ogImage || siteSettings.defaultOgImageUrl;
+const siteOrigin = Astro.site?.href ?? siteConfig.baseUrl;
+const pageOgImageRaw = ogImage || siteSettings.defaultOgImageUrl;
+const pageOgImage = pageOgImageRaw ? absoluteUrl(pageOgImageRaw, siteOrigin) : undefined;
+const pageOgImageAlt = ogImageAlt || (pageOgImage ? `${siteSettings.siteName} — fine art photography` : undefined);
 const faviconHref = siteSettings.faviconUrl || siteConfig.faviconUrl || '/favicon.svg';
+const twitterHandle = siteSettings.twitterHandle || siteConfig.twitterHandle;
+const noindex = noindexProp || useDraftPerspective || sanityPreview;
+
+const websiteJsonLd = buildWebSiteJsonLd(siteSettings, siteOrigin, about);
+const jsonLdGraphs: JsonLd[] = [websiteJsonLd];
+if (jsonLd) {
+	jsonLdGraphs.push(...(Array.isArray(jsonLd) ? jsonLd : [jsonLd]));
+}
+
+const fontsHref =
+	'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Playfair:ital,wght@0,300;1,300&family=Inter:wght@400;500&display=swap';
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<link rel="icon" href={faviconHref} />
-		<SeoHead title={pageTitle} description={pageDescription} ogImage={pageOgImage} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="stylesheet" href={fontsHref} media="print" onload="this.media='all'" />
+		<noscript>
+			<link rel="stylesheet" href={fontsHref} />
+		</noscript>
+		<SeoHead
+			title={pageTitle}
+			description={pageDescription}
+			ogImage={pageOgImage}
+			ogImageAlt={pageOgImageAlt}
+			siteName={siteSettings.siteName}
+			twitterHandle={twitterHandle}
+			noindex={noindex}
+		/>
+		<StructuredData data={jsonLdGraphs} />
 	</head>
 	<body>
 		<a class="skip-link" href="#main-content">Skip to content</a>

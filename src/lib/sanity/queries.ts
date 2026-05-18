@@ -27,7 +27,8 @@ export const siteSettingsQuery = `*[_type == "siteSettings" && _id == "siteSetti
   contactEmail,
   "logoUrl": logo.asset->url,
   "faviconUrl": favicon.asset->url,
-  "defaultOgImageUrl": defaultOgImage.asset->url
+  "defaultOgImageUrl": defaultOgImage.asset->url,
+  twitterHandle
 }`;
 
 /** Shared projection for project documents (list + detail). */
