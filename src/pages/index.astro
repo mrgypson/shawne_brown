@@ -20,17 +20,24 @@ const headingSubheading = homePage.subheading?.trim() ?? '';
 const showTitle = homePage.showTitle && Boolean(headingTitle);
 const showSubheading = homePage.showSubheading && Boolean(headingSubheading);
 const showHeader = showTitle || showSubheading;
+const fallbackH1 =
+	siteSettings.tagline?.trim() ||
+	siteSettings.defaultDescription?.trim() ||
+	siteConfig.tagline ||
+	siteConfig.defaultDescription;
 
 const title = siteSettings.defaultTitle || siteSettings.siteName || siteConfig.siteName;
 const description = siteSettings.defaultDescription || siteConfig.defaultDescription;
 ---
 
 <BaseLayout title={title} description={description}>
-	{showHeader && (
+	{showHeader ? (
 		<header class="prose-narrow">
 			{showTitle && <h1 class="page-title">{headingTitle}</h1>}
 			{showSubheading && <p class="page-lede">{headingSubheading}</p>}
 		</header>
+	) : (
+		<h1 class="visually-hidden">{fallbackH1}</h1>
 	)}
 	<div class="work-grid">
 		{
@@ -42,7 +49,7 @@ const description = siteSettings.defaultDescription || siteConfig.defaultDescrip
 							alt={project.coverImage.alt}
 							loading="lazy"
 							decoding="async"
-							sizes="100vw"
+							sizes="(min-width: 40rem) 50vw, 100vw"
 							width="960"
 							height="720"
 						/>
