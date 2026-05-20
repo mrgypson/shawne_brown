@@ -159,12 +159,10 @@ for (let i = 0; i < images.length; i += 1) {
 			}
 		}
 
-		// Reduced-motion users opt out of the linger-to-focus effect.
-		if (prefersReducedMotion) return;
-
 		const rows = Array.from(
 			gallery.querySelectorAll<HTMLElement>(':scope > .gallery-figure, :scope > .gallery-pair'),
 		);
+		if (rows.length === 0) return;
 
 		let idleTimer: ReturnType<typeof setTimeout> | undefined;
 		let navHideTimer: ReturnType<typeof setTimeout> | undefined;
@@ -306,30 +304,24 @@ for (let i = 0; i < images.length; i += 1) {
 			return rowCenter - window.innerHeight / 2;
 		};
 
-		gallery.addEventListener('click', (event: MouseEvent) => {
-			const target = event.target as HTMLElement | null;
-			if (!target) return;
-			const btn = target.closest<HTMLElement>('[data-gallery-nav]');
-			if (!btn || !gallery.contains(btn)) return;
-			if (!gallery.classList.contains('is-idle')) return;
-
-			const navButton = btn.closest('button');
-			if (navButton?.disabled) return;
-
-			const dir = btn.getAttribute('data-gallery-nav');
-			if (dir !== 'prev' && dir !== 'next') return;
-
+		const currentNavRow = (): HTMLElement | null => {
 			const focusedFig = gallery.querySelector<HTMLElement>('.gallery-figure.is-focused');
-			if (!focusedFig) return;
+			if (focusedFig && gallery.classList.contains('is-idle')) {
+				return rowFromFigure(focusedFig);
+			}
+			const centered = findCenteredFigure();
+			return centered ? rowFromFigure(centered) : null;
+		};
 
-			const currentRow = rowFromFigure(focusedFig);
+		const navigateRow = (dir: 'prev' | 'next'): boolean => {
+			const currentRow = currentNavRow();
+			if (!currentRow) return false;
+
 			const idx = rows.indexOf(currentRow);
-			if (idx < 0) return;
+			if (idx < 0) return false;
 
 			const targetIdx = dir === 'prev' ? idx - 1 : idx + 1;
-			if (targetIdx < 0 || targetIdx >= rows.length) return;
-
-			event.preventDefault();
+			if (targetIdx < 0 || targetIdx >= rows.length) return false;
 
 			const nextRow = rows[targetIdx];
 			exitIdle();
@@ -353,10 +345,62 @@ for (let i = 0; i < images.length; i += 1) {
 				}
 				programmaticNavActive = false;
 				setProgrammaticScroll(false);
-				scheduleIdle();
+				if (!prefersReducedMotion) {
+					scheduleIdle();
+				}
 			};
 			scrollDoneFallback = window.setTimeout(onScrollDone, 900);
 			window.addEventListener('scrollend', onScrollDone, { passive: true });
+			return true;
+		};
+
+		const isTypingTarget = (target: EventTarget | null): boolean => {
+			if (!(target instanceof HTMLElement)) return false;
+			return Boolean(
+				target.closest('input, textarea, select, [contenteditable="true"]'),
+			);
+		};
+
+		const onGalleryKeydown = (event: KeyboardEvent) => {
+			if (!isDesktopNavContext()) return;
+			if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+			if (isTypingTarget(event.target)) return;
+			if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+
+			enableSnapAfterIntent();
+
+			const dir = event.key === 'ArrowDown' ? 'next' : 'prev';
+			if (!navigateRow(dir)) return;
+
+			event.preventDefault();
+			if (gallery.classList.contains('is-idle') && isDesktopNavContext()) {
+				wakeNavControls();
+			}
+		};
+
+		window.addEventListener('keydown', onGalleryKeydown);
+
+		// Reduced-motion users opt out of the linger-to-focus effect (keyboard nav still works).
+		if (prefersReducedMotion) return;
+
+		gallery.addEventListener('click', (event: MouseEvent) => {
+			const target = event.target as HTMLElement | null;
+			if (!target) return;
+			const btn = target.closest<HTMLElement>('[data-gallery-nav]');
+			if (!btn || !gallery.contains(btn)) return;
+			if (!gallery.classList.contains('is-idle')) return;
+
+			const navButton = btn.closest('button');
+			if (navButton?.disabled) return;
+
+			const dir = btn.getAttribute('data-gallery-nav');
+			if (dir !== 'prev' && dir !== 'next') return;
+
+			const focusedFig = gallery.querySelector<HTMLElement>('.gallery-figure.is-focused');
+			if (!focusedFig) return;
+
+			event.preventDefault();
+			navigateRow(dir);
 		});
 
 		window.addEventListener(

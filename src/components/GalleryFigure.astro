@@ -28,9 +28,6 @@ const hasIntrinsicSize =
 	typeof image.intrinsicHeight === 'number' &&
 	image.intrinsicWidth > 0 &&
 	image.intrinsicHeight > 0;
-const mediaStyle = hasIntrinsicSize
-	? `aspect-ratio: ${image.intrinsicWidth} / ${image.intrinsicHeight}`
-	: undefined;
 ---
 
 <figure
@@ -39,12 +36,7 @@ const mediaStyle = hasIntrinsicSize
 	data-width={width}
 	data-align={align}
 >
-	<div
-		class="gallery-figure__media"
-		data-inset-left={insetLeft}
-		data-inset-right={insetRight}
-		style={mediaStyle}
-	>
+	<div class="gallery-figure__media" data-inset-left={insetLeft} data-inset-right={insetRight}>
 		<img
 			src={image.src}
 			alt={image.alt}

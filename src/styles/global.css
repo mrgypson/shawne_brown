@@ -869,11 +869,14 @@ html:has(.project-gallery).project-gallery-programmatic-scroll {
 	}
 }
 
-/* Flex keeps width-% layout on the box while the img may shrink to satisfy max-height. */
+/* Flex keeps width-% layout on the box while the img may shrink to satisfy max-height.
+ * Do not set aspect-ratio on this wrapper — it locks height from width and breaks
+ * --gallery-img-max-height for tall portraits; intrinsic width/height on <img> handles CLS. */
 .gallery-figure__media {
 	position: relative;
 	display: flex;
 	flex-direction: column;
+	max-height: var(--gallery-img-max-height);
 }
 
 .gallery-figure[data-align='left'] .gallery-figure__media {
