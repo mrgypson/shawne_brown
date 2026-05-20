@@ -29,6 +29,10 @@ export type GalleryPairAlignVertical = 'top' | 'center' | 'bottom';
 export interface GalleryImage {
 	src: string;
 	alt: string;
+	/** Original pixel width from Sanity asset metadata (reserves layout space). */
+	intrinsicWidth?: number;
+	/** Original pixel height from Sanity asset metadata (reserves layout space). */
+	intrinsicHeight?: number;
 	caption?: string;
 	/** Edition / inventory label (optional on standard projects). */
 	printNumber?: string;

@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { instagramHref, websiteHref } from '../lib/contact/socialUrls';
 import { siteConfig } from '../data/mock/site';
 import { getAbout, getSiteSettings } from '../lib/content';
+import { buildPersonJsonLd, firstSentence } from '../lib/seo/jsonLd';
 
 export const prerender = false;
 
@@ -11,9 +12,11 @@ const [about, siteSettings] = await Promise.all([
 	getAbout({ preview: useDraftPerspective }),
 	getSiteSettings({ preview: useDraftPerspective }),
 ]);
-const title = 'About & Contact';
 const siteName = siteSettings.siteName || siteConfig.siteName;
-const description = `Artist biography, studio contact, and inquiries — ${siteName}.`;
+const title = `About — ${siteName}, Fine Art Photographer`;
+const description = firstSentence(about.bio) || siteSettings.defaultDescription || siteConfig.defaultDescription;
+const siteOrigin = Astro.site?.href ?? siteConfig.baseUrl;
+const personJsonLd = buildPersonJsonLd(siteSettings, about, siteOrigin);
 const contactLede =
 	about.contactPageLede ??
 	'For studio inquiries, commissions, and availability, use the form below.';
@@ -22,9 +25,10 @@ const inquiryDisclaimer =
 	about.contactInquiryDisclaimer ?? 'We typically reply within a few business days.';
 const ig = instagramHref(about.contact.instagram);
 const web = websiteHref(about.contact.website);
+const hasExhibitions = about.exhibitions.length > 0;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} jsonLd={personJsonLd}>
 	<header class="prose-narrow">
 		<h1 class="page-title">About & Contact</h1>
 	</header>
@@ -43,12 +47,30 @@ const web = websiteHref(about.contact.website);
 		)
 	}
 
+	{
+		(hasExhibitions || about.publicationsNote) && (
+			<section class="prose-narrow page-section" aria-labelledby="about-exhibitions-heading">
+				<h2 id="about-exhibitions-heading" class="page-section-heading">
+					Exhibitions & publications
+				</h2>
+				{hasExhibitions && (
+					<ul class="exhibitions-list">
+						{about.exhibitions.map((entry) => (
+							<li>
+								<span class="exhibitions-year">{entry.year}</span>
+								<span class="exhibitions-detail">{entry.detail}</span>
+							</li>
+						))}
+					</ul>
+				)}
+				{about.publicationsNote && <p class="page-section-body">{about.publicationsNote}</p>}
+			</section>
+		)
+	}
+
 	<section class="prose-narrow contact-block" id="contact" aria-labelledby="about-contact-heading">
 		<h2 id="about-contact-heading" class="page-section-heading">Contact</h2>
 		<p class="page-lede">{contactLede}</p>
-		<p class="text-muted contact-primary-meta">
-			Response times vary; thank you for your patience.
-		</p>
 		<ul class="contact-list">
 			<li>
 				<a href={`mailto:${about.contact.email}`} data-testid="about-mailto">{about.contact.email}</a>

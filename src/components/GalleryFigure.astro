@@ -8,9 +8,11 @@ interface Props {
 	index: number;
 	showPrintMeta?: boolean;
 	paired?: boolean;
+	/** Eager-load for above-the-fold gallery rows (reduces layout shift on first visit). */
+	priorityLoad?: boolean;
 }
 
-const { image, index, showPrintMeta = false, paired = false } = Astro.props;
+const { image, index, showPrintMeta = false, paired = false, priorityLoad = false } = Astro.props;
 
 function hasPrintSales(img: GalleryImage | NeuhoffImage): img is NeuhoffImage {
 	return 'printSales' in img && img.printSales !== undefined && Object.keys(img.printSales).length > 0;
@@ -20,6 +22,15 @@ const insetLeft = String(image.insetLeft ?? 0);
 const insetRight = String(image.insetRight ?? 0);
 const width = image.width ?? 'medium';
 const align = image.align ?? 'center';
+
+const hasIntrinsicSize =
+	typeof image.intrinsicWidth === 'number' &&
+	typeof image.intrinsicHeight === 'number' &&
+	image.intrinsicWidth > 0 &&
+	image.intrinsicHeight > 0;
+const mediaStyle = hasIntrinsicSize
+	? `aspect-ratio: ${image.intrinsicWidth} / ${image.intrinsicHeight}`
+	: undefined;
 ---
 
 <figure
@@ -28,8 +39,21 @@ const align = image.align ?? 'center';
 	data-width={width}
 	data-align={align}
 >
-	<div class="gallery-figure__media" data-inset-left={insetLeft} data-inset-right={insetRight}>
-		<img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+	<div
+		class="gallery-figure__media"
+		data-inset-left={insetLeft}
+		data-inset-right={insetRight}
+		style={mediaStyle}
+	>
+		<img
+			src={image.src}
+			alt={image.alt}
+			loading={priorityLoad ? 'eager' : 'lazy'}
+			decoding="async"
+			fetchpriority={priorityLoad ? 'high' : undefined}
+			width={hasIntrinsicSize ? image.intrinsicWidth : undefined}
+			height={hasIntrinsicSize ? image.intrinsicHeight : undefined}
+		/>
 		{!paired && <GalleryRowNav />}
 	</div>
 	{

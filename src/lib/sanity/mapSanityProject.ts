@@ -22,6 +22,7 @@ type SanityPrintSales = {
 
 type SanityGalleryRow = {
 	image?: Parameters<typeof urlForImage>[0];
+	imageDimensions?: { width?: number; height?: number } | null;
 	caption?: string | null;
 	printNumber?: string | null;
 	printSales?: SanityPrintSales | null;
@@ -75,6 +76,18 @@ function toPairAlignVertical(value: string | null | undefined): GalleryPairAlign
 		: DEFAULT_PAIR_ALIGN_V;
 }
 
+function intrinsicSizeFromSanityRow(
+	row: SanityGalleryRow,
+): Pick<GalleryImage, 'intrinsicWidth' | 'intrinsicHeight'> {
+	const dims = row.imageDimensions;
+	const w = dims?.width;
+	const h = dims?.height;
+	if (typeof w === 'number' && typeof h === 'number' && w > 0 && h > 0) {
+		return { intrinsicWidth: Math.round(w), intrinsicHeight: Math.round(h) };
+	}
+	return {};
+}
+
 export type SanityProjectDoc = {
 	_id: string;
 	title: string;
@@ -104,17 +117,31 @@ function mapPrintSales(raw: SanityPrintSales | null | undefined): PrintSalesMeta
 	return Object.keys(meta).length > 0 ? meta : undefined;
 }
 
-function mapGalleryRow(row: SanityGalleryRow, kind: ProjectKind): GalleryImage | NeuhoffImage {
+function galleryAltFromSanity(
+	image: SanityGalleryRow['image'],
+	projectTitle: string,
+): string {
+	if (image && typeof image === 'object' && 'alt' in image && typeof image.alt === 'string') {
+		const trimmed = image.alt.trim();
+		if (trimmed) return trimmed;
+	}
+	return `${projectTitle} — photograph by Shawne Brown`;
+}
+
+function mapGalleryRow(
+	row: SanityGalleryRow,
+	kind: ProjectKind,
+	projectTitle: string,
+): GalleryImage | NeuhoffImage {
 	const src = urlForImage(row.image ?? null, { maxWidth: SANITY_IMAGE_MAX_WIDTH_GALLERY });
-	const alt =
-		row.image && typeof row.image === 'object' && 'alt' in row.image && typeof row.image.alt === 'string'
-			? row.image.alt
-			: '';
+	const alt = galleryAltFromSanity(row.image, projectTitle);
+	const intrinsicSize = intrinsicSizeFromSanityRow(row);
 
 	const pairWithNext = row.pairWithNext === true;
 	const base: GalleryImage = {
 		src,
 		alt,
+		...intrinsicSize,
 		caption: row.caption?.trim() || undefined,
 		printNumber: row.printNumber?.trim() || undefined,
 		insetLeft: toSpacingStep(row.insetLeft ?? row.insetHorizontal, DEFAULT_INSET),
@@ -137,19 +164,14 @@ function mapGalleryRow(row: SanityGalleryRow, kind: ProjectKind): GalleryImage |
 
 export function mapSanityProject(doc: SanityProjectDoc): Project {
 	const kind: ProjectKind = doc.kind === 'neuhoff' ? 'neuhoff' : 'standard';
+	const coverAlt = galleryAltFromSanity(doc.coverImage ?? null, doc.title);
 	const coverImage = {
 		src: urlForImage(doc.coverImage ?? null, { maxWidth: SANITY_IMAGE_MAX_WIDTH_COVER }),
-		alt:
-			doc.coverImage &&
-			typeof doc.coverImage === 'object' &&
-			'alt' in doc.coverImage &&
-			typeof doc.coverImage.alt === 'string'
-				? doc.coverImage.alt
-				: '',
+		alt: coverAlt,
 	};
 
 	const rows = doc.images ?? [];
-	const images = rows.map((row) => mapGalleryRow(row, kind));
+	const images = rows.map((row) => mapGalleryRow(row, kind, doc.title));
 
 	const sortOrder =
 		typeof doc.order === 'number' && !Number.isNaN(doc.order) ? Math.round(doc.order) : undefined;

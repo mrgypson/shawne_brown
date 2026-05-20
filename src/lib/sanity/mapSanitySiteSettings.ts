@@ -9,6 +9,7 @@ export type SanitySiteSettingsDoc = {
 	logoUrl?: string | null;
 	faviconUrl?: string | null;
 	defaultOgImageUrl?: string | null;
+	twitterHandle?: string | null;
 };
 
 export function mapSanitySiteSettings(doc: SanitySiteSettingsDoc | null): SiteSettings {
@@ -27,6 +28,7 @@ export function mapSanitySiteSettings(doc: SanitySiteSettingsDoc | null): SiteSe
 	if (doc.logoUrl?.trim()) output.logoUrl = doc.logoUrl.trim();
 	if (doc.faviconUrl?.trim()) output.faviconUrl = doc.faviconUrl.trim();
 	if (doc.defaultOgImageUrl?.trim()) output.defaultOgImageUrl = doc.defaultOgImageUrl.trim();
+	if (doc.twitterHandle?.trim()) output.twitterHandle = doc.twitterHandle.trim();
 
 	return output;
 }

@@ -7,4 +7,6 @@ export interface SiteSettings {
 	logoUrl?: string;
 	faviconUrl?: string;
 	defaultOgImageUrl?: string;
+	/** Twitter / X handle for card meta, e.g. @shawne */
+	twitterHandle?: string;
 }

@@ -53,9 +53,15 @@ for (let i = 0; i < images.length; i += 1) {
 	data-space-between={String(spaceBetween)}
 >
 	{
-		rows.map((row, rowIndex) =>
-			row.kind === 'solo' ? (
-				<GalleryFigure image={row.image} index={row.index} showPrintMeta={showPrintMeta} />
+		rows.map((row, rowIndex) => {
+			const priorityLoad = rowIndex < 2;
+			return row.kind === 'solo' ? (
+				<GalleryFigure
+					image={row.image}
+					index={row.index}
+					showPrintMeta={showPrintMeta}
+					priorityLoad={priorityLoad}
+				/>
 			) : (
 				<div
 					class="gallery-pair"
@@ -70,18 +76,20 @@ for (let i = 0; i < images.length; i += 1) {
 							index={row.leftIndex}
 							showPrintMeta={showPrintMeta}
 							paired
+							priorityLoad={priorityLoad}
 						/>
 						<GalleryFigure
 							image={row.right}
 							index={row.rightIndex}
 							showPrintMeta={showPrintMeta}
 							paired
+							priorityLoad={priorityLoad}
 						/>
 					</div>
 					<GalleryRowNav />
 				</div>
-			),
-		)
+			);
+		})
 	}
 </div>
 
@@ -275,6 +283,29 @@ for (let i = 0; i < images.length; i += 1) {
 			idleTimer = setTimeout(enterIdle, IDLE_DELAY_MS);
 		};
 
+		const PROGRAMMATIC_SCROLL_CLASS = 'project-gallery-programmatic-scroll';
+		const SCROLL_CORRECTION_THRESHOLD_PX = 40;
+
+		const setProgrammaticScroll = (active: boolean) => {
+			root.classList.toggle(PROGRAMMATIC_SCROLL_CLASS, active);
+		};
+
+		const scrollRowToCenter = (row: HTMLElement, behavior: ScrollBehavior) => {
+			const rect = row.getBoundingClientRect();
+			const targetTop =
+				window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
+			window.scrollTo({
+				top: Math.max(0, targetTop),
+				behavior,
+			});
+		};
+
+		const rowCenterOffsetFromViewport = (row: HTMLElement): number => {
+			const rect = row.getBoundingClientRect();
+			const rowCenter = rect.top + rect.height / 2;
+			return rowCenter - window.innerHeight / 2;
+		};
+
 		gallery.addEventListener('click', (event: MouseEvent) => {
 			const target = event.target as HTMLElement | null;
 			if (!target) return;
@@ -303,13 +334,12 @@ for (let i = 0; i < images.length; i += 1) {
 			const nextRow = rows[targetIdx];
 			exitIdle();
 			programmaticNavActive = true;
-			nextRow.scrollIntoView({
-				behavior: 'smooth',
-				block: 'center',
-			});
+			setProgrammaticScroll(true);
+			const scrollBehavior: ScrollBehavior = prefersReducedMotion ? 'instant' : 'smooth';
+			scrollRowToCenter(nextRow, scrollBehavior);
 
 			let settled = false;
-			let scrollDoneFallback: ReturnType<typeof setTimeout> | undefined;
+			let scrollDoneFallback: number | undefined;
 			const onScrollDone = () => {
 				if (settled) return;
 				settled = true;
@@ -317,7 +347,12 @@ for (let i = 0; i < images.length; i += 1) {
 				if (scrollDoneFallback !== undefined) {
 					window.clearTimeout(scrollDoneFallback);
 				}
+				const offset = rowCenterOffsetFromViewport(nextRow);
+				if (Math.abs(offset) > SCROLL_CORRECTION_THRESHOLD_PX) {
+					scrollRowToCenter(nextRow, 'instant');
+				}
 				programmaticNavActive = false;
+				setProgrammaticScroll(false);
 				scheduleIdle();
 			};
 			scrollDoneFallback = window.setTimeout(onScrollDone, 900);

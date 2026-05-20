@@ -51,6 +51,12 @@ export const siteSettings = defineType({
 			type: 'image',
 			options: { hotspot: true },
 		}),
+		defineField({
+			name: 'twitterHandle',
+			title: 'Twitter / X handle',
+			type: 'string',
+			description: 'For Twitter Card meta tags, e.g. @shawne',
+		}),
 	],
 	preview: {
 		select: { title: 'siteName' },

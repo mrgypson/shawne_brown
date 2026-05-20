@@ -3,18 +3,26 @@ interface Props {
 	title: string;
 	description: string;
 	ogImage?: string;
+	ogImageAlt?: string;
+	siteName?: string;
+	twitterHandle?: string;
+	noindex?: boolean;
 }
 
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, ogImageAlt, siteName, twitterHandle, noindex = false } =
+	Astro.props;
 const canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site) : Astro.url;
 const ogUrl = canonicalURL.href;
 const image = ogImage;
 const twitterCard = image ? 'summary_large_image' : 'summary';
+const normalizedTwitter = twitterHandle?.trim().replace(/^@/, '');
+const twitterAt = normalizedTwitter ? `@${normalizedTwitter}` : undefined;
 ---
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalURL.href} />
@@ -22,8 +30,13 @@ const twitterCard = image ? 'summary_large_image' : 'summary';
 <meta property="og:description" content={description} />
 <meta property="og:type" content="website" />
 <meta property="og:url" content={ogUrl} />
+{siteName && <meta property="og:site_name" content={siteName} />}
 {image && <meta property="og:image" content={image} />}
+{image && ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
 <meta name="twitter:card" content={twitterCard} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
+{twitterAt && <meta name="twitter:site" content={twitterAt} />}
+{twitterAt && <meta name="twitter:creator" content={twitterAt} />}
 {image && <meta name="twitter:image" content={image} />}
+{image && ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
