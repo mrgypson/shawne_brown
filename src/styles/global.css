@@ -759,6 +759,11 @@ html:has(.project-gallery).project-gallery-snap-active {
 	scroll-snap-type: y proximity;
 }
 
+/* Arrow navigation: disable snap so smooth scrollTo is not corrected upward. */
+html:has(.project-gallery).project-gallery-programmatic-scroll {
+	scroll-snap-type: none;
+}
+
 .project-gallery > .gallery-figure,
 .project-gallery > .gallery-pair {
 	scroll-snap-align: center;

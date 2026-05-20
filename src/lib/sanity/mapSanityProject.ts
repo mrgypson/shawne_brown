@@ -22,6 +22,7 @@ type SanityPrintSales = {
 
 type SanityGalleryRow = {
 	image?: Parameters<typeof urlForImage>[0];
+	imageDimensions?: { width?: number; height?: number } | null;
 	caption?: string | null;
 	printNumber?: string | null;
 	printSales?: SanityPrintSales | null;
@@ -75,6 +76,18 @@ function toPairAlignVertical(value: string | null | undefined): GalleryPairAlign
 		: DEFAULT_PAIR_ALIGN_V;
 }
 
+function intrinsicSizeFromSanityRow(
+	row: SanityGalleryRow,
+): Pick<GalleryImage, 'intrinsicWidth' | 'intrinsicHeight'> {
+	const dims = row.imageDimensions;
+	const w = dims?.width;
+	const h = dims?.height;
+	if (typeof w === 'number' && typeof h === 'number' && w > 0 && h > 0) {
+		return { intrinsicWidth: Math.round(w), intrinsicHeight: Math.round(h) };
+	}
+	return {};
+}
+
 export type SanityProjectDoc = {
 	_id: string;
 	title: string;
@@ -122,11 +135,13 @@ function mapGalleryRow(
 ): GalleryImage | NeuhoffImage {
 	const src = urlForImage(row.image ?? null, { maxWidth: SANITY_IMAGE_MAX_WIDTH_GALLERY });
 	const alt = galleryAltFromSanity(row.image, projectTitle);
+	const intrinsicSize = intrinsicSizeFromSanityRow(row);
 
 	const pairWithNext = row.pairWithNext === true;
 	const base: GalleryImage = {
 		src,
 		alt,
+		...intrinsicSize,
 		caption: row.caption?.trim() || undefined,
 		printNumber: row.printNumber?.trim() || undefined,
 		insetLeft: toSpacingStep(row.insetLeft ?? row.insetHorizontal, DEFAULT_INSET),

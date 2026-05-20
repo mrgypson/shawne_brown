@@ -48,6 +48,7 @@ export const projectFieldsProjection = `
   images[] {
     _key,
     image,
+    "imageDimensions": image.asset->metadata.dimensions,
     caption,
     insetLeft,
     insetRight,
